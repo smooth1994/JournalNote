@@ -16,6 +16,28 @@
 		042A9B8030357C23007D8AE2 /* JournalNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B7E30357C23007D8AE2 /* JournalNoteTests.swift */; };
 		042A9B8430357C26007D8AE2 /* JournalNoteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8130357C26007D8AE2 /* JournalNoteUITests.swift */; };
 		042A9B8530357C26007D8AE2 /* JournalNoteUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8230357C26007D8AE2 /* JournalNoteUITestsLaunchTests.swift */; };
+		042A9B8A30357CA3007D8AE2 /* shiguang-design-spec.md in Resources */ = {isa = PBXBuildFile; fileRef = 042A9B8730357CA3007D8AE2 /* shiguang-design-spec.md */; };
+		042A9B8B30357CA3007D8AE2 /* overview.md in Resources */ = {isa = PBXBuildFile; fileRef = 042A9B8630357CA3007D8AE2 /* overview.md */; };
+		042A9B8C30357CA3007D8AE2 /* shiguang-design-system.html in Resources */ = {isa = PBXBuildFile; fileRef = 042A9B8830357CA3007D8AE2 /* shiguang-design-system.html */; };
+		042A9BA230357D72007D8AE2 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9330357D72007D8AE2 /* TimelineViewController.swift */; };
+		042A9BA330357D72007D8AE2 /* PaperComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9BA030357D72007D8AE2 /* PaperComponents.swift */; };
+		042A9BA430357D72007D8AE2 /* JournalSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9930357D72007D8AE2 /* JournalSetting.swift */; };
+		042A9BA530357D72007D8AE2 /* JournalTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9130357D72007D8AE2 /* JournalTabBarController.swift */; };
+		042A9BA630357D72007D8AE2 /* JournalCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9E30357D72007D8AE2 /* JournalCardCell.swift */; };
+		042A9BA730357D72007D8AE2 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */; };
+		042A9BA830357D72007D8AE2 /* MoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9F30357D72007D8AE2 /* MoodPickerView.swift */; };
+		042A9BA930357D72007D8AE2 /* JournalEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9730357D72007D8AE2 /* JournalEntry.swift */; };
+		042A9BAA30357D72007D8AE2 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9230357D72007D8AE2 /* ProfileViewController.swift */; };
+		042A9BAB30357D72007D8AE2 /* JournalRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9B30357D72007D8AE2 /* JournalRepository.swift */; };
+		042A9BAC30357D72007D8AE2 /* JournalMood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9830357D72007D8AE2 /* JournalMood.swift */; };
+		042A9BAD30357D72007D8AE2 /* JournalDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9530357D72007D8AE2 /* JournalDesign.swift */; };
+		042A9BAE30357D72007D8AE2 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */; };
+		042A9BAF30357D72007D8AE2 /* JournalBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */; };
+		042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9D30357D72007D8AE2 /* CalendarDayCell.swift */; };
+		042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */; };
+		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
+		60A2ED92A081AF59D7396BC0 /* Pods_JournalNoteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */; };
+		9DA3A6D807E89B1FFB35B5A9 /* Pods_JournalNote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6000BC69560BC1E824A4076 /* Pods_JournalNote.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +71,34 @@
 		042A9B7E30357C23007D8AE2 /* JournalNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalNoteTests.swift; sourceTree = "<group>"; };
 		042A9B8130357C26007D8AE2 /* JournalNoteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalNoteUITests.swift; sourceTree = "<group>"; };
 		042A9B8230357C26007D8AE2 /* JournalNoteUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalNoteUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		042A9B8630357CA3007D8AE2 /* overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = overview.md; sourceTree = "<group>"; };
+		042A9B8730357CA3007D8AE2 /* shiguang-design-spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "shiguang-design-spec.md"; sourceTree = "<group>"; };
+		042A9B8830357CA3007D8AE2 /* shiguang-design-system.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "shiguang-design-system.html"; sourceTree = "<group>"; };
+		042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
+		042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
+		042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalBaseViewController.swift; sourceTree = "<group>"; };
+		042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalDetailViewController.swift; sourceTree = "<group>"; };
+		042A9B9130357D72007D8AE2 /* JournalTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalTabBarController.swift; sourceTree = "<group>"; };
+		042A9B9230357D72007D8AE2 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		042A9B9330357D72007D8AE2 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
+		042A9B9530357D72007D8AE2 /* JournalDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalDesign.swift; sourceTree = "<group>"; };
+		042A9B9730357D72007D8AE2 /* JournalEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntry.swift; sourceTree = "<group>"; };
+		042A9B9830357D72007D8AE2 /* JournalMood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalMood.swift; sourceTree = "<group>"; };
+		042A9B9930357D72007D8AE2 /* JournalSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalSetting.swift; sourceTree = "<group>"; };
+		042A9B9B30357D72007D8AE2 /* JournalRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalRepository.swift; sourceTree = "<group>"; };
+		042A9B9D30357D72007D8AE2 /* CalendarDayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCell.swift; sourceTree = "<group>"; };
+		042A9B9E30357D72007D8AE2 /* JournalCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalCardCell.swift; sourceTree = "<group>"; };
+		042A9B9F30357D72007D8AE2 /* MoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodPickerView.swift; sourceTree = "<group>"; };
+		042A9BA030357D72007D8AE2 /* PaperComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperComponents.swift; sourceTree = "<group>"; };
+		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
+		21A66107176B75A55AD2EE16 /* Pods-JournalNote-JournalNoteUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JournalNoteTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		69A62BDB45C7E51732986329 /* Pods-JournalNote.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.release.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.release.xcconfig"; sourceTree = "<group>"; };
+		9463C29DA42EE3D4EDB0728C /* Pods-JournalNote-JournalNoteUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote-JournalNoteUITests.release.xcconfig"; path = "Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C6000BC69560BC1E824A4076 /* Pods_JournalNote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JournalNote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JournalNote_JournalNoteUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA010329E13C089E15B0F26F /* Pods-JournalNoteTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNoteTests.debug.xcconfig"; path = "Target Support Files/Pods-JournalNoteTests/Pods-JournalNoteTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F4FBE44E69824B9427DB4F5C /* Pods-JournalNoteTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNoteTests.release.xcconfig"; path = "Target Support Files/Pods-JournalNoteTests/Pods-JournalNoteTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DA3A6D807E89B1FFB35B5A9 /* Pods_JournalNote.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60A2ED92A081AF59D7396BC0 /* Pods_JournalNoteTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +136,8 @@
 				042A9B7F30357C23007D8AE2 /* JournalNoteTests */,
 				042A9B8330357C26007D8AE2 /* JournalNoteUITests */,
 				042A9B3A30357C15007D8AE2 /* Products */,
+				9EC81229E4BA42B2122CEE00 /* Pods */,
+				5114442DD05FFD3FACC660E5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,6 +154,12 @@
 		042A9B7630357C20007D8AE2 /* JournalNote */ = {
 			isa = PBXGroup;
 			children = (
+				042A9B8930357CA3007D8AE2 /* design */,
+				042A9B9430357D72007D8AE2 /* Controllers */,
+				042A9B9630357D72007D8AE2 /* Core */,
+				042A9B9A30357D72007D8AE2 /* Models */,
+				042A9B9C30357D72007D8AE2 /* Persistence */,
+				042A9BA130357D72007D8AE2 /* Views */,
 				042A9B6D30357C20007D8AE2 /* AppDelegate.swift */,
 				042A9B6E30357C20007D8AE2 /* Assets.xcassets */,
 				042A9B6F30357C20007D8AE2 /* Info.plist */,
@@ -127,6 +188,90 @@
 			path = JournalNoteUITests;
 			sourceTree = "<group>";
 		};
+		042A9B8930357CA3007D8AE2 /* design */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B8630357CA3007D8AE2 /* overview.md */,
+				042A9B8730357CA3007D8AE2 /* shiguang-design-spec.md */,
+				042A9B8830357CA3007D8AE2 /* shiguang-design-system.html */,
+			);
+			path = design;
+			sourceTree = "<group>";
+		};
+		042A9B9430357D72007D8AE2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
+				042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */,
+				042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */,
+				042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */,
+				042A9B9130357D72007D8AE2 /* JournalTabBarController.swift */,
+				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
+				042A9B9330357D72007D8AE2 /* TimelineViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		042A9B9630357D72007D8AE2 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9530357D72007D8AE2 /* JournalDesign.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		042A9B9A30357D72007D8AE2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9730357D72007D8AE2 /* JournalEntry.swift */,
+				042A9B9830357D72007D8AE2 /* JournalMood.swift */,
+				042A9B9930357D72007D8AE2 /* JournalSetting.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		042A9B9C30357D72007D8AE2 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9B30357D72007D8AE2 /* JournalRepository.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		042A9BA130357D72007D8AE2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9D30357D72007D8AE2 /* CalendarDayCell.swift */,
+				042A9B9E30357D72007D8AE2 /* JournalCardCell.swift */,
+				042A9B9F30357D72007D8AE2 /* MoodPickerView.swift */,
+				042A9BA030357D72007D8AE2 /* PaperComponents.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C6000BC69560BC1E824A4076 /* Pods_JournalNote.framework */,
+				CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */,
+				2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9EC81229E4BA42B2122CEE00 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */,
+				69A62BDB45C7E51732986329 /* Pods-JournalNote.release.xcconfig */,
+				21A66107176B75A55AD2EE16 /* Pods-JournalNote-JournalNoteUITests.debug.xcconfig */,
+				9463C29DA42EE3D4EDB0728C /* Pods-JournalNote-JournalNoteUITests.release.xcconfig */,
+				EA010329E13C089E15B0F26F /* Pods-JournalNoteTests.debug.xcconfig */,
+				F4FBE44E69824B9427DB4F5C /* Pods-JournalNoteTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -134,17 +279,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 042A9B6230357C17007D8AE2 /* Build configuration list for PBXNativeTarget "JournalNote" */;
 			buildPhases = (
+				9CF68A10F09941573C055DFC /* [CP] Check Pods Manifest.lock */,
 				042A9B3530357C15007D8AE2 /* Sources */,
 				042A9B3630357C15007D8AE2 /* Frameworks */,
 				042A9B3730357C15007D8AE2 /* Resources */,
+				57D0237EE59E55782F5EBEC9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = JournalNote;
-			packageProductDependencies = (
-			);
 			productName = JournalNote;
 			productReference = 042A9B3930357C15007D8AE2 /* JournalNote.app */;
 			productType = "com.apple.product-type.application";
@@ -153,6 +298,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 042A9B6730357C17007D8AE2 /* Build configuration list for PBXNativeTarget "JournalNoteTests" */;
 			buildPhases = (
+				69E7309F3E8DAD2D09783D8A /* [CP] Check Pods Manifest.lock */,
 				042A9B4B30357C17007D8AE2 /* Sources */,
 				042A9B4C30357C17007D8AE2 /* Frameworks */,
 				042A9B4D30357C17007D8AE2 /* Resources */,
@@ -163,8 +309,6 @@
 				042A9B5130357C17007D8AE2 /* PBXTargetDependency */,
 			);
 			name = JournalNoteTests;
-			packageProductDependencies = (
-			);
 			productName = JournalNoteTests;
 			productReference = 042A9B4F30357C17007D8AE2 /* JournalNoteTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -173,9 +317,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 042A9B6A30357C17007D8AE2 /* Build configuration list for PBXNativeTarget "JournalNoteUITests" */;
 			buildPhases = (
+				FDF76C186F101482005E253A /* [CP] Check Pods Manifest.lock */,
 				042A9B5530357C17007D8AE2 /* Sources */,
 				042A9B5630357C17007D8AE2 /* Frameworks */,
 				042A9B5730357C17007D8AE2 /* Resources */,
+				5B6A3DFC284B83EFA1288766 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -183,8 +329,6 @@
 				042A9B5B30357C17007D8AE2 /* PBXTargetDependency */,
 			);
 			name = JournalNoteUITests;
-			packageProductDependencies = (
-			);
 			productName = JournalNoteUITests;
 			productReference = 042A9B5930357C17007D8AE2 /* JournalNoteUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -239,6 +383,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				042A9B7730357C20007D8AE2 /* Assets.xcassets in Resources */,
+				042A9B8A30357CA3007D8AE2 /* shiguang-design-spec.md in Resources */,
+				042A9B8B30357CA3007D8AE2 /* overview.md in Resources */,
+				042A9B8C30357CA3007D8AE2 /* shiguang-design-system.html in Resources */,
 				042A9B7930357C20007D8AE2 /* LaunchScreen.storyboard in Resources */,
 				042A9B7A30357C20007D8AE2 /* Main.storyboard in Resources */,
 			);
@@ -260,12 +407,139 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		57D0237EE59E55782F5EBEC9 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5B6A3DFC284B83EFA1288766 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		69E7309F3E8DAD2D09783D8A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-JournalNoteTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9CF68A10F09941573C055DFC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-JournalNote-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FDF76C186F101482005E253A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-JournalNote-JournalNoteUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		042A9B3530357C15007D8AE2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				042A9B7B30357C20007D8AE2 /* AppDelegate.swift in Sources */,
+				042A9BA230357D72007D8AE2 /* TimelineViewController.swift in Sources */,
+				042A9BA330357D72007D8AE2 /* PaperComponents.swift in Sources */,
+				042A9BA430357D72007D8AE2 /* JournalSetting.swift in Sources */,
+				042A9BA530357D72007D8AE2 /* JournalTabBarController.swift in Sources */,
+				042A9BA630357D72007D8AE2 /* JournalCardCell.swift in Sources */,
+				042A9BA730357D72007D8AE2 /* CalendarViewController.swift in Sources */,
+				042A9BA830357D72007D8AE2 /* MoodPickerView.swift in Sources */,
+				042A9BA930357D72007D8AE2 /* JournalEntry.swift in Sources */,
+				042A9BAA30357D72007D8AE2 /* ProfileViewController.swift in Sources */,
+				042A9BAB30357D72007D8AE2 /* JournalRepository.swift in Sources */,
+				042A9BAC30357D72007D8AE2 /* JournalMood.swift in Sources */,
+				042A9BAD30357D72007D8AE2 /* JournalDesign.swift in Sources */,
+				042A9BAE30357D72007D8AE2 /* ComposeViewController.swift in Sources */,
+				042A9BAF30357D72007D8AE2 /* JournalBaseViewController.swift in Sources */,
+				042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */,
+				042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */,
 				042A9B7C30357C20007D8AE2 /* SceneDelegate.swift in Sources */,
 				042A9B7D30357C20007D8AE2 /* ViewController.swift in Sources */,
 			);
@@ -325,6 +599,7 @@
 /* Begin XCBuildConfiguration section */
 		042A9B6330357C17007D8AE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -338,6 +613,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -346,6 +622,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yolanda.JournalNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -357,6 +637,7 @@
 		};
 		042A9B6430357C17007D8AE2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69A62BDB45C7E51732986329 /* Pods-JournalNote.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -370,6 +651,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -378,6 +660,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yolanda.JournalNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -510,6 +796,7 @@
 		};
 		042A9B6830357C17007D8AE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA010329E13C089E15B0F26F /* Pods-JournalNoteTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -532,6 +819,7 @@
 		};
 		042A9B6930357C17007D8AE2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4FBE44E69824B9427DB4F5C /* Pods-JournalNoteTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -554,6 +842,7 @@
 		};
 		042A9B6B30357C17007D8AE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 21A66107176B75A55AD2EE16 /* Pods-JournalNote-JournalNoteUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -574,6 +863,7 @@
 		};
 		042A9B6C30357C17007D8AE2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9463C29DA42EE3D4EDB0728C /* Pods-JournalNote-JournalNoteUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

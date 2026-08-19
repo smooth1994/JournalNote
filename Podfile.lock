@@ -1,0 +1,24 @@
+PODS:
+  - SnapKit (5.7.1)
+  - WCDB.swift (2.1.12):
+    - WCDBOptimizedSQLCipher (= 1.4.7)
+  - WCDBOptimizedSQLCipher (1.4.7)
+
+DEPENDENCIES:
+  - SnapKit (~> 5.7.1)
+  - WCDB.swift (= 2.1.12)
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+    - WCDB.swift
+    - WCDBOptimizedSQLCipher
+
+SPEC CHECKSUMS:
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  WCDB.swift: d6e76ea5727f65a6659bf6d642da40f1c738352e
+  WCDBOptimizedSQLCipher: 9bceac087eff9625b151838d3a30364f53f71ad9
+
+PODFILE CHECKSUM: f1138a72b91fe8bb421ea7907c9e61f5a1b1960c
+
+COCOAPODS: 1.16.2

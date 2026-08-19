@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拾光手账 · UI 设计系统</title>
+<style>
+/* ============================================================
+   拾光手账 · Design Tokens
+   治愈 · 复古 · 沉浸式记录
+   ============================================================ */
+:root {
+  /* —— 纸感底色 —— */
+  --paper-50:  #FBF7EF;   /* 晨雾米白 · 主背景 */
+  --paper-100: #F7F1E5;   /* 宣纸白 · 卡片底 */
+  --paper-200: #EFE6D2;   /* 做旧牛皮纸 · 次级区块 */
+  --paper-300: #E4D7BC;   /* 岁月痕 · 分隔/边框 */
+
+  /* —— 墨色文字 —— */
+  --ink-900: #3A3128;     /* 浓墨 · 标题 */
+  --ink-700: #57493C;     /* 淡墨 · 正文 */
+  --ink-500: #8A7B69;     /* 灰墨 · 辅助说明 */
+  --ink-300: #B9AC98;     /* 残墨 · 占位/禁用 */
+
+  /* —— 品牌主色：焦糖琥珀 —— */
+  --amber-500: #B87B4B;   /* 焦糖 · 主行动色 */
+  --amber-600: #A06636;   /* 深焦糖 · 按压态 */
+  --amber-100: #F3E3CE;   /* 焦糖雾 · 浅色底 */
+
+  /* —— 辅助色（手账素材色） —— */
+  --sage-500: #93A084;    /* 鼠尾草绿 · 平静/完成 */
+  --rose-500: #C08879;    /* 干枯玫瑰 · 温柔/收藏 */
+  --mist-500: #8CA0AC;    /* 雾灰蓝 · 思考/雨 */
+  --clay-500: #B5533C;    /* 砖红印章 · 强调/提醒 */
+
+  /* —— 语义色 —— */
+  --success: #7C9473;
+  --warning: #C99A3F;
+  --error:   #B5533C;
+  --info:    #8CA0AC;
+
+  /* —— 夜灯模式（暗色） —— */
+  --night-bg:   #221D17;
+  --night-card: #2E2820;
+  --night-ink:  #E8DFD0;
+
+  /* —— 字体 —— */
+  --font-serif: "Songti SC", "Noto Serif SC", "STSong", serif;
+  --font-hand:  "Ma Shan Zheng", "Xingkai SC", "STXingkai", cursive;
+  --font-mono:  "JetBrains Mono", "Courier New", monospace;
+
+  /* —— 字阶 —— */
+  --fs-xs: 12px; --fs-sm: 14px; --fs-base: 16px;
+  --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px; --fs-3xl: 34px;
+
+  /* —— 间距（4pt 基准） —— */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-6: 24px; --sp-8: 32px; --sp-12: 48px;
+
+  /* —— 圆角 —— */
+  --r-sm: 8px; --r-md: 14px; --r-lg: 20px; --r-full: 999px;
+
+  /* —— 阴影（柔和纸感） —— */
+  --shadow-card: 0 2px 8px rgba(58,49,40,.06), 0 8px 24px rgba(58,49,40,.08);
+  --shadow-lift: 0 4px 12px rgba(58,49,40,.10), 0 12px 32px rgba(58,49,40,.12);
+
+  --ease-soft: cubic-bezier(.22,1,.36,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-serif);
+  background: var(--paper-50);
+  color: var(--ink-700);
+  line-height: 1.75;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(184,123,75,.04), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(147,160,132,.05), transparent 45%);
+}
+
+.doc { max-width: 1120px; margin: 0 auto; padding: var(--sp-12) var(--sp-6) 120px; }
+
+/* —— 封面 —— */
+.cover { text-align: center; padding: 80px 0 64px; border-bottom: 1px solid var(--paper-300); margin-bottom: 64px; position: relative; }
+.cover .stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 88px; height: 88px; border: 2px solid var(--clay-500); border-radius: 50%;
+  color: var(--clay-500); font-family: var(--font-hand); font-size: 30px;
+  transform: rotate(-8deg); margin-bottom: 28px; opacity: .85;
+  box-shadow: inset 0 0 0 1px rgba(181,83,60,.3);
+}
+.cover h1 { font-size: 56px; color: var(--ink-900); font-weight: 700; letter-spacing: 10px; }
+.cover .slogan { font-family: var(--font-hand); font-size: 22px; color: var(--amber-500); margin-top: 16px; letter-spacing: 3px; }
+.cover .meta { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-500); margin-top: 28px; letter-spacing: 1px; }
+
+/* —— 章节 —— */
+section { margin-bottom: 88px; }
+.sec-head { display: flex; align-items: baseline; gap: var(--sp-4); margin-bottom: var(--sp-8); }
+.sec-num { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--clay-500); border: 1px solid var(--clay-500); border-radius: var(--r-full); padding: 2px 12px; opacity: .8; }
+.sec-head h2 { font-size: var(--fs-2xl); color: var(--ink-900); letter-spacing: 4px; }
+.sec-head .en { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-300); letter-spacing: 2px; text-transform: uppercase; }
+.lead { color: var(--ink-500); max-width: 640px; margin-bottom: var(--sp-8); }
+
+/* —— 色板 —— */
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-4); }
+.swatch { background: var(--paper-100); border: 1px solid var(--paper-300); border-radius: var(--r-md); overflow: hidden; transition: transform .3s var(--ease-soft), box-shadow .3s var(--ease-soft); }
+.swatch:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+.swatch .color { height: 84px; }
+.swatch .info { padding: var(--sp-3) var(--sp-4); }
+.swatch .name { font-size: var(--fs-sm); color: var(--ink-900); font-weight: 600; }
+.swatch .hex { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-500); }
+.swatch .usage { font-size: var(--fs-xs); color: var(--ink-300); margin-top: 2px; }
+.palette-title { font-size: var(--fs-sm); color: var(--ink-500); letter-spacing: 2px; margin: var(--sp-8) 0 var(--sp-4); font-weight: 600; }
+
+/* —— 字体 —— */
+.type-row { background: var(--paper-100); border: 1px solid var(--paper-300); border-radius: var(--r-md); padding: var(--sp-6) var(--sp-8); margin-bottom: var(--sp-4); display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-6); flex-wrap: wrap; }
+.type-row .spec { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-500); text-align: right; min-width: 180px; }
+
+/* —— 组件 —— */
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--sp-6); }
+.comp-card { background: var(--paper-100); border: 1px solid var(--paper-300); border-radius: var(--r-lg); padding: var(--sp-8); }
+.comp-card h3 { font-size: var(--fs-lg); color: var(--ink-900); margin-bottom: var(--sp-2); letter-spacing: 2px; }
+.comp-card .desc { font-size: var(--fs-xs); color: var(--ink-500); margin-bottom: var(--sp-6); }
+.comp-demo { display: flex; flex-direction: column; gap: var(--sp-4); align-items: flex-start; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-size: var(--fs-base); padding: 12px 28px; border-radius: var(--r-full); border: none; cursor: pointer; transition: all .25s var(--ease-soft); letter-spacing: 2px; }
+.btn-primary { background: var(--amber-500); color: #FFF9F0; box-shadow: 0 4px 12px rgba(184,123,75,.3); }
+.btn-primary:hover { background: var(--amber-600); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(184,123,75,.4); }
+.btn-ghost { background: transparent; color: var(--amber-600); border: 1.5px solid var(--amber-500); }
+.btn-ghost:hover { background: var(--amber-100); }
+.btn-soft { background: var(--paper-200); color: var(--ink-700); }
+.btn-soft:hover { background: var(--paper-300); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+.btn-sm { padding: 8px 18px; font-size: var(--fs-sm); }
+
+.tag { display: inline-flex; align-items: center; padding: 4px 14px; border-radius: var(--r-full); font-size: var(--fs-xs); letter-spacing: 1px; }
+.tag-sage { background: rgba(147,160,132,.18); color: #5F7052; }
+.tag-rose { background: rgba(192,136,121,.18); color: #96604F; }
+.tag-mist { background: rgba(140,160,172,.18); color: #5C707C; }
+.tag-amber { background: var(--amber-100); color: var(--amber-600); }
+
+.chip-row { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.mood { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: var(--paper-200); border: 2px solid transparent; cursor: pointer; transition: all .25s var(--ease-soft); }
+.mood:hover { transform: scale(1.1); }
+.mood.on { border-color: var(--amber-500); background: var(--amber-100); transform: scale(1.12); box-shadow: 0 4px 12px rgba(184,123,75,.25); }
+
+.input { width: 100%; padding: 14px 18px; border-radius: var(--r-md); border: 1.5px solid var(--paper-300); background: var(--paper-50); font-family: var(--font-serif); font-size: var(--fs-base); color: var(--ink-900); transition: all .25s var(--ease-soft); }
+.input:focus { outline: none; border-color: var(--amber-500); box-shadow: 0 0 0 4px rgba(184,123,75,.12); }
+.input::placeholder { color: var(--ink-300); }
+
+/* 手账卡片 */
+.note-card { background: var(--paper-100); border-radius: var(--r-md); padding: var(--sp-6); box-shadow: var(--shadow-card); border-top: 4px solid var(--sage-500); width: 100%; position: relative; transition: all .3s var(--ease-soft); }
+.note-card:hover { transform: translateY(-3px) rotate(-.4deg); box-shadow: var(--shadow-lift); }
+.note-card .date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-500); letter-spacing: 1px; }
+.note-card .title { font-size: var(--fs-lg); color: var(--ink-900); font-weight: 600; margin: 6px 0; }
+.note-card .excerpt { font-size: var(--fs-sm); color: var(--ink-500); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.note-card .tape { position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg); width: 72px; height: 22px; background: rgba(184,123,75,.28); border-radius: 2px; backdrop-filter: blur(1px); }
+
+/* —— 手机界面稿 —— */
+.phones { display: flex; gap: var(--sp-8); flex-wrap: wrap; justify-content: center; }
+.phone { width: 300px; min-height: 620px; background: var(--paper-50); border-radius: 36px; border: 1px solid var(--paper-300); box-shadow: var(--shadow-lift); padding: 20px 18px; position: relative; overflow: hidden; }
+.phone::before { content: ""; display: block; width: 96px; height: 22px; background: var(--paper-300); border-radius: var(--r-full); margin: 0 auto 18px; opacity: .5; }
+.phone .p-title { font-size: var(--fs-xl); color: var(--ink-900); font-weight: 700; letter-spacing: 3px; }
+.phone .p-sub { font-family: var(--font-hand); font-size: var(--fs-sm); color: var(--amber-500); margin-top: 2px; }
+.phone-label { text-align: center; margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--ink-900); font-weight: 600; letter-spacing: 2px; }
+.phone-label span { display: block; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-300); font-weight: 400; margin-top: 2px; }
+.phone-wrap { display: flex; flex-direction: column; }
+
+.tl-item { display: flex; gap: var(--sp-3); margin-top: var(--sp-4); }
+.tl-dot { display: flex; flex-direction: column; align-items: center; }
+.tl-dot i { width: 10px; height: 10px; border-radius: 50%; background: var(--amber-500); border: 2px solid var(--paper-50); box-shadow: 0 0 0 2px var(--amber-100); }
+.tl-dot u { flex: 1; width: 1.5px; background: var(--paper-300); margin-top: 4px; }
+.tl-card { flex: 1; background: var(--paper-100); border-radius: var(--r-md); padding: 12px 14px; box-shadow: var(--shadow-card); margin-bottom: 4px; }
+.tl-card .d { font-family: var(--font-mono); font-size: 10px; color: var(--ink-500); }
+.tl-card .t { font-size: var(--fs-sm); color: var(--ink-900); font-weight: 600; margin: 2px 0; }
+.tl-card .e { font-size: 11px; color: var(--ink-500); line-height: 1.6; }
+.tl-card .moodline { margin-top: 6px; display: flex; gap: 6px; align-items: center; }
+.tl-card .moodline em { font-style: normal; font-size: 13px; }
+
+.write-area { margin-top: var(--sp-4); background: var(--paper-100); border-radius: var(--r-md); padding: 18px; min-height: 320px; box-shadow: var(--shadow-card);
+  background-image: repeating-linear-gradient(transparent, transparent 31px, var(--paper-300) 31px, var(--paper-300) 32px); }
+.write-area .line { font-size: var(--fs-sm); color: var(--ink-700); line-height: 32px; }
+.write-area .hand { font-family: var(--font-hand); font-size: var(--fs-lg); color: var(--ink-900); line-height: 32px; }
+.write-tools { display: flex; gap: 10px; margin-top: var(--sp-4); justify-content: center; }
+.write-tools i { width: 38px; height: 38px; border-radius: 50%; background: var(--paper-200); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 15px; }
+
+.cal { margin-top: var(--sp-4); background: var(--paper-100); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-card); }
+.cal-head { text-align: center; font-size: var(--fs-sm); color: var(--ink-900); font-weight: 600; letter-spacing: 2px; margin-bottom: 10px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.cal-grid b { font-size: 10px; color: var(--ink-300); font-weight: 400; padding: 4px 0; }
+.cal-grid span { font-size: 11px; color: var(--ink-700); padding: 6px 0; border-radius: 50%; position: relative; }
+.cal-grid span.has { background: var(--amber-100); color: var(--amber-600); font-weight: 600; }
+.cal-grid span.has::after { content: ""; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: var(--clay-500); }
+.cal-grid span.today { background: var(--amber-500); color: #FFF9F0; font-weight: 700; }
+
+.detail-hero { margin-top: var(--sp-4); height: 150px; border-radius: var(--r-md); background: linear-gradient(135deg, var(--paper-200), var(--amber-100)); display: flex; align-items: center; justify-content: center; font-family: var(--font-hand); font-size: 24px; color: var(--amber-600); box-shadow: var(--shadow-card); }
+.detail-body { margin-top: var(--sp-4); }
+.detail-body p { font-size: var(--fs-sm); color: var(--ink-700); line-height: 2; margin-bottom: 10px; }
+.detail-seal { position: absolute; bottom: 76px; right: 30px; width: 46px; height: 46px; border: 1.5px solid var(--clay-500); border-radius: 8px; color: var(--clay-500); font-family: var(--font-hand); font-size: 15px; display: flex; align-items: center; justify-content: center; transform: rotate(6deg); opacity: .8; }
+.tabbar { position: absolute; bottom: 0; left: 0; right: 0; height: 58px; background: var(--paper-100); border-top: 1px solid var(--paper-300); display: flex; justify-content: space-around; align-items: center; }
+.tabbar i { font-style: normal; font-size: 18px; opacity: .4; }
+.tabbar i.on { opacity: 1; color: var(--amber-500); }
+
+/* —— 暗色 —— */
+.dark-demo { background: var(--night-bg); border-radius: var(--r-lg); padding: var(--sp-8); color: var(--night-ink); }
+.dark-demo .card { background: var(--night-card); border-radius: var(--r-md); padding: var(--sp-6); margin-top: var(--sp-4); }
+.dark-demo .card .t { color: var(--night-ink); font-weight: 600; }
+.dark-demo .card .d { font-family: var(--font-mono); font-size: var(--fs-xs); color: #9A8D7A; }
+.dark-tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: var(--sp-4); margin-top: var(--sp-6); }
+.dark-tokens .swatch { background: var(--night-card); border-color: #443B2E; }
+.dark-tokens .swatch .name { color: var(--night-ink); }
+.dark-tokens .swatch .hex, .dark-tokens .swatch .usage { color: #9A8D7A; }
+
+/* —— 规范表 —— */
+table { width: 100%; border-collapse: collapse; background: var(--paper-100); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-card); }
+th { background: var(--paper-200); color: var(--ink-900); font-size: var(--fs-sm); letter-spacing: 1px; text-align: left; padding: 12px 18px; }
+td { padding: 12px 18px; font-size: var(--fs-sm); border-top: 1px solid var(--paper-200); color: var(--ink-700); }
+td code { font-family: var(--font-mono); font-size: var(--fs-xs); background: var(--paper-200); padding: 2px 8px; border-radius: 6px; color: var(--amber-600); }
+
+.footer { text-align: center; margin-top: 100px; padding-top: 40px; border-top: 1px solid var(--paper-300); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-300); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- ═══════════ 封面 ═══════════ -->
+  <div class="cover">
+    <div class="stamp">拾光</div>
+    <h1>拾光手账</h1>
+    <div class="slogan">把时光，一页一页捡起来</div>
+    <div class="meta">SHIGUANG JOURNAL · UI DESIGN SYSTEM v1.0 · 2026.08<br>治愈 / 复古 / 沉浸式记录 · iOS</div>
+  </div>
+
+  <!-- ═══════════ 01 设计理念 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>设计理念</h2><span class="en">Philosophy</span></div>
+    <p class="lead">「拾光」意为拾起时光。设计上以「一本被岁月温柔对待的旧手账」为隐喻——纸张的暖、墨色的沉、印章的拙，共同营造安静、可依赖的记录氛围。三条设计原则贯穿始终：</p>
+    <div class="comp-grid">
+      <div class="comp-card"><h3>🕯 治愈 Healing</h3><div class="desc">低饱和暖色调、大留白、柔和圆角与慢节奏动效，让打开 App 像泡一杯热茶。无任何刺眼的红点焦虑设计。</div></div>
+      <div class="comp-card"><h3>📜 复古 Retro</h3><div class="desc">牛皮纸纹理、衬线宋体、手写体批注、火漆印章与和纸胶带等实体手账元素数字化，唤起「书写的仪式感」。</div></div>
+      <div class="comp-card"><h3>🌙 沉浸 Immersive</h3><div class="desc">书写页零干扰：隐藏导航、信纸横线、环境音与翻页动效，让用户只专注于「此刻想记下什么」。</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 色彩系统 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>色彩系统</h2><span class="en">Colors</span></div>
+    <p class="lead">整体色温控制在暖黄区间（色相 30°–45° 为主轴），辅以自然素材色。正文与背景对比度均 ≥ 4.5:1，满足 WCAG AA。</p>
+
+    <div class="palette-title">纸感底色 · PAPER</div>
+    <div class="palette">
+      <div class="swatch"><div class="color" style="background:#FBF7EF"></div><div class="info"><div class="name">晨雾米白</div><div class="hex">#FBF7EF</div><div class="usage">App 主背景</div></div></div>
+      <div class="swatch"><div class="color" style="background:#F7F1E5"></div><div class="info"><div class="name">宣纸白</div><div class="hex">#F7F1E5</div><div class="usage">卡片 / 浮层底</div></div></div>
+      <div class="swatch"><div class="color" style="background:#EFE6D2"></div><div class="info"><div class="name">做旧牛皮纸</div><div class="hex">#EFE6D2</div><div class="usage">次级区块 / 标签底</div></div></div>
+      <div class="swatch"><div class="color" style="background:#E4D7BC"></div><div class="info"><div class="name">岁月痕</div><div class="hex">#E4D7BC</div><div class="usage">边框 / 分隔线</div></div></div>
+    </div>
+
+    <div class="palette-title">墨色文字 · INK</div>
+    <div class="palette">
+      <div class="swatch"><div class="color" style="background:#3A3128"></div><div class="info"><div class="name">浓墨</div><div class="hex">#3A3128</div><div class="usage">标题（对比度 12.6:1）</div></div></div>
+      <div class="swatch"><div class="color" style="background:#57493C"></div><div class="info"><div class="name">淡墨</div><div class="hex">#57493C</div><div class="usage">正文（对比度 8.2:1）</div></div></div>
+      <div class="swatch"><div class="color" style="background:#8A7B69"></div><div class="info"><div class="name">灰墨</div><div class="hex">#8A7B69</div><div class="usage">辅助说明（对比度 4.6:1）</div></div></div>
+      <div class="swatch"><div class="color" style="background:#B9AC98"></div><div class="info"><div class="name">残墨</div><div class="hex">#B9AC98</div><div class="usage">占位符 / 禁用（仅装饰）</div></div></div>
+    </div>
+
+    <div class="palette-title">品牌与素材色 · ACCENT</div>
+    <div class="palette">
+      <div class="swatch"><div class="color" style="background:#B87B4B"></div><div class="info"><div class="name">焦糖琥珀 · 主色</div><div class="hex">#B87B4B</div><div class="usage">主按钮 / 选中态 / 重点</div></div></div>
+      <div class="swatch"><div class="color" style="background:#A06636"></div><div class="info"><div class="name">深焦糖</div><div class="hex">#A06636</div><div class="usage">按压态 / 文字强调</div></div></div>
+      <div class="swatch"><div class="color" style="background:#93A084"></div><div class="info"><div class="name">鼠尾草绿</div><div class="hex">#93A084</div><div class="usage">平静心情 / 完成态</div></div></div>
+      <div class="swatch"><div class="color" style="background:#C08879"></div><div class="info"><div class="name">干枯玫瑰</div><div class="hex">#C08879</div><div class="usage">温柔心情 / 收藏</div></div></div>
+      <div class="swatch"><div class="color" style="background:#8CA0AC"></div><div class="info"><div class="name">雾灰蓝</div><div class="hex">#8CA0AC</div><div class="usage">思考心情 / 信息</div></div></div>
+      <div class="swatch"><div class="color" style="background:#B5533C"></div><div class="info"><div class="name">砖红印章</div><div class="hex">#B5533C</div><div class="usage">印章 / 提醒 / 错误</div></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 03 字体系统 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>字体系统</h2><span class="en">Typography</span></div>
+    <p class="lead">三套字体分工：宋体承担「阅读」、手写体承担「情感」、等宽体承担「时间」。行高统一 1.75，保证长文阅读的呼吸感。</p>
+    <div class="type-row"><div style="font-size:34px;color:var(--ink-900);font-weight:700;letter-spacing:4px">拾光手账 · 页面大标题</div><div class="spec">宋体 Bold · 34px / 字距 4px</div></div>
+    <div class="type-row"><div style="font-size:22px;color:var(--ink-900);font-weight:600">今天也好好生活了 — 卡片标题</div><div class="spec">宋体 Semibold · 22px</div></div>
+    <div class="type-row"><div style="font-size:16px">傍晚的风从窗缝里溜进来，带着楼下桂花树的味道。我把这一刻写下来，留给以后的自己。—— 正文示例</div><div class="spec">宋体 Regular · 16px / 行高 1.75</div></div>
+    <div class="type-row"><div style="font-family:var(--font-hand);font-size:24px;color:var(--amber-600)">见字如面，万事胜意</div><div class="spec">手写体（马善政/行楷）· 点缀/批注/空状态</div></div>
+    <div class="type-row"><div style="font-family:var(--font-mono);font-size:14px;letter-spacing:1px">2026.08.12 · WED · 15:30</div><div class="spec">等宽体 · 日期/时间戳 12–14px</div></div>
+  </section>
+
+  <!-- ═══════════ 04 组件库 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>核心组件</h2><span class="en">Components</span></div>
+    <div class="comp-grid">
+
+      <div class="comp-card"><h3>按钮 Button</h3><div class="desc">胶囊圆角 + 2px 字距，主按钮带焦糖色投影；最小触控高度 44px。</div>
+        <div class="comp-demo">
+          <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn btn-primary">记下此刻</button><button class="btn btn-ghost">查看回忆</button></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn btn-soft btn-sm">保存草稿</button><button class="btn btn-primary btn-sm" disabled>发布</button></div>
+        </div>
+      </div>
+
+      <div class="comp-card"><h3>心情选择器 Mood</h3><div class="desc">记录前选择当下心情，选中态放大 1.12 倍并点亮焦糖描边，数据用于「心情年轮」回顾。</div>
+        <div class="comp-demo"><div class="chip-row">
+          <div class="mood on">😊</div><div class="mood">🌿</div><div class="mood">🌧</div><div class="mood">🌙</div><div class="mood">🍂</div>
+        </div>
+        <div class="chip-row" style="margin-top:4px"><span class="tag tag-amber">开心</span><span class="tag tag-sage">平静</span><span class="tag tag-mist">思绪</span><span class="tag tag-rose">想念</span></div></div>
+      </div>
+
+      <div class="comp-card"><h3>输入框 Input</h3><div class="desc">1.5px 岁月痕描边，聚焦时泛起焦糖色光晕（4px 12% 透明度外发光）。</div>
+        <div class="comp-demo"><input class="input" placeholder="给这段时光起个名字…"></div>
+      </div>
+
+      <div class="comp-card"><h3>手账卡片 Note Card</h3><div class="desc">顶部 4px 素材色条区分心情类别；和纸胶带装饰；悬停轻微倾斜 -0.4°，像被指尖碰了一下。</div>
+        <div class="comp-demo">
+          <div class="note-card"><div class="tape"></div>
+            <div class="date">2026.08.10 · MON</div>
+            <div class="title">巷口的老书店</div>
+            <div class="excerpt">老板还记得我去年找的那本诗集，说给我留了一本九成新的。旧时光的味道，大概就是纸页发黄的香气。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comp-card"><h3>标签 Tag</h3><div class="desc">18% 透明度素材色底 + 深色文字，保证对比度；用于分类与心情标记。</div>
+        <div class="comp-demo"><div class="chip-row"><span class="tag tag-sage">日常</span><span class="tag tag-rose">旅行</span><span class="tag tag-mist">灵感</span><span class="tag tag-amber">美食</span></div></div>
+      </div>
+
+      <div class="comp-card"><h3>印章 Seal</h3><div class="desc">砖红篆刻风印章，用于「连续记录」「周年纪念」等成就时刻，增加仪式感与收藏欲。</div>
+        <div class="comp-demo"><div style="width:64px;height:64px;border:2px solid var(--clay-500);border-radius:10px;color:var(--clay-500);font-family:var(--font-hand);font-size:20px;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);opacity:.85">七日<br>不辍</div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════ 05 界面设计 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>核心界面</h2><span class="en">Screens</span></div>
+    <p class="lead">四大核心页面高保真稿（iPhone 390pt 逻辑宽度）。底部 Tab 四项：时光轴 / 日历 / 书写（中央凸起）/ 我的。</p>
+    <div class="phones">
+
+      <div class="phone-wrap"><div class="phone">
+        <div class="p-title">时光轴</div><div class="p-sub">八月 · 拾起 9 段时光</div>
+        <div class="tl-item"><div class="tl-dot"><i></i><u></u></div><div class="tl-card"><div class="d">08.12 · 今天</div><div class="t">午后的雷阵雨</div><div class="e">雨点砸在遮阳棚上，像小时候外婆家的夏天…</div><div class="moodline"><em>🌧</em><span class="tag tag-mist" style="font-size:10px;padding:2px 10px">思绪</span></div></div></div>
+        <div class="tl-item"><div class="tl-dot"><i style="background:var(--sage-500);box-shadow:0 0 0 2px rgba(147,160,132,.25)"></i><u></u></div><div class="tl-card"><div class="d">08.10 · 周一</div><div class="t">巷口的老书店</div><div class="e">老板还记得我去年找的那本诗集…</div><div class="moodline"><em>🌿</em><span class="tag tag-sage" style="font-size:10px;padding:2px 10px">平静</span></div></div></div>
+        <div class="tl-item"><div class="tl-dot"><i style="background:var(--rose-500);box-shadow:0 0 0 2px rgba(192,136,121,.25)"></i></div><div class="tl-card"><div class="d">08.08 · 周六</div><div class="t">给妈妈打了电话</div><div class="e">她说家里的栀子开了，让我中秋一定回去…</div><div class="moodline"><em>🌙</em><span class="tag tag-rose" style="font-size:10px;padding:2px 10px">想念</span></div></div></div>
+        <div class="tabbar"><i class="on">📖</i><i>🗓</i><i>✏️</i><i>🕯</i></div>
+      </div><div class="phone-label">首页 · 时光轴<span>Timeline / 倒序时间流 + 心情色点</span></div></div>
+
+      <div class="phone-wrap"><div class="phone">
+        <div class="p-title">此刻</div><div class="p-sub">2026.08.12 · 窗外有雨</div>
+        <div class="write-area">
+          <div class="hand">给今天：</div>
+          <div class="line">雨下了一整个下午。</div>
+          <div class="line">我把椅子搬到窗边，</div>
+          <div class="line">看水珠在玻璃上赛跑。</div>
+          <div class="line">什么也没做，</div>
+          <div class="line">但觉得这一天很满。</div>
+        </div>
+        <div class="write-tools"><i>🖋</i><i>🖼</i><i>🎞</i><i>🎵</i><i>🏷</i></div>
+        <div class="tabbar"><i>📖</i><i>🗓</i><i class="on">✏️</i><i>🕯</i></div>
+      </div><div class="phone-label">沉浸式书写<span>Compose / 信纸横线 · 零干扰 · 多媒体贴纸</span></div></div>
+
+      <div class="phone-wrap"><div class="phone">
+        <div class="p-title">日历</div><div class="p-sub">每一天，都值得被点亮</div>
+        <div class="cal">
+          <div class="cal-head">2026 年 8 月</div>
+          <div class="cal-grid">
+            <b>一</b><b>二</b><b>三</b><b>四</b><b>五</b><b>六</b><b>日</b>
+            <span></span><span></span><span></span><span></span><span></span><span class="has">1</span><span>2</span>
+            <span>3</span><span>4</span><span class="has">5</span><span>6</span><span>7</span><span class="has">8</span><span>9</span>
+            <span class="has">10</span><span>11</span><span class="today">12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+            <span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+            <span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+          </div>
+        </div>
+        <div class="tl-card" style="margin-top:16px"><div class="d">本月统计</div><div class="t">已记录 9 天 · 连续 3 天 🔥</div><div class="e">心情占比：平静 44% · 思绪 33% · 想念 23%</div></div>
+        <div class="tabbar"><i>📖</i><i class="on">🗓</i><i>✏️</i><i>🕯</i></div>
+      </div><div class="phone-label">日历回顾<span>Calendar / 点亮有记录的日子</span></div></div>
+
+      <div class="phone-wrap"><div class="phone">
+        <div class="p-title">手账详情</div><div class="p-sub">2026.08.10 · 周一 · 晴</div>
+        <div class="detail-hero">巷口的老书店</div>
+        <div class="detail-body">
+          <p>老板还记得我去年找的那本诗集，说给我留了一本九成新的。</p>
+          <p>旧时光的味道，大概就是纸页发黄的香气。出门时风铃响了一下，像在跟我说再见。</p>
+          <div class="chip-row"><span class="tag tag-sage">日常</span><span class="tag tag-rose">旧物</span></div>
+        </div>
+        <div class="detail-seal">拾光</div>
+        <div class="tabbar"><i>📖</i><i>🗓</i><i>✏️</i><i>🕯</i></div>
+      </div><div class="phone-label">详情页<span>Detail / 照片头图 + 火漆印章落款</span></div></div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════ 06 夜灯模式 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>夜灯模式</h2><span class="en">Dark Mode</span></div>
+    <p class="lead">暗色不走纯黑路线，而是「深夜台灯下的牛皮纸」：暖棕底 + 米白墨，保护夜间书写的眼睛，延续纸感氛围。</p>
+    <div class="dark-demo">
+      深夜 23:47 · 台灯模式已开启
+      <div class="card"><div class="d">2026.08.12 · WED</div><div class="t">睡不着，写点什么吧</div></div>
+      <div class="dark-tokens">
+        <div class="swatch"><div class="color" style="background:#221D17"></div><div class="info"><div class="name">夜纸</div><div class="hex">#221D17</div><div class="usage">主背景</div></div></div>
+        <div class="swatch"><div class="color" style="background:#2E2820"></div><div class="info"><div class="name">灯影</div><div class="hex">#2E2820</div><div class="usage">卡片底</div></div></div>
+        <div class="swatch"><div class="color" style="background:#E8DFD0"></div><div class="info"><div class="name">夜墨</div><div class="hex">#E8DFD0</div><div class="usage">主要文字（13.1:1）</div></div></div>
+        <div class="swatch"><div class="color" style="background:#D29A66"></div><div class="info"><div class="name">暖焦糖</div><div class="hex">#D29A66</div><div class="usage">暗色主色（提亮）</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 07 设计规范速查 ═══════════ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>规范速查</h2><span class="en">Specs</span></div>
+    <table>
+      <tr><th>类别</th><th>规范</th><th>Token / 数值</th></tr>
+      <tr><td>间距</td><td>4pt 基准栅格</td><td><code>4 / 8 / 12 / 16 / 24 / 32 / 48</code></td></tr>
+      <tr><td>圆角</td><td>小件 / 卡片 / 面板 / 胶囊</td><td><code>8 / 14 / 20 / 999</code></td></tr>
+      <tr><td>触控目标</td><td>最小可点区域（WCAG）</td><td><code>≥ 44 × 44 pt</code></td></tr>
+      <tr><td>阴影</td><td>卡片静止 / 浮起</td><td><code>shadow-card / shadow-lift</code> 暖棕系投影</td></tr>
+      <tr><td>动效</td><td>统一缓动曲线</td><td><code>cubic-bezier(.22,1,.36,1)</code> · 200–350ms</td></tr>
+      <tr><td>翻页转场</td><td>书写页 → 保存</td><td>拟物翻页 500ms + 纸张摩擦音效（可关）</td></tr>
+      <tr><td>对比度</td><td>正文 / 大字（WCAG AA）</td><td><code>≥ 4.5:1 / ≥ 3:1</code> 全部通过</td></tr>
+      <tr><td>文字缩放</td><td>动态字体</td><td>支持 iOS Dynamic Type 至 200%</td></tr>
+      <tr><td>减少动态</td><td>Reduce Motion</td><td>自动降级为淡入淡出</td></tr>
+      <tr><td>适配</td><td>iOS 断点</td><td>iPhone SE 375pt → Pro Max 430pt 弹性布局</td></tr>
+    </table>
+  </section>
+
+  <div class="footer">拾光手账 UI DESIGN SYSTEM · v1.0 · 2026.08.12<br>Designed with 🕯 by UI Designer</div>
+</div>
+</body>
+</html>
