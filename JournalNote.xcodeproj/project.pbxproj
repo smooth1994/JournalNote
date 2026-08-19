@@ -201,11 +201,10 @@
 		042A9B9430357D72007D8AE2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				042A9BB230358217007D8AE2 /* Base */,
 				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
 				042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */,
-				042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */,
 				042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */,
-				042A9B9130357D72007D8AE2 /* JournalTabBarController.swift */,
 				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
 				042A9B9330357D72007D8AE2 /* TimelineViewController.swift */,
 			);
@@ -247,6 +246,15 @@
 				042A9BA030357D72007D8AE2 /* PaperComponents.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		042A9BB230358217007D8AE2 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9130357D72007D8AE2 /* JournalTabBarController.swift */,
+				042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
@@ -711,7 +719,7 @@
 				DEVELOPMENT_TEAM = 4NX335G8BX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -775,7 +783,7 @@
 				DEVELOPMENT_TEAM = 4NX335G8BX;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

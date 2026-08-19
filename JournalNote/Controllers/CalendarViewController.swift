@@ -64,12 +64,6 @@ final class CalendarViewController: JournalBaseViewController {
         }
     }
 
-    deinit {
-        if let dataObserver {
-            NotificationCenter.default.removeObserver(dataObserver)
-        }
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadData()

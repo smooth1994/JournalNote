@@ -36,10 +36,6 @@ final class ProfileViewController: JournalBaseViewController {
         reloadData()
     }
 
-    deinit {
-        observers.forEach(NotificationCenter.default.removeObserver)
-    }
-
     private func setupViews() {
         scrollView.alwaysBounceVertical = true
         scrollView.showsVerticalScrollIndicator = false
