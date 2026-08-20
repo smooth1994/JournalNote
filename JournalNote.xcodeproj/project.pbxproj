@@ -202,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				042A9BB230358217007D8AE2 /* Base */,
+				045469F6303694000044576D /* TimeLine */,
 				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
 				042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */,
 				042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */,
@@ -255,6 +256,13 @@
 				042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		045469F6303694000044576D /* TimeLine */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = TimeLine;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {

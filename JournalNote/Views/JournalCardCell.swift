@@ -82,7 +82,6 @@ final class JournalCardCell: UITableViewCell {
         accentStrip.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         tape.backgroundColor = JournalDesign.amber500.withAlphaComponent(0.26)
         tape.layer.cornerRadius = 2
-        tape.transform = CGAffineTransform(rotationAngle: -.pi / 90)
 
         dateLabel.font = JournalDesign.monoFont(size: 12, textStyle: .caption1)
         dateLabel.textColor = JournalDesign.secondaryText

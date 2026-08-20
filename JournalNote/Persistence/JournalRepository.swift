@@ -21,6 +21,7 @@ final class JournalRepository {
 
     private let entriesTableName = "journal_entries"
     private let settingsTableName = "journal_settings"
+    private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
@@ -43,7 +44,7 @@ final class JournalRepository {
             try database.create(table: settingsTableName, of: JournalSetting.self)
             entriesTable = database.getTable(named: entriesTableName, of: JournalEntry.self)
             settingsTable = database.getTable(named: settingsTableName, of: JournalSetting.self)
-            insertFirstRunExamplesIfNeeded()
+            removeLegacyExamplesIfNeeded()
         } catch {
             assertionFailure("WCDB setup error: \(error)")
         }
@@ -135,42 +136,25 @@ final class JournalRepository {
         return result
     }
 
-    private func insertFirstRunExamplesIfNeeded() {
-        guard allEntries(includeDrafts: true).isEmpty else { return }
+    private func removeLegacyExamplesIfNeeded() {
+        guard let settingsTable, let entriesTable else { return }
 
-        let calendar = Calendar.current
-        let today = Date()
-        let examples: [JournalEntry] = [
-            JournalEntry(
-                title: "午后的雷阵雨",
-                body: "雨点砸在遮阳棚上，像小时候外婆家的夏天。什么也没做，但觉得这一天很满。",
-                mood: .thoughtful,
-                tags: ["日常", "雨天"],
-                createdAt: today
-            ),
-            JournalEntry(
-                title: "巷口的老书店",
-                body: "老板还记得我去年找的那本诗集，说给我留了一本九成新的。旧时光的味道，大概就是纸页发黄的香气。",
-                mood: .calm,
-                tags: ["日常", "旧物"],
-                createdAt: calendar.date(byAdding: .day, value: -1, to: today) ?? today
-            ),
-            JournalEntry(
-                title: "给妈妈打了电话",
-                body: "她说家里的栀子开了，让我中秋一定回去。电话挂断后，房间里忽然安静得像一只被放轻的杯子。",
-                mood: .missing,
-                tags: ["家人", "想念"],
-                createdAt: calendar.date(byAdding: .day, value: -3, to: today) ?? today
-            )
-        ]
-
-        guard let entriesTable else { return }
         do {
-            for entry in examples {
-                try entriesTable.insert(entry)
+            let settings = try settingsTable.getObjects(on: JournalSetting.Properties.all)
+            guard !settings.contains(where: { $0.key == legacyExamplesCleanupKey }) else { return }
+
+            let legacyExamples = [
+                (title: "午后的雷阵雨", body: "雨点砸在遮阳棚上，像小时候外婆家的夏天。什么也没做，但觉得这一天很满。"),
+                (title: "巷口的老书店", body: "老板还记得我去年找的那本诗集，说给我留了一本九成新的。旧时光的味道，大概就是纸页发黄的香气。"),
+                (title: "给妈妈打了电话", body: "她说家里的栀子开了，让我中秋一定回去。电话挂断后，房间里忽然安静得像一只被放轻的杯子。")
+            ]
+            let entries = try entriesTable.getObjects(on: JournalEntry.Properties.all)
+            for entry in entries where legacyExamples.contains(where: { $0.title == entry.title && $0.body == entry.body }) {
+                try entriesTable.delete(where: JournalEntry.CodingKeys.id == entry.id)
             }
+            try settingsTable.insert(JournalSetting(key: legacyExamplesCleanupKey, value: "1"))
         } catch {
-            assertionFailure("WCDB example data error: \(error)")
+            assertionFailure("WCDB legacy data cleanup error: \(error)")
         }
     }
 }

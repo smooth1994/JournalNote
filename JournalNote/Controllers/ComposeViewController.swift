@@ -18,6 +18,7 @@ final class ComposeViewController: JournalBaseViewController {
     private let bodyPlaceholderLabel = UILabel()
     private let tagStack = UIStackView()
     private let saveButton = JournalActionButton(title: "记下此刻")
+    private let closeButton = UIButton(type: .system)
     private var selectedTags = Set(["日常"])
     private var tagButtons: [String: UIButton] = [:]
 
@@ -48,6 +49,14 @@ final class ComposeViewController: JournalBaseViewController {
         dateLabel.textColor = JournalDesign.accent
         dateLabel.font = JournalDesign.handwrittenFont(size: 16, textStyle: .subheadline)
         dateLabel.adjustsFontForContentSizeCategory = true
+
+        closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        closeButton.tintColor = JournalDesign.secondaryText
+        closeButton.backgroundColor = JournalDesign.secondaryBackground
+        closeButton.layer.cornerRadius = 17
+        closeButton.layer.cornerCurve = .continuous
+        closeButton.accessibilityLabel = "关闭书写页"
+        closeButton.addTarget(self, action: #selector(closeComposer), for: .touchUpInside)
 
         titleField.placeholder = "给这段时光起个名字…"
         titleField.font = JournalDesign.serifFont(size: 18, textStyle: .headline, weight: .semibold)
@@ -100,7 +109,7 @@ final class ComposeViewController: JournalBaseViewController {
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [headlineLabel, dateLabel, moodTitle, moodPicker, titleField, bodyTextView, bodyPlaceholderLabel, tools, tagsTitle, tagStack, saveButton].forEach {
+        [closeButton, headlineLabel, dateLabel, moodTitle, moodPicker, titleField, bodyTextView, bodyPlaceholderLabel, tools, tagsTitle, tagStack, saveButton].forEach {
             contentView.addSubview($0)
         }
 
@@ -111,8 +120,13 @@ final class ComposeViewController: JournalBaseViewController {
             make.edges.equalToSuperview()
             make.width.equalTo(scrollView.snp.width)
         }
+        closeButton.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().inset(20)
+            make.width.height.equalTo(34)
+        }
         headlineLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(18)
+            make.top.equalTo(closeButton.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(20)
         }
         dateLabel.snp.makeConstraints { make in
@@ -243,7 +257,7 @@ final class ComposeViewController: JournalBaseViewController {
             let alert = UIAlertController(title: "这一刻已被拾起", message: "它会安静地留在你的时光轴里。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "继续写", style: .cancel))
             alert.addAction(UIAlertAction(title: "查看时光轴", style: .default) { [weak self] _ in
-                (self?.tabBarController as? JournalTabBarController)?.selectTimeline()
+                self?.dismiss(animated: true)
             })
             present(alert, animated: true)
         } catch {
@@ -261,6 +275,10 @@ final class ComposeViewController: JournalBaseViewController {
         selectedTags = ["日常"]
         updateTagSelection()
         view.endEditing(true)
+    }
+
+    @objc private func closeComposer() {
+        dismiss(animated: true)
     }
 
     private func presentValidationAlert() {

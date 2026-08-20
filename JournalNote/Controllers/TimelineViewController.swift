@@ -110,7 +110,10 @@ final class TimelineViewController: JournalBaseViewController {
     }
 
     @objc private func beginWriting() {
-        tabBarController?.selectedIndex = 2
+        let composer = ComposeViewController()
+        let navigationController = UINavigationController(rootViewController: composer)
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 }
 

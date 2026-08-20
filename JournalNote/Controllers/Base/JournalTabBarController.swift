@@ -20,11 +20,6 @@ final class JournalTabBarController: UITabBarController {
         observers.forEach(NotificationCenter.default.removeObserver)
     }
 
-    func selectTimeline() {
-        selectedIndex = 0
-        (viewControllers?.first as? UINavigationController)?.popToRootViewController(animated: false)
-    }
-
     private func configureControllers() {
         let timeline = makeNavigationController(
             root: TimelineViewController(),
@@ -38,19 +33,13 @@ final class JournalTabBarController: UITabBarController {
             image: "calendar",
             selectedImage: "calendar"
         )
-        let compose = makeNavigationController(
-            root: ComposeViewController(),
-            title: "此刻",
-            image: "pencil.and.outline",
-            selectedImage: "pencil.and.outline"
-        )
         let profile = makeNavigationController(
             root: ProfileViewController(),
             title: "我的",
             image: "flame",
             selectedImage: "flame.fill"
         )
-        viewControllers = [timeline, calendar, compose, profile]
+        viewControllers = [timeline, calendar, profile]
     }
 
     private func makeNavigationController(
