@@ -37,6 +37,7 @@
 		042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */; };
 		04A10002306A000000000001 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10001306A000000000001 /* OnboardingViewController.swift */; };
 		04D218B53036CB2A000C304D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B43036CB29000C304D /* README.md */; };
+		04D218B73036D4CF000C304D /* upload_ipa_to_pgyer.sh in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */; };
 		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
 		60A2ED92A081AF59D7396BC0 /* Pods_JournalNoteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */; };
 		9DA3A6D807E89B1FFB35B5A9 /* Pods_JournalNote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6000BC69560BC1E824A4076 /* Pods_JournalNote.framework */; };
@@ -94,6 +95,7 @@
 		042A9BA030357D72007D8AE2 /* PaperComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperComponents.swift; sourceTree = "<group>"; };
 		04A10001306A000000000001 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		04D218B43036CB29000C304D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa_to_pgyer.sh; sourceTree = "<group>"; };
 		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
 		21A66107176B75A55AD2EE16 /* Pods-JournalNote-JournalNoteUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JournalNoteTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				04D218B43036CB29000C304D /* README.md */,
+				04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */,
 				042A9B7630357C20007D8AE2 /* JournalNote */,
 				042A9B7F30357C23007D8AE2 /* JournalNoteTests */,
 				042A9B8330357C26007D8AE2 /* JournalNoteUITests */,
@@ -433,6 +436,7 @@
 				042A9B8B30357CA3007D8AE2 /* overview.md in Resources */,
 				04D218B53036CB2A000C304D /* README.md in Resources */,
 				042A9B8C30357CA3007D8AE2 /* shiguang-design-system.html in Resources */,
+				04D218B73036D4CF000C304D /* upload_ipa_to_pgyer.sh in Resources */,
 				042A9B7930357C20007D8AE2 /* LaunchScreen.storyboard in Resources */,
 				042A9B7A30357C20007D8AE2 /* Main.storyboard in Resources */,
 			);
