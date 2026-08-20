@@ -35,6 +35,7 @@
 		042A9BAF30357D72007D8AE2 /* JournalBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B8F30357D72007D8AE2 /* JournalBaseViewController.swift */; };
 		042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9D30357D72007D8AE2 /* CalendarDayCell.swift */; };
 		042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */; };
+		04A10002306A000000000001 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10001306A000000000001 /* OnboardingViewController.swift */; };
 		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
 		60A2ED92A081AF59D7396BC0 /* Pods_JournalNoteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */; };
 		9DA3A6D807E89B1FFB35B5A9 /* Pods_JournalNote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6000BC69560BC1E824A4076 /* Pods_JournalNote.framework */; };
@@ -90,6 +91,7 @@
 		042A9B9E30357D72007D8AE2 /* JournalCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalCardCell.swift; sourceTree = "<group>"; };
 		042A9B9F30357D72007D8AE2 /* MoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodPickerView.swift; sourceTree = "<group>"; };
 		042A9BA030357D72007D8AE2 /* PaperComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperComponents.swift; sourceTree = "<group>"; };
+		04A10001306A000000000001 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
 		21A66107176B75A55AD2EE16 /* Pods-JournalNote-JournalNoteUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		2DC97418C565E3F68CF93C8E /* Pods_JournalNoteTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JournalNoteTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -202,6 +204,7 @@
 			isa = PBXGroup;
 			children = (
 				042A9BB230358217007D8AE2 /* Base */,
+				045469F9303699EB0044576D /* Welcome */,
 				045469F6303694000044576D /* TimeLine */,
 				045469F73036985C0044576D /* Calendar */,
 				045469F8303698B70044576D /* Profile */,
@@ -279,6 +282,14 @@
 				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		045469F9303699EB0044576D /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				04A10001306A000000000001 /* OnboardingViewController.swift */,
+			);
+			path = Welcome;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
@@ -448,13 +459,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -469,13 +476,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -572,6 +575,7 @@
 				042A9BAF30357D72007D8AE2 /* JournalBaseViewController.swift in Sources */,
 				042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */,
 				042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */,
+				04A10002306A000000000001 /* OnboardingViewController.swift in Sources */,
 				042A9B7C30357C20007D8AE2 /* SceneDelegate.swift in Sources */,
 				042A9B7D30357C20007D8AE2 /* ViewController.swift in Sources */,
 			);

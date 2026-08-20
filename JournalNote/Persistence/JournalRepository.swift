@@ -22,6 +22,7 @@ final class JournalRepository {
     private let entriesTableName = "journal_entries"
     private let settingsTableName = "journal_settings"
     private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
+    private let onboardingCompletedKey = "has_completed_onboarding_v1"
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
@@ -110,6 +111,25 @@ final class JournalRepository {
         }
         try settingsTable.insert(JournalSetting(key: "theme_mode", value: mode.rawValue))
         NotificationCenter.default.post(name: .journalThemeDidChange, object: mode)
+    }
+
+    func hasCompletedOnboarding() -> Bool {
+        guard let settingsTable else { return false }
+
+        do {
+            let settings = try settingsTable.getObjects(on: JournalSetting.Properties.all)
+            return settings.first(where: { $0.key == onboardingCompletedKey })?.value == "1"
+        } catch {
+            assertionFailure("WCDB onboarding read error: \(error)")
+            return false
+        }
+    }
+
+    func markOnboardingCompleted() throws {
+        guard let settingsTable else { throw JournalRepositoryError.databaseUnavailable }
+
+        try settingsTable.delete(where: JournalSetting.CodingKeys.key == onboardingCompletedKey)
+        try settingsTable.insert(JournalSetting(key: onboardingCompletedKey, value: "1"))
     }
 
     func monthlyEntries(for date: Date, calendar: Calendar = .current) -> [JournalEntry] {
