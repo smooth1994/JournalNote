@@ -33,7 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private var shouldShowOnboarding: Bool {
         ProcessInfo.processInfo.arguments.contains("-showOnboarding") ||
-            !JournalRepository.shared.hasCompletedOnboarding()
+            JournalRepository.shared.shouldShowOnboarding()
     }
 
     private func showHome() {

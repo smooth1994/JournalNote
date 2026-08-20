@@ -27,10 +27,12 @@ final class OnboardingViewController: UIViewController {
     private let pageControl = UIPageControl()
     private let skipButton = UIButton(type: .system)
     private let actionButton = UIButton(type: .system)
+    private let bottomButtonStack = UIStackView()
     private var pageViews: [UIView] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        recordOnboardingShown()
         configureView()
         buildPages()
         configureControls()
@@ -131,7 +133,7 @@ final class OnboardingViewController: UIViewController {
         view.addSubview(pageControl)
         pageControl.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-70)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-82)
             make.height.equalTo(24)
         }
 
@@ -140,13 +142,8 @@ final class OnboardingViewController: UIViewController {
         skipButton.titleLabel?.font = JournalDesign.serifFont(size: 15, textStyle: .subheadline)
         skipButton.accessibilityLabel = "跳过引导"
         skipButton.addTarget(self, action: #selector(skipTapped), for: .touchUpInside)
-        view.addSubview(skipButton)
-        skipButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.centerY.equalTo(pageControl)
-            make.height.greaterThanOrEqualTo(44)
-            make.width.greaterThanOrEqualTo(52)
-        }
+        skipButton.setContentHuggingPriority(.required, for: .horizontal)
+        skipButton.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         actionButton.setTitle("下一页", for: .normal)
         actionButton.setTitleColor(.white, for: .normal)
@@ -160,11 +157,29 @@ final class OnboardingViewController: UIViewController {
         actionButton.layer.shadowRadius = 10
         actionButton.accessibilityLabel = "下一页"
         actionButton.addTarget(self, action: #selector(actionTapped), for: .touchUpInside)
-        view.addSubview(actionButton)
+        actionButton.setContentHuggingPriority(.required, for: .horizontal)
+        actionButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        // Use the stack as a full-width positioning container. The primary
+        // action is centered on the screen; skip follows it on the right.
+        view.addSubview(bottomButtonStack)
+        bottomButtonStack.snp.makeConstraints { make in
+            make.top.equalTo(pageControl.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(44)
+            make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).offset(-16)
+        }
+        bottomButtonStack.addSubview(actionButton)
+        bottomButtonStack.addSubview(skipButton)
         actionButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(20)
-            make.centerY.equalTo(pageControl)
+            make.centerX.equalToSuperview()
+            make.top.bottom.equalToSuperview()
             make.width.equalTo(132)
+        }
+        skipButton.snp.makeConstraints { make in
+            make.leading.equalTo(actionButton.snp.trailing).offset(12)
+            make.centerY.equalTo(actionButton)
+            make.width.equalTo(68)
             make.height.equalTo(44)
         }
     }
@@ -208,6 +223,14 @@ final class OnboardingViewController: UIViewController {
             assertionFailure("WCDB onboarding write error: \(error)")
         }
         onFinished?()
+    }
+
+    private func recordOnboardingShown() {
+        do {
+            try JournalRepository.shared.markOnboardingShown()
+        } catch {
+            assertionFailure("WCDB onboarding schedule write error: \(error)")
+        }
     }
 }
 

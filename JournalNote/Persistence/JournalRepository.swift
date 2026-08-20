@@ -23,6 +23,8 @@ final class JournalRepository {
     private let settingsTableName = "journal_settings"
     private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
     private let onboardingCompletedKey = "has_completed_onboarding_v1"
+    private let onboardingLastShownKey = "onboarding_last_shown_at_v1"
+    private let onboardingInterval: TimeInterval = 10   // 12 * 60 * 60
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
@@ -123,6 +125,32 @@ final class JournalRepository {
             assertionFailure("WCDB onboarding read error: \(error)")
             return false
         }
+    }
+
+    /// Returns true on first launch, then only after the 12-hour welcome-page interval.
+    func shouldShowOnboarding(now: Date = Date()) -> Bool {
+        guard let settingsTable else { return true }
+
+        do {
+            let settings = try settingsTable.getObjects(on: JournalSetting.Properties.all)
+            guard let value = settings.first(where: { $0.key == onboardingLastShownKey })?.value,
+                  let timestamp = TimeInterval(value) else {
+                return true
+            }
+            return now.timeIntervalSince1970 - timestamp >= onboardingInterval
+        } catch {
+            assertionFailure("WCDB onboarding schedule read error: \(error)")
+            return true
+        }
+    }
+
+    func markOnboardingShown(at date: Date = Date()) throws {
+        guard let settingsTable else { throw JournalRepositoryError.databaseUnavailable }
+
+        try settingsTable.delete(where: JournalSetting.CodingKeys.key == onboardingLastShownKey)
+        try settingsTable.insert(
+            JournalSetting(key: onboardingLastShownKey, value: String(date.timeIntervalSince1970))
+        )
     }
 
     func markOnboardingCompleted() throws {
