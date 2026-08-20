@@ -21,6 +21,7 @@ final class JournalRepository {
 
     private let entriesTableName = "journal_entries"
     private let settingsTableName = "journal_settings"
+    private let checkInsTableName = "check_in_records"
     private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
     private let onboardingCompletedKey = "has_completed_onboarding_v1"
     private let onboardingLastShownKey = "onboarding_last_shown_at_v1"
@@ -28,6 +29,7 @@ final class JournalRepository {
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
+    private var checkInsTable: Table<CheckInRecord>?
 
     private init() {}
 
@@ -45,8 +47,10 @@ final class JournalRepository {
         do {
             try database.create(table: entriesTableName, of: JournalEntry.self)
             try database.create(table: settingsTableName, of: JournalSetting.self)
+            try database.create(table: checkInsTableName, of: CheckInRecord.self)
             entriesTable = database.getTable(named: entriesTableName, of: JournalEntry.self)
             settingsTable = database.getTable(named: settingsTableName, of: JournalSetting.self)
+            checkInsTable = database.getTable(named: checkInsTableName, of: CheckInRecord.self)
             removeLegacyExamplesIfNeeded()
         } catch {
             assertionFailure("WCDB setup error: \(error)")
@@ -204,5 +208,112 @@ final class JournalRepository {
         } catch {
             assertionFailure("WCDB legacy data cleanup error: \(error)")
         }
+    }
+
+    // MARK: - Check-In Records
+
+    func checkInForDate(_ date: Date, calendar: Calendar = .current) -> CheckInRecord? {
+        guard let checkInsTable else { return nil }
+        let dayStart = calendar.startOfDay(for: date)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
+
+        do {
+            let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
+            return records.first { record in
+                let recordDayStart = calendar.startOfDay(for: record.date)
+                return recordDayStart == dayStart
+            }
+        } catch {
+            assertionFailure("WCDB check-in read error: \(error)")
+            return nil
+        }
+    }
+
+    func saveCheckIn(_ record: CheckInRecord) throws {
+        guard let checkInsTable else { throw JournalRepositoryError.databaseUnavailable }
+
+        let existing = checkInForDate(record.date)
+        if let existing = existing {
+            try checkInsTable.delete(where: CheckInRecord.CodingKeys.id == existing.id)
+        }
+        try checkInsTable.insert(record)
+        NotificationCenter.default.post(name: .checkInDidChange, object: nil)
+    }
+
+    func checkInDates(in month: Date, calendar: Calendar = .current) -> Set<Date> {
+        guard let checkInsTable,
+              let interval = calendar.dateInterval(of: .month, for: month) else {
+            return []
+        }
+
+        do {
+            let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
+            return Set(records
+                .filter { interval.contains($0.date) }
+                .map { calendar.startOfDay(for: $0.date) })
+        } catch {
+            assertionFailure("WCDB check-in dates read error: \(error)")
+            return []
+        }
+    }
+
+    func currentStreak(calendar: Calendar = .current) -> Int {
+        guard let checkInsTable else { return 0 }
+
+        do {
+            let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
+            let checkInDays = Set(records.map { calendar.startOfDay(for: $0.date) })
+
+            var cursor = calendar.startOfDay(for: Date())
+            var streak = 0
+
+            while checkInDays.contains(cursor) {
+                streak += 1
+                guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+                cursor = previous
+            }
+
+            return streak
+        } catch {
+            assertionFailure("WCDB streak calculation error: \(error)")
+            return 0
+        }
+    }
+
+    func makeupCountThisMonth(calendar: Calendar = .current) -> Int {
+        guard let interval = calendar.dateInterval(of: .month, for: Date()),
+              let checkInsTable else {
+            return 0
+        }
+
+        do {
+            let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
+            return records.filter { interval.contains($0.date) && $0.isMakeup }.count
+        } catch {
+            assertionFailure("WCDB makeup count error: \(error)")
+            return 0
+        }
+    }
+
+    func canMakeup(for date: Date, calendar: Calendar = .current) -> Bool {
+        let dayStart = calendar.startOfDay(for: date)
+        let today = calendar.startOfDay(for: Date())
+
+        // 只能补签过去的日期
+        guard dayStart < today else { return false }
+
+        // 已经打卡的日期不能补签
+        guard checkInForDate(date, calendar: calendar) == nil else { return false }
+
+        // 每月限制2次
+        return makeupCountThisMonth(calendar: calendar) < 2
+    }
+
+    func autoCheckInForEntry(_ entry: JournalEntry, calendar: Calendar = .current) throws {
+        let dayStart = calendar.startOfDay(for: entry.createdAt)
+        guard checkInForDate(dayStart, calendar: calendar) == nil else { return }
+
+        let record = CheckInRecord(date: dayStart, journalEntryId: entry.id, isMakeup: false)
+        try saveCheckIn(record)
     }
 }

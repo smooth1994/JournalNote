@@ -1,249 +1,360 @@
-#!/bin/bash
+#!/bin/sh
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /bin/bash "$0" "$@"
+fi
 
-set -euo pipefail
+set -Eeuo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR"
-WORKSPACE_PATH="$PROJECT_ROOT/JournalNote.xcworkspace"
-SCHEME="${JOURNALNOTE_SCHEME:-JournalNote}"
-CONFIGURATION="${JOURNALNOTE_CONFIGURATION:-Release}"
-TEAM_ID="${JOURNALNOTE_TEAM_ID:-4NX335G8BX}"
-PGYER_API_URL="${PGYER_API_URL:-https://www.pgyer.com/apiv2/app/upload}"
-# 蒲公英凭证（按需求写入脚本；环境变量可临时覆盖）
+
+# 蒲公英固定配置
 PGYER_API_KEY="${PGYER_API_KEY:-24e363194c2e936c183d6331961780ea}"
-PGYER_USER_KEY="${PGYER_USER_KEY:-a44e1b634edbb5453470d8d8eb113330}"
-KEYCHAIN_SERVICE="com.yolanda.JournalNote.pgyer"
-API_KEY_ACCOUNT="api_key"
-USER_KEY_ACCOUNT="user_key"
+PGYER_API_URL="${PGYER_API_URL:-https://www.pgyer.com/apiv2/app/upload}"
 
-usage() {
-  echo "用法："
-  echo "  $0 --configure              将蒲公英密钥保存到 macOS 钥匙串"
-  echo "  $0                          自动归档、导出企业 IPA 并上传"
-  echo "  $0 --ipa /path/to/app.ipa   上传已有 IPA，跳过构建"
-  echo ""
-  echo "可选环境变量："
-  echo "  PGYER_API_KEY                蒲公英 API Key（优先于钥匙串）"
-  echo "  PGYER_USER_KEY               蒲公英 User Key（兼容旧账号，可不填）"
-  echo "  PGYER_UPDATE_DESCRIPTION     版本更新说明"
-  echo "  PGYER_INSTALL_TYPE           安装方式：1公开，2密码，3邀请；默认1"
-  echo "  PGYER_INSTALL_PASSWORD       PGYER_INSTALL_TYPE=2 时的安装密码"
-  echo "  JOURNALNOTE_TEAM_ID          企业开发团队 ID，默认 $TEAM_ID"
-}
+# 项目配置
+SCHEME_NAME="${SCHEME_NAME:-JournalNote}"
+TEAM_ID="${TEAM_ID:-4NX335G8BX}"
+EXPORT_METHOD="${EXPORT_METHOD:-enterprise}"
+DESTINATION="${DESTINATION:-generic/platform=iOS}"
 
-save_secret() {
-  local account="$1"
-  local value="$2"
-  security add-generic-password \
-    -U \
-    -s "$KEYCHAIN_SERVICE" \
-    -a "$account" \
-    -w "$value" >/dev/null
-}
+# 安装配置
+PGYER_INSTALL_TYPE="${PGYER_INSTALL_TYPE:-1}"
+PGYER_INSTALL_PASSWORD="${PGYER_INSTALL_PASSWORD:-}"
+PGYER_UPDATE_DESCRIPTION="${PGYER_UPDATE_DESCRIPTION:-}"
 
-read_secret() {
-  local account="$1"
-  security find-generic-password \
-    -s "$KEYCHAIN_SERVICE" \
-    -a "$account" \
-    -w 2>/dev/null || true
-}
+# 行为控制
+KEEP_BUILD_ARTIFACTS="${KEEP_BUILD_ARTIFACTS:-1}"
+USE_EXISTING_IPA="${USE_EXISTING_IPA:-0}"
+EXISTING_IPA_PATH="${EXISTING_IPA_PATH:-}"
+AUTO_OPEN_DOWNLOAD_URL="${AUTO_OPEN_DOWNLOAD_URL:-1}"
 
-configure_credentials() {
-  local api_key
-  local user_key
+# 构建路径
+OUTPUT_DIR="$PROJECT_ROOT/build"
+ARCHIVE_PATH="$OUTPUT_DIR/${SCHEME_NAME}.xcarchive"
+IPA_DIR="$OUTPUT_DIR/ipa"
+EXPORT_OPTIONS_PLIST="$OUTPUT_DIR/ExportOptions.plist"
+ARCHIVE_LOG="$OUTPUT_DIR/archive.log"
+EXPORT_LOG="$OUTPUT_DIR/export.log"
 
-  read -r -s -p "请输入蒲公英 API Key：" api_key
-  echo ""
-  if [ -z "$api_key" ]; then
-    echo "错误：API Key 不能为空。" >&2
-    exit 1
+# 备份目录
+CURRENT_USER="$(whoami)"
+if [ -z "${MAC_SAVE_DIR:-}" ]; then
+  case "$CURRENT_USER" in
+    "mac")
+      MAC_SAVE_DIR="${HOME}/Documents/IPA_Backup"
+      ;;
+    *)
+      MAC_SAVE_DIR="${HOME}/Desktop/JournalNote_Archive"
+      ;;
+  esac
+fi
+
+TEMP_FILES=()
+TEMP_DIRS=()
+
+cleanup() {
+  local file
+  local dir
+
+  for file in "${TEMP_FILES[@]:-}"; do
+    [ -n "$file" ] && [ -e "$file" ] && rm -f "$file"
+  done
+
+  for dir in "${TEMP_DIRS[@]:-}"; do
+    [ -n "$dir" ] && [ -e "$dir" ] && rm -rf "$dir"
+  done
+
+  if [ "$KEEP_BUILD_ARTIFACTS" != "1" ]; then
+    rm -rf "$OUTPUT_DIR"
   fi
+}
+trap cleanup EXIT
 
-  read -r -s -p "请输入蒲公英 User Key（可留空）：" user_key
-  echo ""
+step() {
+  printf '\n▶ %s\n' "$1"
+}
 
-  save_secret "$API_KEY_ACCOUNT" "$api_key"
-  if [ -n "$user_key" ]; then
-    save_secret "$USER_KEY_ACCOUNT" "$user_key"
-  fi
-  echo "蒲公英密钥已安全保存到 macOS 钥匙串。"
+success() {
+  printf '✅ %s\n' "$1"
+}
+
+warn() {
+  printf '⚠️  %s\n' "$1"
+}
+
+fail() {
+  printf '❌ %s\n' "$1" >&2
+  exit 1
 }
 
 require_command() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "错误：找不到命令 $1。" >&2
-    exit 1
+  command -v "$1" >/dev/null 2>&1 || fail "缺少命令: $1"
+}
+
+require_value() {
+  local value="$1"
+  local field_name="$2"
+  [ -n "$value" ] || fail "缺少配置: ${field_name}"
+}
+
+copy_to_clipboard() {
+  local content="$1"
+  if command -v pbcopy >/dev/null 2>&1; then
+    printf '%s' "$content" | pbcopy
   fi
 }
 
-create_export_options() {
-  local path="$1"
-  plutil -create xml1 "$path"
-  /usr/libexec/PlistBuddy -c "Add :method string enterprise" "$path"
-  /usr/libexec/PlistBuddy -c "Add :signingStyle string automatic" "$path"
-  /usr/libexec/PlistBuddy -c "Add :teamID string $TEAM_ID" "$path"
-  /usr/libexec/PlistBuddy -c "Add :stripSwiftSymbols bool true" "$path"
-  /usr/libexec/PlistBuddy -c "Add :compileBitcode bool false" "$path"
+open_url() {
+  local url="$1"
+  if [ "$AUTO_OPEN_DOWNLOAD_URL" = "1" ] && command -v open >/dev/null 2>&1; then
+    open "$url" >/dev/null 2>&1 || true
+  fi
 }
 
-build_enterprise_ipa() {
-  local work_dir="$1"
-  local archive_path="$work_dir/JournalNote.xcarchive"
-  local export_path="$work_dir/export"
-  local export_options="$work_dir/ExportOptions.plist"
+tail_log_or_fail() {
+  local log_file="$1"
+  local message="$2"
+  if [ -f "$log_file" ]; then
+    tail -n 80 "$log_file" || true
+  fi
+  fail "$message"
+}
 
-  mkdir -p "$export_path"
-  create_export_options "$export_options"
+plist_get() {
+  local plist_file="$1"
+  local key="$2"
+  /usr/libexec/PlistBuddy -c "Print :${key}" "$plist_file" 2>/dev/null || true
+}
 
-  echo "[1/3] 正在归档 ${SCHEME:-JournalNote}（${CONFIGURATION:-Release}）..." >&2
+json_get() {
+  local json_file="$1"
+  local key_path="$2"
+  python3 - "$json_file" "$key_path" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+json_file = Path(sys.argv[1])
+key_path = sys.argv[2].split('.')
+with json_file.open('r', encoding='utf-8') as f:
+    data = json.load(f)
+
+value = data
+for key in key_path:
+    if isinstance(value, dict) and key in value:
+        value = value[key]
+    else:
+        value = None
+        break
+
+if value is None:
+    print("")
+elif isinstance(value, bool):
+    print("true" if value else "false")
+else:
+    print(value)
+PY
+}
+
+prepare_existing_ipa() {
+  local inspect_dir
+  local ipa_app_path
+
+  mkdir -p "$OUTPUT_DIR" "$IPA_DIR"
+
+  if [ -n "$EXISTING_IPA_PATH" ]; then
+    IPA_RAW_PATH="$EXISTING_IPA_PATH"
+  else
+    IPA_RAW_PATH="$(find "$PROJECT_ROOT/build" -name '*.ipa' | sort | tail -n 1)"
+  fi
+  [ -f "$IPA_RAW_PATH" ] || fail "未找到可复用的 IPA，请设置 EXISTING_IPA_PATH 或先导出 IPA"
+
+  inspect_dir="$(mktemp -d)"
+  TEMP_DIRS+=("$inspect_dir")
+  unzip -q "$IPA_RAW_PATH" -d "$inspect_dir"
+
+  ipa_app_path="$(find "$inspect_dir/Payload" -maxdepth 1 -name '*.app' | head -n 1)"
+  [ -n "$ipa_app_path" ] || fail "无法从现有 IPA 中找到 .app 目录"
+
+  INFO_PLIST="${ipa_app_path}/Info.plist"
+}
+
+build_and_export_ipa() {
+  rm -rf "$OUTPUT_DIR"
+  mkdir -p "$IPA_DIR"
+
+  cat > "$EXPORT_OPTIONS_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>${EXPORT_METHOD}</string>
+    <key>teamID</key>
+    <string>${TEAM_ID}</string>
+    <key>compileBitcode</key>
+    <false/>
+</dict>
+</plist>
+EOF
+
+  step "Archive"
   xcodebuild archive \
-    -workspace "$WORKSPACE_PATH" \
-    -scheme "${SCHEME:-JournalNote}" \
-    -configuration "${CONFIGURATION:-Release}" \
-    -destination "generic/platform=iOS" \
-    -archivePath "$archive_path" \
-    -allowProvisioningUpdates >&2
+    -workspace "${SCHEME_NAME}.xcworkspace" \
+    -scheme "${SCHEME_NAME}" \
+    -destination "$DESTINATION" \
+    -configuration Release \
+    -archivePath "$ARCHIVE_PATH" \
+    -allowProvisioningUpdates \
+    > "$ARCHIVE_LOG" 2>&1 || tail_log_or_fail "$ARCHIVE_LOG" "归档失败，详见 build/archive.log"
 
-  echo "[2/3] 正在导出 Enterprise IPA..." >&2
+  step "Export IPA"
   xcodebuild -exportArchive \
-    -archivePath "$archive_path" \
-    -exportPath "$export_path" \
-    -exportOptionsPlist "$export_options" \
-    -allowProvisioningUpdates >&2
+    -archivePath "$ARCHIVE_PATH" \
+    -exportOptionsPlist "$EXPORT_OPTIONS_PLIST" \
+    -exportPath "$IPA_DIR" \
+    -allowProvisioningUpdates \
+    > "$EXPORT_LOG" 2>&1 || tail_log_or_fail "$EXPORT_LOG" "导出失败，详见 build/export.log"
 
-  local ipa_path
-  ipa_path="$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
-  if [ -z "$ipa_path" ]; then
-    echo "错误：导出完成，但没有找到 IPA。" >&2
-    exit 1
-  fi
-  echo "$ipa_path"
+  IPA_RAW_PATH="$(find "$IPA_DIR" -maxdepth 1 -name '*.ipa' | head -n 1)"
+  [ -n "$IPA_RAW_PATH" ] || fail "导出成功但未找到 IPA 文件"
+
+  ARCHIVE_APP_PATH="$(find "${ARCHIVE_PATH}/Products/Applications" -maxdepth 1 -name '*.app' | head -n 1)"
+  [ -n "$ARCHIVE_APP_PATH" ] || fail "未找到归档后的 .app 目录"
+
+  INFO_PLIST="${ARCHIVE_APP_PATH}/Info.plist"
 }
 
-upload_ipa() {
+prepare_output_ipa() {
+  local timestamp
+
+  BUILD_NUMBER="$(plist_get "$INFO_PLIST" 'CFBundleVersion')"
+  VERSION="$(plist_get "$INFO_PLIST" 'CFBundleShortVersionString')"
+  APP_DISPLAY_NAME="$(plist_get "$INFO_PLIST" 'CFBundleDisplayName')"
+  if [ -z "$APP_DISPLAY_NAME" ]; then
+    APP_DISPLAY_NAME="$(plist_get "$INFO_PLIST" 'CFBundleName')"
+  fi
+  [ -n "$APP_DISPLAY_NAME" ] || APP_DISPLAY_NAME="$SCHEME_NAME"
+
+  timestamp="$(date +%Y%m%d%H%M)"
+  UPLOAD_IPA_NAME="${SCHEME_NAME}_v${VERSION}_${timestamp}.ipa"
+  UPLOAD_IPA_PATH="${OUTPUT_DIR}/${UPLOAD_IPA_NAME}"
+
+  if [ "$IPA_RAW_PATH" != "$UPLOAD_IPA_PATH" ]; then
+    cp "$IPA_RAW_PATH" "$UPLOAD_IPA_PATH"
+  fi
+
+  TARGET_SAVE_DIR="${MAC_SAVE_DIR}/${SCHEME_NAME}_v${VERSION}"
+  mkdir -p "$TARGET_SAVE_DIR"
+  cp "$UPLOAD_IPA_PATH" "${TARGET_SAVE_DIR}/${UPLOAD_IPA_NAME}"
+}
+
+upload_to_pgyer() {
   local ipa_path="$1"
-  local response_path="$2"
-  local api_key="${PGYER_API_KEY:-24e363194c2e936c183d6331961780ea}"
-  local user_key="${PGYER_USER_KEY:-}"
-  local install_type="${PGYER_INSTALL_TYPE:-1}"
-  local update_description="${PGYER_UPDATE_DESCRIPTION:-JournalNote 企业测试版本}"
+  local response_json="$2"
 
-  if [ -z "$api_key" ]; then
-    api_key="$(read_secret "$API_KEY_ACCOUNT")"
-  fi
-  if [ -z "$user_key" ]; then
-    user_key="$(read_secret "$USER_KEY_ACCOUNT")"
-  fi
-  if [ -z "$api_key" ]; then
-    echo "错误：没有找到蒲公英 API Key。请先运行：$0 --configure" >&2
-    exit 1
-  fi
-  if [ "$install_type" = "2" ] && [ -z "${PGYER_INSTALL_PASSWORD:-}" ]; then
-    echo "错误：密码安装模式需要设置 PGYER_INSTALL_PASSWORD。" >&2
-    exit 1
+  require_value "$PGYER_API_KEY" "PGYER_API_KEY"
+
+  if [ -z "$PGYER_UPDATE_DESCRIPTION" ]; then
+    PGYER_UPDATE_DESCRIPTION="${SCHEME_NAME} v${VERSION} (${BUILD_NUMBER})"
   fi
 
-  echo "[3/3] 正在上传 $(basename "$ipa_path") 到蒲公英..."
   local curl_args=(
     --fail-with-body
     --silent
     --show-error
-    --request POST
-    "$PGYER_API_URL"
-    --form "_api_key=$api_key"
-    --form "file=@$ipa_path"
-    --form "buildInstallType=$install_type"
-    --form "buildUpdateDescription=$update_description"
-    --output "$response_path"
+    -X POST "$PGYER_API_URL"
+    -F "_api_key=${PGYER_API_KEY}"
+    -F "file=@${ipa_path}"
+    -F "buildInstallType=${PGYER_INSTALL_TYPE}"
+    -F "buildUpdateDescription=${PGYER_UPDATE_DESCRIPTION}"
   )
-  if [ -n "$user_key" ]; then
-    curl_args+=(--form "uKey=$user_key")
-  fi
-  if [ -n "${PGYER_INSTALL_PASSWORD:-}" ]; then
-    curl_args+=(--form "buildPassword=${PGYER_INSTALL_PASSWORD}")
-  fi
-  curl "${curl_args[@]}"
-}
 
-print_upload_result() {
-  local response_path="$1"
-  python3 - "$response_path" <<'PY'
-import json
-import sys
-
-path = sys.argv[1]
-try:
-    with open(path, "r", encoding="utf-8") as file:
-        result = json.load(file)
-except Exception as error:
-    print(f"错误：无法解析蒲公英返回结果：{error}", file=sys.stderr)
-    sys.exit(1)
-
-code = result.get("code")
-if code not in (0, "0"):
-    message = result.get("message") or result.get("msg") or "未知错误"
-    print(f"上传失败：{message}（code={code}）", file=sys.stderr)
-    sys.exit(1)
-
-data = result.get("data") or {}
-shortcut = data.get("buildShortcutUrl")
-download_url = data.get("buildQRCodeURL")
-version = data.get("buildVersion") or "未知"
-build = data.get("buildBuildVersion") or "未知"
-
-print("上传成功。")
-print(f"版本：{version} ({build})")
-if shortcut:
-    print(f"安装地址：https://www.pgyer.com/{shortcut}")
-if download_url:
-    print(f"二维码地址：{download_url}")
-PY
-}
-
-main() {
-  require_command xcodebuild
-  require_command curl
-  require_command python3
-  require_command security
-
-  local provided_ipa=""
-  case "${1:-}" in
-    --configure)
-      configure_credentials
-      exit 0
-      ;;
-    --ipa)
-      provided_ipa="${2:-}"
-      if [ -z "$provided_ipa" ] || [ ! -f "$provided_ipa" ]; then
-        echo "错误：请提供存在的 IPA 文件路径。" >&2
-        exit 1
-      fi
-      ;;
-    --help|-h)
-      usage
-      exit 0
-      ;;
-    "")
-      ;;
-    *)
-      usage >&2
-      exit 1
-      ;;
-  esac
-
-  local work_dir
-  work_dir="$(mktemp -d "${TMPDIR:-/tmp}/journalnote-pgyer.XXXXXX")"
-  trap 'rm -rf "$work_dir"' EXIT
-
-  local ipa_path="$provided_ipa"
-  if [ -z "$ipa_path" ]; then
-    ipa_path="$(build_enterprise_ipa "$work_dir")"
+  if [ -n "$PGYER_INSTALL_PASSWORD" ]; then
+    curl_args+=(-F "buildPassword=${PGYER_INSTALL_PASSWORD}")
   fi
 
-  local response_path="$work_dir/pgyer-response.json"
-  upload_ipa "$ipa_path" "$response_path"
-  print_upload_result "$response_path"
+  curl "${curl_args[@]}" > "$response_json"
 }
 
-main "$@"
+parse_pgyer_response() {
+  local response_json="$1"
+
+  PGYER_CODE="$(json_get "$response_json" "code")"
+  if [ "$PGYER_CODE" != "0" ]; then
+    PGYER_MESSAGE="$(json_get "$response_json" "message")"
+    fail "蒲公英上传失败: ${PGYER_MESSAGE} (code=${PGYER_CODE})"
+  fi
+
+  PGYER_BUILD_VERSION="$(json_get "$response_json" "data.buildVersion")"
+  PGYER_BUILD_BUILD_VERSION="$(json_get "$response_json" "data.buildBuildVersion")"
+  PGYER_SHORTCUT="$(json_get "$response_json" "data.buildShortcutUrl")"
+  PGYER_QR_CODE_URL="$(json_get "$response_json" "data.buildQRCodeURL")"
+
+  if [ -n "$PGYER_SHORTCUT" ]; then
+    PGYER_DOWNLOAD_URL="https://www.pgyer.com/${PGYER_SHORTCUT}"
+  else
+    PGYER_DOWNLOAD_URL=""
+  fi
+}
+
+build_summary() {
+  cat <<EOF
+【${SCHEME_NAME} v${VERSION}】
+版本号：${BUILD_NUMBER}
+下载地址：${PGYER_DOWNLOAD_URL}
+二维码：${PGYER_QR_CODE_URL}
+EOF
+}
+
+require_command xcodebuild
+require_command curl
+require_command python3
+require_command unzip
+require_executable /usr/libexec/PlistBuddy
+
+cd "$PROJECT_ROOT"
+
+step "校验项目信息"
+SETTINGS="$(xcodebuild -showBuildSettings \
+  -workspace "${SCHEME_NAME}.xcworkspace" \
+  -scheme "${SCHEME_NAME}" \
+  -configuration Release 2>/dev/null)"
+
+BUNDLE_ID="$(printf '%s\n' "$SETTINGS" | grep 'PRODUCT_BUNDLE_IDENTIFIER' | grep -v ' = NO' | head -1 | awk '{print $3}')"
+[ -n "$BUNDLE_ID" ] || fail "无法解析 PRODUCT_BUNDLE_IDENTIFIER"
+success "包名 ${BUNDLE_ID}"
+
+if [ "$USE_EXISTING_IPA" = "1" ]; then
+  step "准备现有 IPA"
+  prepare_existing_ipa
+  success "已复用现有 IPA"
+else
+  step "构建 IPA"
+  build_and_export_ipa
+  success "构建与导出完成"
+fi
+
+step "整理产物"
+prepare_output_ipa
+success "IPA 已就绪: ${UPLOAD_IPA_PATH}"
+success "已备份到: ${TARGET_SAVE_DIR}/${UPLOAD_IPA_NAME}"
+
+step "上传蒲公英"
+PGYER_RESPONSE_JSON="$(mktemp)"
+TEMP_FILES+=("$PGYER_RESPONSE_JSON")
+
+upload_to_pgyer "$UPLOAD_IPA_PATH" "$PGYER_RESPONSE_JSON"
+parse_pgyer_response "$PGYER_RESPONSE_JSON"
+
+success "蒲公英上传成功"
+success "版本：${PGYER_BUILD_VERSION} (${PGYER_BUILD_BUILD_VERSION})"
+success "下载地址：${PGYER_DOWNLOAD_URL}"
+
+SUMMARY_CONTENT="$(build_summary)"
+copy_to_clipboard "$SUMMARY_CONTENT"
+open_url "$PGYER_DOWNLOAD_URL"
+
+step "完成"
+success "脚本执行结束"

@@ -158,4 +158,6 @@ extension UIView {
 extension Notification.Name {
     static let journalEntriesDidChange = Notification.Name("journalEntriesDidChange")
     static let journalThemeDidChange = Notification.Name("journalThemeDidChange")
+    static let checkInDidChange = Notification.Name("checkInDidChange")
+    static let badgeUnlocked = Notification.Name("badgeUnlocked")
 }
