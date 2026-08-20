@@ -203,11 +203,8 @@
 			children = (
 				042A9BB230358217007D8AE2 /* Base */,
 				045469F6303694000044576D /* TimeLine */,
-				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
-				042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */,
-				042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */,
-				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
-				042A9B9330357D72007D8AE2 /* TimelineViewController.swift */,
+				045469F73036985C0044576D /* Calendar */,
+				045469F8303698B70044576D /* Profile */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -261,8 +258,27 @@
 		045469F6303694000044576D /* TimeLine */ = {
 			isa = PBXGroup;
 			children = (
+				042A9B9330357D72007D8AE2 /* TimelineViewController.swift */,
+				042A9B8E30357D72007D8AE2 /* ComposeViewController.swift */,
+				042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */,
 			);
 			path = TimeLine;
+			sourceTree = "<group>";
+		};
+		045469F73036985C0044576D /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		045469F8303698B70044576D /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
@@ -432,9 +448,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -449,9 +469,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
