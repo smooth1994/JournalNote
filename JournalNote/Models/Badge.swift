@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum BadgeSeries: String, Codable {
+enum BadgeSeries: String, Codable, CaseIterable {
     case persistence = "坚持系列"
     case time = "时光系列"
     case mood = "心情系列"

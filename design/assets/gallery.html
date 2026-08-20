@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拾光手账 · 图标 / 启动页 / 引导页 资产预览</title>
+<style>
+:root{--paper:#FBF7EF;--paper2:#F7F1E5;--paper3:#EFE6D2;--ink:#3A3128;--ink2:#57493C;--amber:#B87B4B;--clay:#B5533C;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Songti SC","Noto Serif SC",serif;background:var(--paper);color:var(--ink2);line-height:1.7;padding:48px 20px 80px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{color:var(--ink);font-size:34px;letter-spacing:6px;text-align:center}
+.sub{text-align:center;font-family:"Ma Shan Zheng",cursive;color:var(--amber);font-size:20px;margin-top:8px}
+.bar{height:1px;background:var(--paper3);margin:36px 0}
+.sec-t{font-size:20px;color:var(--ink);letter-spacing:3px;margin:32px 0 16px;display:flex;align-items:center;gap:10px}
+.sec-t .n{font-family:monospace;font-size:12px;color:var(--clay);border:1px solid var(--clay);border-radius:99px;padding:2px 10px}
+.card{background:var(--paper2);border:1px solid var(--paper3);border-radius:18px;padding:18px;box-shadow:0 2px 8px rgba(58,49,40,.06),0 8px 24px rgba(58,49,40,.08);margin-bottom:28px}
+.card.icon{padding:24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.card.icon img{width:200px;height:200px;border-radius:44px;box-shadow:var(--shadow,0 8px 24px rgba(58,49,40,.18))}
+.meta{flex:1;min-width:240px}
+.meta .k{font-size:14px;color:var(--amber);letter-spacing:2px}
+.meta .v{font-size:15px;color:var(--ink2);margin:6px 0 14px}
+.meta ul{list-style:none;font-size:13px;color:var(--ink2)}
+.meta li{padding:3px 0;font-family:monospace}
+.imgbox{text-align:center;margin-bottom:14px}
+.imgbox img{width:100%;max-width:340px;border-radius:14px;box-shadow:0 4px 14px rgba(58,49,40,.12)}
+.cap{font-size:14px;color:var(--ink2)}
+.cap b{color:var(--ink)}
+.copy{display:inline-block;margin-top:10px;background:rgba(184,123,75,.12);color:var(--amber);padding:6px 14px;border-radius:99px;font-size:13px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.foot{text-align:center;margin-top:48px;font-family:monospace;font-size:11px;color:#B9AC98;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>拾光手账</h1>
+  <div class="sub">把时光，一页一页捡起来</div>
+
+  <div class="bar"></div>
+
+  <!-- ICON -->
+  <div class="sec-t"><span class="n">01</span> App 图标 Icon</div>
+  <div class="card icon">
+    <img src="icon-1024.png" alt="icon">
+    <div class="meta">
+      <div class="k">尺寸 SIZE</div><div class="v">1024 × 1024 px（提交商店原图，系统自动生成各尺寸圆角）</div>
+      <div class="k">设计元素</div>
+      <ul>
+        <li>· 闭合复古皮革手账本</li>
+        <li>· 米色书签丝带垂落</li>
+        <li>· 封面砖红火漆印章</li>
+        <li>· 暖米纸 + 焦糖琥珀配色</li>
+      </ul>
+      <div class="copy">建议文案：无字（纯图形图标）</div>
+    </div>
+  </div>
+
+  <!-- LAUNCH -->
+  <div class="sec-t"><span class="n">02</span> 启动页 Launch Screen</div>
+  <div class="card">
+    <div class="imgbox"><img src="launch.png" alt="launch"></div>
+    <div class="cap"><b>适配：</b>iPhone 全系（按 1170×2532 设计，@2x/@3x 输出；竖屏）。<br>内容居中的极简手账 + 丝带 + 印章母题，应用启动瞬间浮现，随后淡出进入首页。</div>
+    <div class="copy">建议文案：拾光手账（母题下方可叠一行手写体小字）</div>
+  </div>
+
+  <!-- GUIDES -->
+  <div class="sec-t"><span class="n">03</span> 引导页 Onboarding × 5</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="imgbox"><img src="guide-01-record.png" alt="g1"></div>
+      <div class="cap"><b>第 1 页 · 记录当下</b><br>钢笔落在纸上的瞬间，每一刻都值得被写下来。</div>
+      <div class="copy">标题：随手记下此刻</div>
+    </div>
+    <div class="card">
+      <div class="imgbox"><img src="guide-02-mood.png" alt="g2"></div>
+      <div class="cap"><b>第 2 页 · 心情印记</b><br>用五种心情为一页手账盖上专属的小印章。</div>
+      <div class="copy">标题：给心情留个记号</div>
+    </div>
+    <div class="card">
+      <div class="imgbox"><img src="guide-03-timeline.png" alt="g3"></div>
+      <div class="cap"><b>第 3 页 · 时光轴</b><br>所有写下的日子，串成一条只属于你的时光长河。</div>
+      <div class="copy">标题：把日子串成轴</div>
+    </div>
+    <div class="card">
+      <div class="imgbox"><img src="guide-04-calendar.png" alt="g4"></div>
+      <div class="cap"><b>第 4 页 · 日历回顾</b><br>被点亮的那一天，都是你认真生活过的证据。</div>
+      <div class="copy">标题：回看每一天的光</div>
+    </div>
+    <div class="card">
+      <div class="imgbox"><img src="guide-05-immersive.png" alt="g5"></div>
+      <div class="cap"><b>第 5 页 · 沉浸 & 手账册</b><br>零干扰书写，年终一键导出属于你的纸质手账册。</div>
+      <div class="copy">标题：开始拾起时光 →</div>
+    </div>
+  </div>
+
+  <div class="foot">SHIGUANG JOURNAL · BRAND ASSETS v1.0 · 2026.08<br>Designed by UI Designer</div>
+</div>
+</body>
+</html>

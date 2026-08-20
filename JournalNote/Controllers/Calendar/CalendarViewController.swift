@@ -21,6 +21,7 @@ final class CalendarViewController: JournalBaseViewController {
     private var displayedMonth = Date()
     private var days: [DayItem] = []
     private var monthEntries: [JournalEntry] = []
+    private var checkInDates: Set<Date> = []
     private var selectedDate: Date?
 
     private let scrollView = UIScrollView()
@@ -32,6 +33,7 @@ final class CalendarViewController: JournalBaseViewController {
     private let weekStack = UIStackView()
     private let dayCollectionView: UICollectionView
     private let statisticsCard = UIView()
+    private let checkInButton = JournalActionButton(title: "✍️ 记下此刻 · 完成打卡")
     private let statisticsTitleLabel = UILabel()
     private let statisticsValueLabel = UILabel()
     private let statisticsDetailLabel = UILabel()
@@ -110,6 +112,7 @@ final class CalendarViewController: JournalBaseViewController {
         statisticsDetailLabel.textColor = JournalDesign.secondaryText
         statisticsDetailLabel.numberOfLines = 0
         statisticsDetailLabel.adjustsFontForContentSizeCategory = true
+        checkInButton.addTarget(self, action: #selector(checkInToday), for: .touchUpInside)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -120,6 +123,7 @@ final class CalendarViewController: JournalBaseViewController {
         calendarCard.addSubview(weekStack)
         calendarCard.addSubview(dayCollectionView)
         contentView.addSubview(statisticsCard)
+        contentView.addSubview(checkInButton)
         statisticsCard.addSubview(statisticsTitleLabel)
         statisticsCard.addSubview(statisticsValueLabel)
         statisticsCard.addSubview(statisticsDetailLabel)
@@ -160,7 +164,6 @@ final class CalendarViewController: JournalBaseViewController {
         statisticsCard.snp.makeConstraints { make in
             make.top.equalTo(calendarCard.snp.bottom).offset(16)
             make.leading.trailing.equalTo(calendarCard)
-            make.bottom.equalToSuperview().inset(28)
         }
         statisticsTitleLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(18)
@@ -174,6 +177,11 @@ final class CalendarViewController: JournalBaseViewController {
             make.top.equalTo(statisticsValueLabel.snp.bottom).offset(5)
             make.leading.trailing.equalTo(statisticsTitleLabel)
             make.bottom.equalToSuperview().inset(18)
+        }
+        checkInButton.snp.makeConstraints { make in
+            make.top.equalTo(statisticsCard.snp.bottom).offset(16)
+            make.leading.trailing.equalTo(calendarCard)
+            make.bottom.equalToSuperview().inset(28)
         }
     }
 
@@ -191,10 +199,12 @@ final class CalendarViewController: JournalBaseViewController {
 
     private func reloadData() {
         monthEntries = repository.monthlyEntries(for: displayedMonth, calendar: calendar)
+        checkInDates = repository.checkInDates(in: displayedMonth, calendar: calendar)
         days = makeDays(for: displayedMonth)
         updateMonthHeader()
         updateStatistics()
         dayCollectionView.reloadData()
+        updateCheckInButton()
     }
 
     private func makeDays(for month: Date) -> [DayItem] {
@@ -224,9 +234,10 @@ final class CalendarViewController: JournalBaseViewController {
     }
 
     private func updateStatistics() {
-        let dayCount = Set(monthEntries.map { calendar.startOfDay(for: $0.createdAt) }).count
-        let consecutive = repository.consecutiveDays(calendar: calendar)
-        statisticsValueLabel.text = "已记录 \(dayCount) 天 · 连续 \(consecutive) 天 🔥"
+        let dayCount = checkInDates.count
+        let consecutive = repository.currentStreak(calendar: calendar)
+        let remaining = max(0, 2 - repository.makeupCountThisMonth(calendar: calendar))
+        statisticsValueLabel.text = "连续 \(consecutive) 天 🔥 · 本月 \(dayCount) 天"
 
         let total = max(monthEntries.count, 1)
         let moodText = repository.moodCounts(for: monthEntries)
@@ -234,7 +245,22 @@ final class CalendarViewController: JournalBaseViewController {
             .prefix(3)
             .map { mood, count in "\(mood.title) \(Int((Double(count) / Double(total) * 100).rounded()))%" }
             .joined(separator: " · ")
-        statisticsDetailLabel.text = moodText.isEmpty ? "这个月还没有记录，点亮第一天吧。" : "心情占比：\(moodText)"
+        statisticsDetailLabel.text = moodText.isEmpty ? "补签剩余 \(remaining) 次 · 点亮第一天吧。" : "心情占比：\(moodText) · 补签剩余 \(remaining) 次"
+    }
+
+    private func updateCheckInButton() {
+        let checked = repository.checkInForDate(Date(), calendar: calendar) != nil
+        checkInButton.setTitle(checked ? "🔥 今日已打卡 · 连续 \(repository.currentStreak(calendar: calendar)) 天" : "✍️ 记下此刻 · 完成打卡", for: .normal)
+        checkInButton.isEnabled = !checked
+        checkInButton.alpha = checked ? 0.78 : 1
+        checkInButton.backgroundColor = checked ? JournalDesign.sage500 : JournalDesign.accent
+    }
+
+    @objc private func checkInToday() {
+        let composer = ComposeViewController()
+        let navigationController = UINavigationController(rootViewController: composer)
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
     }
 
     @objc private func showPreviousMonth() {
@@ -268,7 +294,9 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
         let hasEntry = date.map { day in monthEntries.contains { calendar.isDate($0.createdAt, inSameDayAs: day) } } ?? false
         let isToday = date.map { calendar.isDateInToday($0) } ?? false
         let isSelected = date.map { selected in selectedDate.map { calendar.isDate($0, inSameDayAs: selected) } ?? false } ?? false
-        cell.configure(day: item.day, hasEntry: hasEntry, isToday: isToday, isSelected: isSelected)
+        let checked = date.map { checkInDates.contains(calendar.startOfDay(for: $0)) } ?? false
+        let future = date.map { calendar.startOfDay(for: $0) > calendar.startOfDay(for: Date()) } ?? false
+        cell.configure(day: item.day, hasEntry: hasEntry, isCheckedIn: checked, isFuture: future, isToday: isToday, isSelected: isSelected)
         return cell
     }
 
@@ -278,11 +306,28 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let date = days[indexPath.item].date else { return }
+        guard calendar.startOfDay(for: date) <= calendar.startOfDay(for: Date()) else { return }
         selectedDate = date
         collectionView.reloadData()
 
         if let entry = monthEntries.first(where: { calendar.isDate($0.createdAt, inSameDayAs: date) }) {
             navigationController?.pushViewController(JournalDetailViewController(entry: entry), animated: true)
+        } else if repository.canMakeup(for: date, calendar: calendar) {
+            let alert = UIAlertController(title: "补签这一天？", message: "每月可补签 2 次，补签会生成一条短日记。", preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = "为这一天写一句话" }
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel))
+            alert.addAction(UIAlertAction(title: "补签", style: .default) { [weak self] _ in
+                guard let self else { return }
+                let body = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let entry = JournalEntry(title: "补签的一天", body: body.isEmpty ? "今天也值得被记住。" : body, mood: .calm, tags: ["补签"], createdAt: date)
+                do {
+                    try self.repository.save(entry)
+                    try self.repository.saveCheckIn(CheckInRecord(date: date, journalEntryId: entry.id, isMakeup: true))
+                    BadgeManager.shared.checkAndUnlockBadges()
+                    self.reloadData()
+                } catch { }
+            })
+            present(alert, animated: true)
         }
     }
 }

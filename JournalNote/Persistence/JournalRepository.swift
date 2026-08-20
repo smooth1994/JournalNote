@@ -25,7 +25,8 @@ final class JournalRepository {
     private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
     private let onboardingCompletedKey = "has_completed_onboarding_v1"
     private let onboardingLastShownKey = "onboarding_last_shown_at_v1"
-    private let onboardingInterval: TimeInterval = 10   // 12 * 60 * 60
+    private let onboardingInterval: TimeInterval = 12 * 60 * 60
+    private let unlockedBadgesKey = "unlocked_badge_ids_v1"
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
@@ -87,7 +88,11 @@ final class JournalRepository {
             try entriesTable.delete(where: JournalEntry.CodingKeys.id == entry.id)
         }
         try entriesTable.insert(entry)
+        if !entry.isDraft {
+            try autoCheckInForEntry(entry)
+        }
         NotificationCenter.default.post(name: .journalEntriesDidChange, object: nil)
+        BadgeManager.shared.checkAndUnlockBadges()
     }
 
     func delete(_ entry: JournalEntry) throws {
@@ -215,8 +220,6 @@ final class JournalRepository {
     func checkInForDate(_ date: Date, calendar: Calendar = .current) -> CheckInRecord? {
         guard let checkInsTable else { return nil }
         let dayStart = calendar.startOfDay(for: date)
-        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
-
         do {
             let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
             return records.first { record in
@@ -315,5 +318,24 @@ final class JournalRepository {
 
         let record = CheckInRecord(date: dayStart, journalEntryId: entry.id, isMakeup: false)
         try saveCheckIn(record)
+    }
+
+    func unlockedBadgeIDs() -> [String] {
+        guard let settingsTable else { return [] }
+        do {
+            let settings = try settingsTable.getObjects(on: JournalSetting.Properties.all)
+            guard let value = settings.first(where: { $0.key == unlockedBadgesKey })?.value,
+                  let data = value.data(using: .utf8),
+                  let ids = try? JSONDecoder().decode([String].self, from: data) else { return [] }
+            return ids
+        } catch { return [] }
+    }
+
+    func saveUnlockedBadgeIDs(_ ids: [String]) throws {
+        guard let settingsTable else { throw JournalRepositoryError.databaseUnavailable }
+        let data = try JSONEncoder().encode(ids.sorted())
+        guard let value = String(data: data, encoding: .utf8) else { return }
+        try settingsTable.delete(where: JournalSetting.CodingKeys.key == unlockedBadgesKey)
+        try settingsTable.insert(JournalSetting(key: unlockedBadgesKey, value: value))
     }
 }

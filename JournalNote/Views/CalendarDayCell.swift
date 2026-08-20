@@ -49,7 +49,7 @@ final class CalendarDayCell: UICollectionViewCell {
         isAccessibilityElement = false
     }
 
-    func configure(day: Int?, hasEntry: Bool, isToday: Bool, isSelected: Bool) {
+    func configure(day: Int?, hasEntry: Bool, isCheckedIn: Bool, isFuture: Bool, isToday: Bool, isSelected: Bool) {
         guard let day else {
             dayLabel.text = nil
             dot.isHidden = true
@@ -59,9 +59,12 @@ final class CalendarDayCell: UICollectionViewCell {
         dayLabel.text = "\(day)"
         dayLabel.textColor = JournalDesign.bodyText
         dayLabel.backgroundColor = .clear
-        dot.isHidden = !hasEntry || isToday
+        dot.isHidden = !isCheckedIn || isToday
+        dot.backgroundColor = JournalDesign.sage500
 
-        if isToday {
+        if isFuture {
+            dayLabel.textColor = JournalDesign.ink300
+        } else if isToday {
             dayLabel.backgroundColor = JournalDesign.accent
             dayLabel.textColor = JournalDesign.paper50
         } else if isSelected {
@@ -73,7 +76,8 @@ final class CalendarDayCell: UICollectionViewCell {
         }
 
         isAccessibilityElement = true
-        accessibilityLabel = hasEntry ? "\(day) 日，有记录" : "\(day) 日，无记录"
+        let status = isCheckedIn ? "已打卡" : (hasEntry ? "有记录" : (isFuture ? "未来日期" : "无记录"))
+        accessibilityLabel = "\(day) 日，\(status)"
         accessibilityTraits = isSelected ? [.button, .selected] : .button
     }
 }

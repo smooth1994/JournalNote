@@ -36,6 +36,10 @@
 		042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9D30357D72007D8AE2 /* CalendarDayCell.swift */; };
 		042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042A9B9030357D72007D8AE2 /* JournalDetailViewController.swift */; };
 		04A10002306A000000000001 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10001306A000000000001 /* OnboardingViewController.swift */; };
+		04A10004306A000000000001 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10003306A000000000001 /* Badge.swift */; };
+		04A10006306A000000000001 /* CheckInRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10005306A000000000001 /* CheckInRecord.swift */; };
+		04A10008306A000000000001 /* BadgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10007306A000000000001 /* BadgeManager.swift */; };
+		04A1000B306A000000000001 /* BadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1000A306A000000000001 /* BadgeViewController.swift */; };
 		04D218B53036CB2A000C304D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B43036CB29000C304D /* README.md */; };
 		04D218B73036D4CF000C304D /* upload_ipa_to_pgyer.sh in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */; };
 		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
@@ -94,6 +98,10 @@
 		042A9B9F30357D72007D8AE2 /* MoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodPickerView.swift; sourceTree = "<group>"; };
 		042A9BA030357D72007D8AE2 /* PaperComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperComponents.swift; sourceTree = "<group>"; };
 		04A10001306A000000000001 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		04A10003306A000000000001 /* Badge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
+		04A10005306A000000000001 /* CheckInRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInRecord.swift; sourceTree = "<group>"; };
+		04A10007306A000000000001 /* BadgeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeManager.swift; sourceTree = "<group>"; };
+		04A1000A306A000000000001 /* BadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewController.swift; sourceTree = "<group>"; };
 		04D218B43036CB29000C304D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa_to_pgyer.sh; sourceTree = "<group>"; };
 		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
@@ -166,6 +174,7 @@
 				042A9B9430357D72007D8AE2 /* Controllers */,
 				042A9B9630357D72007D8AE2 /* Core */,
 				042A9B9A30357D72007D8AE2 /* Models */,
+				04A10009306A000000000001 /* Managers */,
 				042A9B9C30357D72007D8AE2 /* Persistence */,
 				042A9BA130357D72007D8AE2 /* Views */,
 				042A9B6D30357C20007D8AE2 /* AppDelegate.swift */,
@@ -211,6 +220,7 @@
 			children = (
 				042A9BB230358217007D8AE2 /* Base */,
 				045469F9303699EB0044576D /* Welcome */,
+				04A1000C306A000000000001 /* Badge */,
 				045469F6303694000044576D /* TimeLine */,
 				045469F73036985C0044576D /* Calendar */,
 				045469F8303698B70044576D /* Profile */,
@@ -226,17 +236,19 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		042A9B9A30357D72007D8AE2 /* Models */ = {
+			042A9B9A30357D72007D8AE2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				042A9B9730357D72007D8AE2 /* JournalEntry.swift */,
 				042A9B9830357D72007D8AE2 /* JournalMood.swift */,
 				042A9B9930357D72007D8AE2 /* JournalSetting.swift */,
+				04A10003306A000000000001 /* Badge.swift */,
+				04A10005306A000000000001 /* CheckInRecord.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		042A9B9C30357D72007D8AE2 /* Persistence */ = {
+			042A9B9C30357D72007D8AE2 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
 				042A9B9B30357D72007D8AE2 /* JournalRepository.swift */,
@@ -244,6 +256,14 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
+			04A10009306A000000000001 /* Managers */ = {
+				isa = PBXGroup;
+				children = (
+					04A10007306A000000000001 /* BadgeManager.swift */,
+				);
+				path = Managers;
+				sourceTree = "<group>";
+			};
 		042A9BA130357D72007D8AE2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -296,6 +316,14 @@
 				04A10001306A000000000001 /* OnboardingViewController.swift */,
 			);
 			path = Welcome;
+			sourceTree = "<group>";
+		};
+		04A1000C306A000000000001 /* Badge */ = {
+			isa = PBXGroup;
+			children = (
+				04A1000A306A000000000001 /* BadgeViewController.swift */,
+			);
+			path = Badge;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
@@ -592,6 +620,10 @@
 				042A9BB030357D72007D8AE2 /* CalendarDayCell.swift in Sources */,
 				042A9BB130357D72007D8AE2 /* JournalDetailViewController.swift in Sources */,
 				04A10002306A000000000001 /* OnboardingViewController.swift in Sources */,
+				04A10004306A000000000001 /* Badge.swift in Sources */,
+				04A10006306A000000000001 /* CheckInRecord.swift in Sources */,
+				04A10008306A000000000001 /* BadgeManager.swift in Sources */,
+				04A1000B306A000000000001 /* BadgeViewController.swift in Sources */,
 				042A9B7C30357C20007D8AE2 /* SceneDelegate.swift in Sources */,
 				042A9B7D30357C20007D8AE2 /* ViewController.swift in Sources */,
 			);

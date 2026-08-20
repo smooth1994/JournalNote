@@ -8,7 +8,6 @@ import Foundation
 final class BadgeManager {
     static let shared = BadgeManager()
 
-    private let unlockedBadgesKey = "unlocked_badge_ids"
     private var unlockedBadgeIDs: Set<String> = []
 
     private init() {
@@ -81,13 +80,11 @@ final class BadgeManager {
     // MARK: - Private Methods
 
     private func loadUnlockedBadges() {
-        if let data = UserDefaults.standard.array(forKey: unlockedBadgesKey) as? [String] {
-            unlockedBadgeIDs = Set(data)
-        }
+        unlockedBadgeIDs = Set(JournalRepository.shared.unlockedBadgeIDs())
     }
 
     private func saveUnlockedBadges() {
-        UserDefaults.standard.set(Array(unlockedBadgeIDs), forKey: unlockedBadgesKey)
+        try? JournalRepository.shared.saveUnlockedBadgeIDs(Array(unlockedBadgeIDs))
     }
 
     private func unlock(_ badgeID: String) {

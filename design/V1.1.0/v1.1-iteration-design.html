@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拾光手账 V1.1 迭代 UI 设计方案</title>
+<style>
+:root{
+  --bg:#F5F0E6;
+  --card:#FBF7EF;
+  --card2:#F7F1E5;
+  --border:#E8DEC8;
+  --ink:#3E3328;
+  --ink2:#6B5E4F;
+  --ink3:#9A8B78;
+  --primary:#B07B4E;
+  --primary2:#9A663A;
+  --primary-light:#F3E6D4;
+  --success:#93A084;
+  --rose:#C08879;
+  --mist:#8FA3B0;
+  --clay:#B5533C;
+  --gold:#D4A056;
+  --shadow:0 2px 10px rgba(62,51,40,.06),0 8px 26px rgba(62,51,40,.10);
+  --r:18px;
+  --r-sm:12px;
+  --font-serif:"Songti SC","Noto Serif SC",serif;
+  --font-hand:"Ma Shan Zheng",cursive;
+  --font-mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--ink2);line-height:1.7;padding:40px 20px 80px}
+.wrap{max-width:1100px;margin:0 auto}
+h1{color:var(--ink);font-size:34px;letter-spacing:5px}
+.sub{font-family:var(--font-hand);color:var(--primary);font-size:20px;margin:8px 0 6px}
+.meta{font-family:var(--font-mono);font-size:11px;color:var(--ink3);letter-spacing:1px}
+.bar{height:1px;background:var(--border);margin:36px 0}
+.sec{display:flex;align-items:center;gap:12px;margin:42px 0 20px}
+.sec .n{font-family:var(--font-mono);font-size:12px;color:var(--clay);border:1px solid var(--clay);border-radius:99px;padding:2px 12px}
+.sec h2{color:var(--ink);font-size:22px;letter-spacing:3px}
+.lead{max-width:680px;color:var(--ink2);margin-bottom:20px}
+
+/* tables */
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:24px}
+th{background:var(--card2);color:var(--ink);font-size:14px;text-align:left;padding:12px 16px}
+td{padding:12px 16px;font-size:14px;border-top:1px solid var(--border);color:var(--ink2)}
+.p0{color:var(--clay);font-weight:700}.p1{color:var(--primary);font-weight:700}.p2{color:var(--success);font-weight:700}
+
+/* phone */
+.phone{width:300px;min-height:620px;background:var(--bg);border-radius:36px;border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 16px 70px;position:relative;overflow:hidden;margin:0 auto}
+.phone::before{content:"";display:block;width:90px;height:22px;background:var(--border);border-radius:99px;margin:0 auto 14px;opacity:.5}
+.p-title{font-size:22px;color:var(--ink);font-weight:700;letter-spacing:3px}
+.p-sub{font-size:13px;color:var(--ink3);margin-top:2px}
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:60px;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;padding:0 12px}
+.tabbar i{font-style:normal;font-size:20px;opacity:.35;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabbar i span{font-size:9px;font-family:var(--font-serif);letter-spacing:0}
+.tabbar i.on{opacity:1;color:var(--primary)}
+
+/* components */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-top:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-serif);font-size:15px;padding:12px 26px;border-radius:99px;border:none;cursor:pointer;letter-spacing:2px;background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(176,123,78,.32)}
+.btn-ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-sm{padding:8px 18px;font-size:13px}
+.chip{display:inline-flex;padding:5px 14px;border-radius:99px;font-size:12px;background:var(--card2);color:var(--ink2);margin-right:6px}
+.chip.on{background:var(--primary-light);color:var(--primary2)}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:99px;font-size:12px;background:var(--primary-light);color:var(--primary2)}
+
+/* calendar */
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px}
+.cal-month{font-size:16px;color:var(--ink);font-weight:600;letter-spacing:1px}
+.cal-arr{width:28px;height:28px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal-grid b{font-size:11px;color:var(--ink3);font-weight:400;padding:4px 0}
+.cal-day{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;color:var(--ink2);margin:0 auto;position:relative}
+.cal-day.has{background:var(--primary-light);color:var(--primary2);font-weight:600}
+.cal-day.today{background:var(--primary);color:#fff;font-weight:700}
+.cal-day.checked::after{content:"";position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--success)}
+.cal-day.locked{color:var(--ink3)}
+.checkin-big{width:100%;margin-top:16px;padding:16px;background:linear-gradient(135deg,var(--primary),var(--primary2));border-radius:var(--r);color:#fff;text-align:center}
+.checkin-big.done{background:var(--success)}
+.checkin-big .t{font-size:18px;font-weight:700;letter-spacing:2px}
+.checkin-big .s{font-size:12px;opacity:.9;margin-top:4px}
+.streak{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:var(--ink2)}
+.streak b{color:var(--clay)}
+
+/* badge */
+.badge{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--card2);border:2px solid var(--border);position:relative}
+.badge.unlocked{background:linear-gradient(135deg,#FFF9F0,var(--primary-light));border-color:var(--gold);box-shadow:0 4px 14px rgba(212,160,86,.25)}
+.badge.locked{filter:grayscale(100%);opacity:.55}
+.badge .lock{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;background:var(--card);border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink3)}
+.badge-ring{position:absolute;inset:-4px;border-radius:50%;border:3px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold);transform:rotate(45deg)}
+.badge-name{font-size:11px;color:var(--ink2);margin-top:6px;text-align:center}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 8px;margin-top:16px}
+.series-tabs{display:flex;gap:10px;margin-top:12px}
+.series-tab{padding:8px 16px;border-radius:99px;font-size:13px;background:var(--card2);color:var(--ink3);cursor:pointer}
+.series-tab.on{background:var(--primary);color:#fff}
+
+/* modal */
+.sheet{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--border);padding:22px 18px 28px;box-shadow:0 -4px 24px rgba(62,51,40,.12)}
+.sheet::before{content:"";display:block;width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 18px}
+
+/* rings */
+.rings{position:relative;width:140px;height:140px;margin:20px auto}
+.ring{position:absolute;border-radius:50%;border:1px solid var(--border)}
+
+/* prompt */
+.prompt-card{margin-top:14px;background:var(--card2);border-radius:var(--r-sm);padding:14px;border-left:4px solid var(--primary)}
+.prompt-card .q{font-family:var(--font-hand);font-size:18px;color:var(--primary)}
+
+.report-row{display:flex;gap:10px;margin-top:10px}
+.report-cell{flex:1;background:var(--card2);border-radius:var(--r-sm);padding:12px;text-align:center}
+.report-cell .n{font-size:22px;color:var(--ink);font-weight:700}
+.report-cell .l{font-size:11px;color:var(--ink3)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:20px}
+.foot{text-align:center;margin-top:60px;font-family:var(--font-mono);font-size:11px;color:var(--ink3);letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>拾光手账 V1.1 迭代方案</h1>
+  <div class="sub">打卡 · 徽章 · 更多温柔</div>
+  <div class="meta">ITERATION v1.1 · 2026.08.20 · UI Designer</div>
+
+  <div class="bar"></div>
+
+  <!-- 01 迭代范围 -->
+  <div class="sec"><span class="n">01</span><h2>迭代范围与优先级</h2></div>
+  <p class="lead">在现有「时光轴 / 日历 / 我的」三 tab 基础上，V1.1 聚焦「养成感」与「成就反馈」：把单次记录行为变成可感知的每日仪式，用徽章体系强化长期留存。</p>
+  <table>
+    <tr><th>模块</th><th>功能点</th><th>优先级</th><th>价值</th></tr>
+    <tr><td>日历打卡</td><td>今日打卡按钮、连续打卡天数、月度打卡视图、补签机制</td><td><span class="p0">P0</span></td><td>将记录转化为每日仪式，提升打开频次</td></tr>
+    <tr><td>徽章系统</td><td>徽章中心、系列分类、锁定/点亮态、进度、详情页</td><td><span class="p0">P0</span></td><td>游戏化成就反馈，增强长期留存</td></tr>
+    <tr><td>每日灵感</td><td>首页顶部每日写作提示，可一键引用</td><td><span class="p1">P1</span></td><td>降低「不知道写什么」的启动阻力</td></tr>
+    <tr><td>月度手账报告</td><td>每月生成一页可视化报告卡，可分享/导出</td><td><span class="p1">P1</span></td><td>强化回顾价值与分享传播</td></tr>
+    <tr><td>未来信箱</td><td>写给未来自己的信，设定日期后封存并到期提醒</td><td><span class="p2">P2</span></td><td>情感化功能，提升产品记忆点</td></tr>
+  </table>
+
+  <!-- 02 设计原则 -->
+  <div class="sec"><span class="n">02</span><h2>设计原则与 Token 延续</h2></div>
+  <p class="lead">延续 V1.0 的治愈复古基调，新增「养成感」视觉线索：火焰（连续）、金属锁（未解锁）、金箔描边（已点亮）。不引入高饱和插画，保持纸感与克制。</p>
+  <div class="grid">
+    <div class="card"><b>色彩</b><br>主色焦糖 `#B07B4E` · 成功绿 `#93A084` · 砖红 `#B5533C` · 新增金箔 `#D4A056` 用于徽章高光</div>
+    <div class="card"><b>材质</b><br>纸纹底、火漆印章、和纸胶带；徽章锁定态用灰度 + 哑光，点亮态用金箔描边 + 暖光投影</div>
+    <div class="card"><b>动效</b><br>打卡成功：印章落下 300ms + 火焰跃起；徽章解锁：灰度转彩色 500ms + 金边生长动画</div>
+  </div>
+
+  <!-- 03 日历打卡 -->
+  <div class="sec"><span class="n">03</span><h2>日历打卡模块</h2></div>
+  <p class="lead">在原有日历页增加「今日打卡」主行动点，并把「有记录」与「已打卡」区分开：有记录自动打卡；无记录时可点击打卡写一句话。连续打卡用火焰与 streak 数字强化。</p>
+  <div class="grid">
+    <div class="phone">
+      <div class="p-title">日历</div>
+      <div class="p-sub">每一天，都值得被点亮</div>
+      <div class="card">
+        <div class="cal-head"><span class="cal-arr">‹</span><span class="cal-month">2026 年 8 月</span><span class="cal-arr">›</span></div>
+        <div class="cal-grid">
+          <b>一</b><b>二</b><b>三</b><b>四</b><b>五</b><b>六</b><b>日</b>
+          <span></span><span></span><span></span><span></span><span></span><span class="has checked">1</span><span>2</span>
+          <span>3</span><span class="has checked">4</span><span class="has checked">5</span><span>6</span><span>7</span><span class="has checked">8</span><span>9</span>
+          <span class="has checked">10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+          <span>17</span><span>18</span><span>19</span><span class="today checked">20</span><span class="locked">21</span><span>22</span><span>23</span>
+          <span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+        </div>
+      </div>
+      <div class="checkin-big"><div class="t">🔥 今日已打卡</div><div class="s">连续 5 天 · 本月累计 9 天</div></div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:12px;color:var(--ink3)">本月统计</div>
+        <div class="streak"><b>连续 5 天</b> · 累计 9 天 · 补签剩余 2 次</div>
+      </div>
+      <div class="tabbar"><i>📖<span>时光轴</span></i><i class="on">🗓<span>日历</span></i><i>🏅<span>徽章</span></i></div>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">日历</div>
+      <div class="p-sub">今日还未落笔</div>
+      <div class="card">
+        <div class="cal-head"><span class="cal-arr">‹</span><span class="cal-month">2026 年 8 月</span><span class="cal-arr">›</span></div>
+        <div class="cal-grid">
+          <b>一</b><b>二</b><b>三</b><b>四</b><b>五</b><b>六</b><b>日</b>
+          <span></span><span></span><span></span><span></span><span></span><span class="has checked">1</span><span>2</span>
+          <span>3</span><span class="has checked">4</span><span class="has checked">5</span><span>6</span><span>7</span><span class="has checked">8</span><span>9</span>
+          <span class="has checked">10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+          <span>17</span><span>18</span><span>19</span><span class="today">20</span><span>21</span><span>22</span><span>23</span>
+        </div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:16px">✍️ 记下此刻 · 完成打卡</button>
+      <div class="card" style="margin-top:14px">
+        <div style="font-size:12px;color:var(--ink3)">快速打卡</div>
+        <div style="margin-top:8px;font-size:14px;color:var(--ink2)">今天可以先写一句话，再慢慢补充完整。</div>
+      </div>
+      <div class="tabbar"><i>📖<span>时光轴</span></i><i class="on">🗓<span>日历</span></i><i>🏅<span>徽章</span></i></div>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">打卡成功</div>
+      <div class="p-sub">2026.08.20 · 周四</div>
+      <div class="card" style="text-align:center;padding:28px 16px;margin-top:40px">
+        <div style="font-size:64px">🔥</div>
+        <div style="font-size:28px;color:var(--ink);font-weight:700;margin-top:10px">连续 5 天</div>
+        <div style="font-size:14px;color:var(--ink3);margin-top:6px">今天的记录已保存，记得明天再来。</div>
+        <div style="margin-top:20px;display:flex;justify-content:center;gap:8px">
+          <div class="tag">+1 小火苗</div><div class="tag" style="background:rgba(147,160,132,.18);color:#5F7052">坚持系列进度 +10%</div>
+        </div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:20px">查看时光轴</button>
+    </div>
+  </div>
+
+  <!-- 04 徽章系统 -->
+  <div class="sec"><span class="n">04</span><h2>徽章系统</h2></div>
+  <p class="lead">参考蜜雪冰城徽章页，但适配拾光手账的纸感复古气质：圆形徽章母题、系列 tab、锁定态灰度哑光、点亮态金箔描边。徽章不仅是成就，也是可收集的「电子手账贴纸」。</p>
+
+  <div class="grid">
+    <div class="phone">
+      <div class="p-title">徽章中心</div>
+      <div class="p-sub">已点亮 7 枚 · 共 24 枚</div>
+      <div class="series-tabs">
+        <div class="series-tab on">坚持系列</div>
+        <div class="series-tab">时光系列</div>
+        <div class="series-tab">心情系列</div>
+      </div>
+      <div class="badge-grid">
+        <div><div class="badge unlocked"><div class="badge-ring"></div>✍️</div><div class="badge-name">初次落笔</div></div>
+        <div><div class="badge unlocked"><div class="badge-ring"></div>🔥</div><div class="badge-name">七日不辍</div></div>
+        <div><div class="badge locked">🔒<div class="lock">🔒</div></div><div class="badge-name">一月有成</div></div>
+        <div><div class="badge locked">🔒<div class="lock">🔒</div></div><div class="badge-name">四季流转</div></div>
+        <div><div class="badge locked">🔒<div class="lock">🔒</div></div><div class="badge-name">年度拾光</div></div>
+        <div><div class="badge locked">🔒<div class="lock">🔒</div></div><div class="badge-name">晨间习惯</div></div>
+      </div>
+      <div class="tabbar"><i>📖<span>时光轴</span></i><i>🗓<span>日历</span></i><i class="on">🏅<span>徽章</span></i></div>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">徽章详情</div>
+      <div class="p-sub">坚持系列 · 2 / 6</div>
+      <div class="card" style="text-align:center;padding:24px 16px;margin-top:24px">
+        <div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#FFF9F0,var(--primary-light));border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:56px;margin:0 auto;box-shadow:0 6px 20px rgba(212,160,86,.25)">🔥</div>
+        <div style="font-size:20px;color:var(--ink);font-weight:700;margin-top:16px;letter-spacing:2px">七日不辍</div>
+        <div style="font-size:13px;color:var(--ink3);margin-top:6px">连续打卡 7 天</div>
+        <div style="margin-top:16px;background:var(--card2);border-radius:99px;height:8px;overflow:hidden"><div style="width:100%;height:100%;background:var(--primary)"></div></div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px">已达成 · 2026.08.20</div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="font-size:14px;color:var(--ink);font-weight:600">获取条件</div>
+        <div style="font-size:13px;color:var(--ink2);margin-top:6px">连续 7 天完成「记下此刻」打卡，中断则重新计算。</div>
+      </div>
+      <button class="btn-ghost btn-sm" style="margin-top:14px">分享徽章</button>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">徽章详情</div>
+      <div class="p-sub">心情系列 · 0 / 5</div>
+      <div class="card" style="text-align:center;padding:24px 16px;margin-top:24px">
+        <div style="width:110px;height:110px;border-radius:50%;background:var(--card2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:56px;margin:0 auto;filter:grayscale(100%);opacity:.55">🌧</div>
+        <div style="font-size:20px;color:var(--ink);font-weight:700;margin-top:16px;letter-spacing:2px">雨夜思绪</div>
+        <div style="font-size:13px;color:var(--ink3);margin-top:6px">累计 10 次选择「思绪」心情</div>
+        <div style="margin-top:16px;background:var(--card2);border-radius:99px;height:8px;overflow:hidden"><div style="width:30%;height:100%;background:var(--mist)"></div></div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px">进度 3 / 10</div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div style="font-size:14px;color:var(--ink);font-weight:600">点亮提示</div>
+        <div style="font-size:13px;color:var(--ink2);margin-top:6px">下次记录时选择 🌧 思绪心情，再积累 7 次即可解锁。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 附加功能 -->
+  <div class="sec"><span class="n">05</span><h2>附加功能</h2></div>
+
+  <div class="grid">
+    <div class="phone">
+      <div class="p-title">时光轴</div>
+      <div class="p-sub">8 月 · 拾起 12 段时光</div>
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;color:var(--primary);font-weight:600">今日灵感</div>
+          <div style="font-size:13px;color:var(--ink2)">描述一下今天闻到的第一种味道。</div>
+        </div>
+        <button class="btn-sm" style="padding:6px 14px;font-size:12px">引用</button>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:12px;color:var(--ink3)">08.20 · 周四</div>
+        <div style="font-size:17px;color:var(--ink);font-weight:600">深圳的雨</div>
+        <div style="font-size:13px;color:var(--ink2)">深圳的雨总是下的那么触不及防…</div>
+        <div style="margin-top:8px"><span class="chip">🌧 思绪</span><span class="chip">日常</span></div>
+      </div>
+      <div class="tabbar"><i class="on">📖<span>时光轴</span></i><i>🗓<span>日历</span></i><i>🏅<span>徽章</span></i></div>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">8 月手账报告</div>
+      <div class="p-sub">把一个月的时光，折成一页纸</div>
+      <div class="card" style="text-align:center">
+        <div style="font-family:var(--font-hand);font-size:22px;color:var(--primary)">八月 · 拾光手记</div>
+        <div class="report-row">
+          <div class="report-cell"><div class="n">12</div><div class="l">记录天数</div></div>
+          <div class="report-cell"><div class="n">5</div><div class="l">最长连续</div></div>
+          <div class="report-cell"><div class="n">3</div><div class="l">解锁徽章</div></div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--ink2)">最常出现的心情：🌧 思绪 42%</div>
+        <div style="margin-top:6px;font-size:13px;color:var(--ink2)">最晚记录时间：23:47</div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:14px">生成分享卡片</button>
+      <button class="btn-ghost btn-sm" style="width:100%;margin-top:10px">导出 PDF</button>
+    </div>
+
+    <div class="phone">
+      <div class="p-title">未来信箱</div>
+      <div class="p-sub">把此刻寄给未来的自己</div>
+      <div class="card">
+        <div style="font-size:14px;color:var(--ink);font-weight:600">收信时间</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="chip on">1 个月后</span><span class="chip">3 个月后</span><span class="chip">1 年后</span><span class="chip">自定义</span>
+        </div>
+        <textarea placeholder="写一封信，给未来的自己…" style="width:100%;margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);font-family:var(--font-serif);font-size:14px;color:var(--ink);min-height:120px;resize:none"></textarea>
+      </div>
+      <button class="btn" style="width:100%;margin-top:14px">✉️ 封存这封信</button>
+      <div class="card" style="margin-top:14px">
+        <div style="font-size:12px;color:var(--ink3)">已封存 2 封</div>
+        <div style="font-size:13px;color:var(--ink2);margin-top:4px">最近一封将在 2026.09.20 开启</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 信息架构 -->
+  <div class="sec"><span class="n">06</span><h2>信息架构更新</h2></div>
+  <p class="lead">底部 Tab 由 3 个扩展为 4 个：时光轴 / 日历 / 徽章 / 我的。徽章独立为一级入口，强化养成中心地位。</p>
+  <table>
+    <tr><th>Tab</th><th>页面</th><th>V1.1 变更</th></tr>
+    <tr><td>📖 时光轴</td><td>首页</td><td>新增「每日灵感」卡片；徽章进度快捷入口</td></tr>
+    <tr><td>🗓 日历</td><td>日历页</td><td>新增打卡按钮、连续天数、补签、月度统计</td></tr>
+    <tr><td>🏅 徽章</td><td>新增</td><td>徽章中心、系列分类、详情、分享</td></tr>
+    <tr><td>🕯 我的</td><td>个人页</td><td>新增「未来信箱」入口；月度报告入口</td></tr>
+  </table>
+
+  <!-- 07 组件规范 -->
+  <div class="sec"><span class="n">07</span><h2>新增/更新组件规范</h2></div>
+  <table>
+    <tr><th>组件</th><th>规范</th></tr>
+    <tr><td>打卡按钮</td><td>未打卡：焦糖主按钮，文案「记下此刻 · 完成打卡」；已打卡：绿色填充，文案「🔥 今日已打卡 · 连续 N 天」</td></tr>
+    <tr><td>日历单元格</td><td>普通 / 有记录 has / 今日 today / 已打卡 checked（绿色小点）/ 锁定未来 locked（浅灰）</td></tr>
+    <tr><td>徽章卡片</td><td>72pt 圆形，锁定态：灰度 + 55% 透明度 + 小锁；点亮态：金箔 `#D4A056` 描边 + 暖光投影</td></tr>
+    <tr><td>进度环/条</td><td>徽章详情使用 8px 圆角进度条；坚持系列可用环形进度（参考心情年轮）</td></tr>
+    <tr><td>Toast / Sheet</td><td>打卡成功用居中卡片弹窗 300ms；徽章解锁从底部弹出详情 sheet</td></tr>
+    <tr><td>每日灵感</td><td>首页顶部胶囊卡片，左侧引号装饰，右侧「引用」按钮</td></tr>
+  </table>
+
+  <!-- 08 动效与文案 -->
+  <div class="sec"><span class="n">08</span><h2>动效与关键文案</h2></div>
+  <div class="grid">
+    <div class="card"><b>打卡成功</b><br>印章盖下「已打卡」→ 火焰图标 scale 1.2 → 连续天数 +1；音效：纸张轻响（可关）</div>
+    <div class="card"><b>徽章解锁</b><br>灰度滤镜淡出 500ms + 金边描边从 0° 生长到 360° + 弹出详情 sheet；音效：金属轻鸣</div>
+    <div class="card"><b>补签机制</b><br>每月赠送 2 次补签；点击未打卡的过去日期 → 弹出「补签需要写一句话」→ 完成后该日显示橙色补签标记</div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <b>建议文案</b><br>
+    打卡：「今日已打卡 · 连续 N 天」「记下此刻，完成打卡」「补签：给遗漏的一天补一句话」<br>
+    徽章：「已点亮 X 枚徽章」「继续记录，解锁更多」「分享徽章」「系列：坚持 / 时光 / 心情 / 隐藏」<br>
+    报告：「X 月手账报告」「本月你最常出现的心情是…」「生成分享卡片」「导出 PDF 手账册」<br>
+    未来信箱：「把此刻寄给未来的自己」「封存这封信」「还有 X 天开启」
+  </div>
+
+  <!-- 09 开发标注 -->
+  <div class="sec"><span class="n">09</span><h2>开发交付标注</h2></div>
+  <table>
+    <tr><th>项</th><th>标注</th></tr>
+    <tr><td>TabBar</td><td>新增「徽章」入口；图标 24pt，选中态填充色 #B07B4E，未选中 #9A8B78</td></tr>
+    <tr><td>数据</td><td>打卡记录与用户日记一一对应；每篇日记生成一条打卡记录；无日记的日期支持「快速打卡」生成一条短日记</td></tr>
+    <tr><td>徽章</td><td>服务端配置 badge_id / series / unlock_condition / progress；本地缓存点亮状态，解锁时触发本地通知</td></tr>
+    <tr><td>补签</td><td>限制每月 2 次，用 UserDefaults / Keychain 记录；补签日记带 is_makeup=true 标记</td></tr>
+    <tr><td>未来信箱</td><td>本地定时通知（UNUserNotificationCenter），信件内容加密存储本地</td></tr>
+    <tr><td>无障碍</td><td>徽章增加 accessibilityLabel「未解锁，连续打卡 7 天可点亮」；进度条读百分比</td></tr>
+  </table>
+
+  <div class="foot">SHIGUANG JOURNAL V1.1 · UI ITERATION · 2026.08.20 · Designed by UI Designer</div>
+</div>
+</body>
+</html>

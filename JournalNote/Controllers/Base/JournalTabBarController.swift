@@ -33,13 +33,19 @@ final class JournalTabBarController: UITabBarController {
             image: "calendar",
             selectedImage: "calendar"
         )
+        let badges = makeNavigationController(
+            root: BadgeViewController(),
+            title: "徽章",
+            image: "medal",
+            selectedImage: "medal.fill"
+        )
         let profile = makeNavigationController(
             root: ProfileViewController(),
             title: "我的",
             image: "flame",
             selectedImage: "flame.fill"
         )
-        viewControllers = [timeline, calendar, profile]
+        viewControllers = [timeline, calendar, badges, profile]
     }
 
     private func makeNavigationController(
