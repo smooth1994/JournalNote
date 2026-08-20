@@ -6,7 +6,8 @@ target 'JournalNote' do
 
   pod 'SnapKit', '~> 5.7.1'
   pod 'WCDB.swift', '2.1.16'
-  pod 'KeyboardKit'
+  pod 'IQKeyboardManager'
+  pod 'MBProgressHUD'
 
   target 'JournalNoteTests' do
 

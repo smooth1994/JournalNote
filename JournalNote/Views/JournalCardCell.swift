@@ -128,7 +128,7 @@ final class JournalCardCell: UITableViewCell {
         tape.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(-8)
             make.centerX.equalToSuperview()
-            make.width.equalTo(64)
+            make.width.equalTo(52)
             make.height.equalTo(20)
         }
         dateLabel.snp.makeConstraints { make in

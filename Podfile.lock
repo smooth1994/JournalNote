@@ -1,28 +1,32 @@
 PODS:
-  - KeyboardKit (7.9.2)
+  - IQKeyboardManager (6.5.19)
+  - MBProgressHUD (1.2.0)
   - SnapKit (5.7.1)
   - WCDB.swift (2.1.16):
     - WCDBOptimizedSQLCipher (= 1.4.8)
   - WCDBOptimizedSQLCipher (1.4.8)
 
 DEPENDENCIES:
-  - KeyboardKit
+  - IQKeyboardManager
+  - MBProgressHUD
   - SnapKit (~> 5.7.1)
   - WCDB.swift (= 2.1.16)
 
 SPEC REPOS:
   trunk:
-    - KeyboardKit
+    - IQKeyboardManager
+    - MBProgressHUD
     - SnapKit
     - WCDB.swift
     - WCDBOptimizedSQLCipher
 
 SPEC CHECKSUMS:
-  KeyboardKit: 3b33915993c52769f978d0c43097b2821b07086a
+  IQKeyboardManager: c8665b3396bd0b79402b4c573eac345a31c7d485
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
   WCDB.swift: d9c65b12e4ca9c97387c75c2393a50d9649d99e0
   WCDBOptimizedSQLCipher: 871994f7f620302fdf87a2729c099a1efa2223da
 
-PODFILE CHECKSUM: e73a2557f2c06cddeea7fb20a4182b3d994926dd
+PODFILE CHECKSUM: 263b5d5b8fc47bb46470c891d54fe6e41cba5307
 
 COCOAPODS: 1.16.2

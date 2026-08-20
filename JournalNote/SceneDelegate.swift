@@ -11,14 +11,46 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = JournalTabBarController()
         self.window = window
+        window.rootViewController = makeInitialViewController()
         window.makeKeyAndVisible()
+    }
+
+    private func makeInitialViewController() -> UIViewController {
+        if shouldShowOnboarding {
+            let onboarding = OnboardingViewController()
+            onboarding.onFinished = { [weak self] in
+                self?.showHome()
+            }
+            return onboarding
+        }
+        return JournalTabBarController()
+    }
+
+    private var shouldShowOnboarding: Bool {
+        ProcessInfo.processInfo.arguments.contains("-showOnboarding") ||
+            !JournalRepository.shared.hasCompletedOnboarding()
+    }
+
+    private func showHome() {
+        guard let window else { return }
+        let home = JournalTabBarController()
+        guard !UIAccessibility.isReduceMotionEnabled else {
+            window.rootViewController = home
+            return
+        }
+
+        UIView.transition(
+            with: window,
+            duration: 0.28,
+            options: [.transitionCrossDissolve, .allowAnimatedContent]
+        ) {
+            window.rootViewController = home
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -51,4 +83,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 }
-
