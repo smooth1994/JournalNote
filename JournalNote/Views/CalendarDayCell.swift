@@ -44,21 +44,17 @@ final class CalendarDayCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        dayLabel.text = nil
-        dot.isHidden = true
-        isAccessibilityElement = false
+        resetVisualState()
     }
 
     func configure(day: Int?, hasEntry: Bool, isCheckedIn: Bool, isFuture: Bool, isToday: Bool, isSelected: Bool) {
+        resetVisualState()
+
         guard let day else {
-            dayLabel.text = nil
-            dot.isHidden = true
             return
         }
 
         dayLabel.text = "\(day)"
-        dayLabel.textColor = JournalDesign.bodyText
-        dayLabel.backgroundColor = .clear
         dot.isHidden = !isCheckedIn || isToday
         dot.backgroundColor = JournalDesign.sage500
 
@@ -79,5 +75,16 @@ final class CalendarDayCell: UICollectionViewCell {
         let status = isCheckedIn ? "已打卡" : (hasEntry ? "有记录" : (isFuture ? "未来日期" : "无记录"))
         accessibilityLabel = "\(day) 日，\(status)"
         accessibilityTraits = isSelected ? [.button, .selected] : .button
+    }
+
+    private func resetVisualState() {
+        dayLabel.text = nil
+        dayLabel.textColor = JournalDesign.bodyText
+        dayLabel.backgroundColor = .clear
+        dot.isHidden = true
+        dot.backgroundColor = JournalDesign.sage500
+        accessibilityLabel = nil
+        accessibilityTraits = []
+        isAccessibilityElement = false
     }
 }
