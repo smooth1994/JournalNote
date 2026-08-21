@@ -37,19 +37,6 @@ EXPORT_OPTIONS_PLIST="$OUTPUT_DIR/ExportOptions.plist"
 ARCHIVE_LOG="$OUTPUT_DIR/archive.log"
 EXPORT_LOG="$OUTPUT_DIR/export.log"
 
-# 备份目录
-CURRENT_USER="$(whoami)"
-if [ -z "${MAC_SAVE_DIR:-}" ]; then
-  case "$CURRENT_USER" in
-    "mac")
-      MAC_SAVE_DIR="${HOME}/Documents/IPA_Backup"
-      ;;
-    *)
-      MAC_SAVE_DIR="${HOME}/Desktop/JournalNote_Archive"
-      ;;
-  esac
-fi
-
 TEMP_FILES=()
 TEMP_DIRS=()
 
@@ -249,10 +236,6 @@ prepare_output_ipa() {
   if [ "$IPA_RAW_PATH" != "$UPLOAD_IPA_PATH" ]; then
     cp "$IPA_RAW_PATH" "$UPLOAD_IPA_PATH"
   fi
-
-  TARGET_SAVE_DIR="${MAC_SAVE_DIR}/${SCHEME_NAME}_v${VERSION}"
-  mkdir -p "$TARGET_SAVE_DIR"
-  cp "$UPLOAD_IPA_PATH" "${TARGET_SAVE_DIR}/${UPLOAD_IPA_NAME}"
 }
 
 upload_to_pgyer() {
@@ -344,7 +327,6 @@ fi
 step "整理产物"
 prepare_output_ipa
 success "IPA 已就绪: ${UPLOAD_IPA_PATH}"
-success "已备份到: ${TARGET_SAVE_DIR}/${UPLOAD_IPA_NAME}"
 
 step "上传蒲公英"
 PGYER_RESPONSE_JSON="$(mktemp)"
