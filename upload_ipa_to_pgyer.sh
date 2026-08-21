@@ -92,6 +92,11 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || fail "缺少命令: $1"
 }
 
+require_executable() {
+  local executable="$1"
+  [ -x "$executable" ] || fail "缺少可执行文件: ${executable}"
+}
+
 require_value() {
   local value="$1"
   local field_name="$2"
