@@ -236,7 +236,7 @@ final class CalendarViewController: JournalBaseViewController {
     private func updateStatistics() {
         let dayCount = checkInDates.count
         let consecutive = repository.currentStreak(calendar: calendar)
-        let remaining = max(0, 2 - repository.makeupCountThisMonth(calendar: calendar))
+        let remaining = max(0, 2 - repository.makeupCount(in: displayedMonth, calendar: calendar))
         statisticsValueLabel.text = "连续 \(consecutive) 天 🔥 · 本月 \(dayCount) 天"
 
         let total = max(monthEntries.count, 1)

@@ -37,7 +37,9 @@ final class JournalTabBarController: UITabBarController {
             root: BadgeViewController(),
             title: "徽章",
             image: "medal",
-            selectedImage: "medal.fill"
+            selectedImage: "medal.fill",
+            fallbackImage: "star.circle",
+            fallbackSelectedImage: "star.circle.fill"
         )
         let profile = makeNavigationController(
             root: ProfileViewController(),
@@ -52,12 +54,14 @@ final class JournalTabBarController: UITabBarController {
         root: UIViewController,
         title: String,
         image: String,
-        selectedImage: String
+        selectedImage: String,
+        fallbackImage: String? = nil,
+        fallbackSelectedImage: String? = nil
     ) -> UINavigationController {
         root.tabBarItem = UITabBarItem(
             title: title,
-            image: UIImage(systemName: image),
-            selectedImage: UIImage(systemName: selectedImage)
+            image: UIImage(systemName: image) ?? fallbackImage.flatMap(UIImage.init(systemName:)),
+            selectedImage: UIImage(systemName: selectedImage) ?? fallbackSelectedImage.flatMap(UIImage.init(systemName:))
         )
         let navigationController = UINavigationController(rootViewController: root)
         navigationController.navigationBar.prefersLargeTitles = true

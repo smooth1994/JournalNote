@@ -40,6 +40,9 @@
 		04A10006306A000000000001 /* CheckInRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10005306A000000000001 /* CheckInRecord.swift */; };
 		04A10008306A000000000001 /* BadgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10007306A000000000001 /* BadgeManager.swift */; };
 		04A1000B306A000000000001 /* BadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1000A306A000000000001 /* BadgeViewController.swift */; };
+		04A1000E306A000000000001 /* FutureLetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1000D306A000000000001 /* FutureLetter.swift */; };
+		04A10010306A000000000001 /* FutureMailboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1000F306A000000000001 /* FutureMailboxViewController.swift */; };
+		04A10012306A000000000001 /* MonthlyReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10011306A000000000001 /* MonthlyReportViewController.swift */; };
 		04D218B53036CB2A000C304D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B43036CB29000C304D /* README.md */; };
 		04D218B73036D4CF000C304D /* upload_ipa_to_pgyer.sh in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */; };
 		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
@@ -102,6 +105,9 @@
 		04A10005306A000000000001 /* CheckInRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInRecord.swift; sourceTree = "<group>"; };
 		04A10007306A000000000001 /* BadgeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeManager.swift; sourceTree = "<group>"; };
 		04A1000A306A000000000001 /* BadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewController.swift; sourceTree = "<group>"; };
+		04A1000D306A000000000001 /* FutureLetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FutureLetter.swift; sourceTree = "<group>"; };
+		04A1000F306A000000000001 /* FutureMailboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FutureMailboxViewController.swift; sourceTree = "<group>"; };
+		04A10011306A000000000001 /* MonthlyReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyReportViewController.swift; sourceTree = "<group>"; };
 		04D218B43036CB29000C304D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa_to_pgyer.sh; sourceTree = "<group>"; };
 		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
@@ -244,6 +250,7 @@
 				042A9B9930357D72007D8AE2 /* JournalSetting.swift */,
 				04A10003306A000000000001 /* Badge.swift */,
 				04A10005306A000000000001 /* CheckInRecord.swift */,
+				04A1000D306A000000000001 /* FutureLetter.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -306,6 +313,8 @@
 			isa = PBXGroup;
 			children = (
 				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
+				04A1000F306A000000000001 /* FutureMailboxViewController.swift */,
+				04A10011306A000000000001 /* MonthlyReportViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -624,6 +633,9 @@
 				04A10006306A000000000001 /* CheckInRecord.swift in Sources */,
 				04A10008306A000000000001 /* BadgeManager.swift in Sources */,
 				04A1000B306A000000000001 /* BadgeViewController.swift in Sources */,
+				04A1000E306A000000000001 /* FutureLetter.swift in Sources */,
+				04A10010306A000000000001 /* FutureMailboxViewController.swift in Sources */,
+				04A10012306A000000000001 /* MonthlyReportViewController.swift in Sources */,
 				042A9B7C30357C20007D8AE2 /* SceneDelegate.swift in Sources */,
 				042A9B7D30357C20007D8AE2 /* ViewController.swift in Sources */,
 			);

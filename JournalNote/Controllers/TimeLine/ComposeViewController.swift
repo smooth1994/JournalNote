@@ -7,6 +7,7 @@ import UIKit
 import SnapKit
 
 final class ComposeViewController: JournalBaseViewController {
+    var suggestedText: String?
     private let repository = JournalRepository.shared
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -27,6 +28,10 @@ final class ComposeViewController: JournalBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        if let suggestedText, !suggestedText.isEmpty {
+            bodyTextView.text = suggestedText
+            bodyPlaceholderLabel.isHidden = true
+        }
         refreshDate()
     }
 

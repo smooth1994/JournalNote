@@ -19,6 +19,8 @@ final class ProfileViewController: JournalBaseViewController {
     private let sealStack = UIStackView()
     private let themeCard = UIView()
     private let nightSwitch = UISwitch()
+    private let reportButton = JournalActionButton(title: "查看月度报告", style: .soft)
+    private let mailboxButton = JournalActionButton(title: "未来信箱", style: .soft)
     private let exportButton = JournalActionButton(title: "导出 PDF 手账册", style: .ghost)
     private var observers: [NSObjectProtocol] = []
 
@@ -87,11 +89,19 @@ final class ProfileViewController: JournalBaseViewController {
         nightSwitch.addTarget(self, action: #selector(changeTheme), for: .valueChanged)
         nightSwitch.accessibilityLabel = "今夜台灯模式"
 
+        reportButton.setImage(UIImage(systemName: "chart.bar.doc.horizontal"), for: .normal)
+        reportButton.tintColor = JournalDesign.accent
+        reportButton.addTarget(self, action: #selector(showMonthlyReport), for: .touchUpInside)
+        mailboxButton.setImage(UIImage(systemName: "envelope.badge"), for: .normal)
+        mailboxButton.tintColor = JournalDesign.accent
+        mailboxButton.addTarget(self, action: #selector(showFutureMailbox), for: .touchUpInside)
         exportButton.addTarget(self, action: #selector(exportJournal), for: .touchUpInside)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, exportButton].forEach { contentView.addSubview($0) }
+        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, reportButton, mailboxButton, exportButton].forEach {
+            contentView.addSubview($0)
+        }
         moodCard.addSubview(moodTitle)
         moodCard.addSubview(moodYearView)
         moodCard.addSubview(moodSummaryLabel)
@@ -178,8 +188,16 @@ final class ProfileViewController: JournalBaseViewController {
             make.trailing.equalToSuperview().inset(18)
             make.centerY.equalToSuperview()
         }
-        exportButton.snp.makeConstraints { make in
+        reportButton.snp.makeConstraints { make in
             make.top.equalTo(themeCard.snp.bottom).offset(22)
+            make.leading.trailing.equalTo(moodCard)
+        }
+        mailboxButton.snp.makeConstraints { make in
+            make.top.equalTo(reportButton.snp.bottom).offset(12)
+            make.leading.trailing.equalTo(moodCard)
+        }
+        exportButton.snp.makeConstraints { make in
+            make.top.equalTo(mailboxButton.snp.bottom).offset(18)
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().inset(30)
         }
@@ -256,6 +274,14 @@ final class ProfileViewController: JournalBaseViewController {
             alert.addAction(UIAlertAction(title: "知道了", style: .default))
             present(alert, animated: true)
         }
+    }
+
+    @objc private func showMonthlyReport() {
+        navigationController?.pushViewController(MonthlyReportViewController(), animated: true)
+    }
+
+    @objc private func showFutureMailbox() {
+        navigationController?.pushViewController(FutureMailboxViewController(), animated: true)
     }
 
     @objc private func exportJournal() {

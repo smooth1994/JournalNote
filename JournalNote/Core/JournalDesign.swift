@@ -160,4 +160,5 @@ extension Notification.Name {
     static let journalThemeDidChange = Notification.Name("journalThemeDidChange")
     static let checkInDidChange = Notification.Name("checkInDidChange")
     static let badgeUnlocked = Notification.Name("badgeUnlocked")
+    static let futureLettersDidChange = Notification.Name("futureLettersDidChange")
 }

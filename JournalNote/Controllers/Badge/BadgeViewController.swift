@@ -13,6 +13,7 @@ final class BadgeViewController: JournalBaseViewController {
     private let summaryLabel = UILabel()
     private let seriesControl = UISegmentedControl(items: BadgeSeries.allCases.map(\.rawValue))
     private let gridView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private var gridHeightConstraint: Constraint?
     private var selectedSeries: BadgeSeries = .persistence
 
     override func viewDidLoad() {
@@ -55,7 +56,24 @@ final class BadgeViewController: JournalBaseViewController {
         contentView.snp.makeConstraints { make in make.edges.equalToSuperview(); make.width.equalTo(scrollView.snp.width) }
         summaryLabel.snp.makeConstraints { make in make.top.equalToSuperview().offset(14); make.leading.trailing.equalToSuperview().inset(20) }
         seriesControl.snp.makeConstraints { make in make.top.equalTo(summaryLabel.snp.bottom).offset(16); make.leading.trailing.equalToSuperview().inset(20); make.height.equalTo(34) }
-        gridView.snp.makeConstraints { make in make.top.equalTo(seriesControl.snp.bottom).offset(22); make.leading.trailing.equalToSuperview().inset(20); make.height.greaterThanOrEqualTo(360); make.bottom.equalToSuperview().inset(24) }
+        gridView.snp.makeConstraints { make in
+            make.top.equalTo(seriesControl.snp.bottom).offset(22)
+            make.leading.trailing.equalToSuperview().inset(20)
+            gridHeightConstraint = make.height.equalTo(360).constraint
+            make.bottom.equalToSuperview().inset(24)
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        gridView.layoutIfNeeded()
+        let contentHeight = gridView.collectionViewLayout.collectionViewContentSize.height
+        guard contentHeight > 0 else { return }
+        let height = max(360, contentHeight)
+        let currentHeight = gridHeightConstraint?.layoutConstraints.first?.constant ?? 0
+        if abs(currentHeight - height) > 0.5 {
+            gridHeightConstraint?.update(offset: height)
+        }
     }
 
     @objc private func seriesChanged() {
@@ -65,7 +83,7 @@ final class BadgeViewController: JournalBaseViewController {
 
     @objc private func reloadData() {
         let unlockedCount = manager.unlockedBadges().count
-        summaryLabel.text = "已点亮 \\(unlockedCount) 枚 · 共 \\(manager.allBadges().count) 枚"
+        summaryLabel.text = "已点亮 \(unlockedCount) 枚 · 共 \(manager.allBadges().count) 枚"
         gridView.reloadData()
         gridView.collectionViewLayout.invalidateLayout()
     }
@@ -93,16 +111,21 @@ extension BadgeViewController: UICollectionViewDataSource, UICollectionViewDeleg
         let badge = visibleBadges[indexPath.item]
         let progress = manager.progressForBadge(badge)
         let unlocked = manager.isUnlocked(badge.id)
-        let detail = unlocked ? "已点亮 · 进度 \\(progress.current)/\\(progress.target)" : "进度 \\(min(progress.current, progress.target))/\\(progress.target)"
-        let alert = UIAlertController(title: "\\(badge.emoji)  \\(badge.name)", message: "\\(badge.description)\\n\\n\\(detail)", preferredStyle: .actionSheet)
+        let sourceCell = collectionView.cellForItem(at: indexPath)
+        let detail = unlocked ? "已点亮 · 进度 \(progress.current)/\(progress.target)" : "进度 \(min(progress.current, progress.target))/\(progress.target)"
+        let alert = UIAlertController(title: "\(badge.emoji)  \(badge.name)", message: "\(badge.description)\n\n\(detail)", preferredStyle: .actionSheet)
         if unlocked {
             alert.addAction(UIAlertAction(title: "分享徽章", style: .default) { [weak self] _ in
-                let activity = UIActivityViewController(activityItems: ["我在拾光手账点亮了「\\(badge.name)」徽章：\\(badge.description)"], applicationActivities: nil)
+                let activity = UIActivityViewController(activityItems: ["我在拾光手账点亮了「\(badge.name)」徽章：\(badge.description)"], applicationActivities: nil)
+                if let popover = activity.popoverPresentationController {
+                    popover.sourceView = sourceCell ?? collectionView
+                    popover.sourceRect = sourceCell?.bounds ?? collectionView.bounds
+                }
                 self?.present(activity, animated: true)
             })
         }
         alert.addAction(UIAlertAction(title: "知道了", style: .cancel))
-        if let popover = alert.popoverPresentationController { popover.sourceView = collectionView; popover.sourceRect = collectionView.cellForItem(at: indexPath)?.frame ?? .zero }
+        if let popover = alert.popoverPresentationController { popover.sourceView = collectionView; popover.sourceRect = sourceCell?.frame ?? .zero }
         present(alert, animated: true)
     }
 }
@@ -136,7 +159,7 @@ private final class BadgeCell: UICollectionViewCell {
         badgeView.layer.cornerRadius = 36; badgeView.layer.cornerCurve = .continuous; badgeView.layer.borderWidth = unlocked ? 2.5 : 1; badgeView.layer.borderColor = (unlocked ? UIColor(hex: "#D4A056") : JournalDesign.separator).cgColor
         badgeView.layer.shadowColor = UIColor(hex: "#D4A056").cgColor; badgeView.layer.shadowOpacity = unlocked ? 0.24 : 0; badgeView.layer.shadowRadius = 7; badgeView.layer.shadowOffset = CGSize(width: 0, height: 3)
         nameLabel.text = badge.name
-        progressLabel.text = unlocked ? "已点亮" : "(min(progress.current, progress.target))/(progress.target)"
-        accessibilityLabel = unlocked ? "(badge.name)，已点亮" : "(badge.name)，未解锁，(badge.description)"
+        progressLabel.text = unlocked ? "已点亮" : "\(min(progress.current, progress.target))/\(progress.target)"
+        accessibilityLabel = unlocked ? "\(badge.name)，已点亮" : "\(badge.name)，未解锁，\(badge.description)"
     }
 }

@@ -22,6 +22,7 @@ final class JournalRepository {
     private let entriesTableName = "journal_entries"
     private let settingsTableName = "journal_settings"
     private let checkInsTableName = "check_in_records"
+    private let futureLettersTableName = "future_letters"
     private let legacyExamplesCleanupKey = "legacy_examples_cleaned_v1"
     private let onboardingCompletedKey = "has_completed_onboarding_v1"
     private let onboardingLastShownKey = "onboarding_last_shown_at_v1"
@@ -31,6 +32,7 @@ final class JournalRepository {
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
     private var checkInsTable: Table<CheckInRecord>?
+    private var futureLettersTable: Table<FutureLetter>?
 
     private init() {}
 
@@ -49,9 +51,11 @@ final class JournalRepository {
             try database.create(table: entriesTableName, of: JournalEntry.self)
             try database.create(table: settingsTableName, of: JournalSetting.self)
             try database.create(table: checkInsTableName, of: CheckInRecord.self)
+            try database.create(table: futureLettersTableName, of: FutureLetter.self)
             entriesTable = database.getTable(named: entriesTableName, of: JournalEntry.self)
             settingsTable = database.getTable(named: settingsTableName, of: JournalSetting.self)
             checkInsTable = database.getTable(named: checkInsTableName, of: CheckInRecord.self)
+            futureLettersTable = database.getTable(named: futureLettersTableName, of: FutureLetter.self)
             removeLegacyExamplesIfNeeded()
         } catch {
             assertionFailure("WCDB setup error: \(error)")
@@ -98,6 +102,17 @@ final class JournalRepository {
     func delete(_ entry: JournalEntry) throws {
         guard let entriesTable else { throw JournalRepositoryError.databaseUnavailable }
         try entriesTable.delete(where: JournalEntry.CodingKeys.id == entry.id)
+        if let checkInsTable,
+           let record = checkInForDate(entry.createdAt),
+           record.journalEntryId == entry.id {
+            if let replacement = entries(on: entry.createdAt).first {
+                record.journalEntryId = replacement.id
+                try saveCheckIn(record)
+            } else {
+                try checkInsTable.delete(where: CheckInRecord.CodingKeys.id == record.id)
+                NotificationCenter.default.post(name: .checkInDidChange, object: nil)
+            }
+        }
         NotificationCenter.default.post(name: .journalEntriesDidChange, object: nil)
     }
 
@@ -283,8 +298,29 @@ final class JournalRepository {
         }
     }
 
-    func makeupCountThisMonth(calendar: Calendar = .current) -> Int {
-        guard let interval = calendar.dateInterval(of: .month, for: Date()),
+    func checkInCount(in month: Date, calendar: Calendar = .current) -> Int {
+        checkInDates(in: month, calendar: calendar).count
+    }
+
+    func longestCheckInStreak(in month: Date, calendar: Calendar = .current) -> Int {
+        let days = checkInDates(in: month, calendar: calendar).sorted()
+        guard !days.isEmpty else { return 0 }
+        var longest = 1
+        var current = 1
+        for index in 1..<days.count {
+            if let previous = calendar.date(byAdding: .day, value: 1, to: days[index - 1]),
+               calendar.isDate(previous, inSameDayAs: days[index]) {
+                current += 1
+                longest = max(longest, current)
+            } else {
+                current = 1
+            }
+        }
+        return longest
+    }
+
+    func makeupCount(in month: Date, calendar: Calendar = .current) -> Int {
+        guard let interval = calendar.dateInterval(of: .month, for: month),
               let checkInsTable else {
             return 0
         }
@@ -298,6 +334,10 @@ final class JournalRepository {
         }
     }
 
+    func makeupCountThisMonth(calendar: Calendar = .current) -> Int {
+        makeupCount(in: Date(), calendar: calendar)
+    }
+
     func canMakeup(for date: Date, calendar: Calendar = .current) -> Bool {
         let dayStart = calendar.startOfDay(for: date)
         let today = calendar.startOfDay(for: Date())
@@ -309,7 +349,7 @@ final class JournalRepository {
         guard checkInForDate(date, calendar: calendar) == nil else { return false }
 
         // 每月限制2次
-        return makeupCountThisMonth(calendar: calendar) < 2
+        return makeupCount(in: date, calendar: calendar) < 2
     }
 
     func autoCheckInForEntry(_ entry: JournalEntry, calendar: Calendar = .current) throws {
@@ -337,5 +377,42 @@ final class JournalRepository {
         guard let value = String(data: data, encoding: .utf8) else { return }
         try settingsTable.delete(where: JournalSetting.CodingKeys.key == unlockedBadgesKey)
         try settingsTable.insert(JournalSetting(key: unlockedBadgesKey, value: value))
+    }
+
+    // MARK: - Future Mailbox
+
+    /// Returns letters in the order in which they are scheduled to open.
+    func futureLetters() -> [FutureLetter] {
+        guard let futureLettersTable else { return [] }
+        do {
+            return try futureLettersTable
+                .getObjects(on: FutureLetter.Properties.all)
+                .map { letter in
+                    do {
+                        letter.body = try FutureLetterCipher.decrypt(letter.body)
+                    } catch {
+                        // Keep the ciphertext intact so a transient Keychain error never overwrites it.
+                    }
+                    return letter
+                }
+                .sorted { $0.openAt < $1.openAt }
+        } catch {
+            assertionFailure("WCDB future letter read error: \(error)")
+            return []
+        }
+    }
+
+    func saveFutureLetter(_ letter: FutureLetter) throws {
+        guard let futureLettersTable else { throw JournalRepositoryError.databaseUnavailable }
+
+        let existing = futureLetters().contains { $0.id == letter.id }
+        if existing {
+            try futureLettersTable.delete(where: FutureLetter.CodingKeys.id == letter.id)
+        }
+        let plainText = letter.body
+        letter.body = try FutureLetterCipher.encrypt(plainText)
+        defer { letter.body = plainText }
+        try futureLettersTable.insert(letter)
+        NotificationCenter.default.post(name: .futureLettersDidChange, object: nil)
     }
 }
