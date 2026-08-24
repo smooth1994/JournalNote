@@ -11,6 +11,10 @@ import UIKit
 
 struct JournalNoteTests {
 
+    @Test func monthlyMakeupLimitIsTen() {
+        #expect(JournalRepository.monthlyMakeupLimit == 10)
+    }
+
     @Test func futureLetterContentIsEncryptedAndCanBeDecrypted() throws {
         let plainText = "写给未来的自己"
         let encrypted = try FutureLetterCipher.encrypt(plainText)
@@ -38,8 +42,27 @@ struct JournalNoteTests {
         let controller = JournalTabBarController()
         controller.loadViewIfNeeded()
         let titles = controller.viewControllers?.compactMap { $0.tabBarItem.title } ?? []
-        #expect(titles == ["时光轴", "日历", "徽章", "我的"])
+        #expect(titles == ["时光轴", "日历", "我的"])
         #expect(controller.viewControllers?[2].tabBarItem.image != nil)
+    }
+
+    @Test @MainActor func badgeCenterIsAvailableFromProfile() {
+        let profile = ProfileViewController()
+        let navigationController = UINavigationController(rootViewController: profile)
+        profile.loadViewIfNeeded()
+
+        let badgeButton = allSubviews(in: profile.view)
+            .compactMap { $0 as? UIButton }
+            .first { $0.title(for: .normal) == "徽章中心" }
+        #expect(badgeButton != nil)
+
+        badgeButton?.sendActions(for: .touchUpInside)
+        #expect(navigationController.topViewController is BadgeViewController)
+    }
+
+    @MainActor
+    private func allSubviews(in view: UIView) -> [UIView] {
+        view.subviews + view.subviews.flatMap(allSubviews)
     }
 
 }

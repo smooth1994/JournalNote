@@ -236,7 +236,7 @@ final class CalendarViewController: JournalBaseViewController {
     private func updateStatistics() {
         let dayCount = checkInDates.count
         let consecutive = repository.currentStreak(calendar: calendar)
-        let remaining = max(0, 2 - repository.makeupCount(in: displayedMonth, calendar: calendar))
+        let remaining = max(0, JournalRepository.monthlyMakeupLimit - repository.makeupCount(in: displayedMonth, calendar: calendar))
         statisticsValueLabel.text = "连续 \(consecutive) 天 🔥 · 本月 \(dayCount) 天"
 
         let total = max(monthEntries.count, 1)
@@ -313,13 +313,27 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
         if let entry = monthEntries.first(where: { calendar.isDate($0.createdAt, inSameDayAs: date) }) {
             navigationController?.pushViewController(JournalDetailViewController(entry: entry), animated: true)
         } else if repository.canMakeup(for: date, calendar: calendar) {
-            let alert = UIAlertController(title: "补签这一天？", message: "每月可补签 2 次，补签会生成一条短日记。", preferredStyle: .alert)
-            alert.addTextField { $0.placeholder = "为这一天写一句话" }
+            let alert = UIAlertController(title: "补签这一天？", message: "每月可补签 \(JournalRepository.monthlyMakeupLimit) 次，请填写标题；正文可选。", preferredStyle: .alert)
+            alert.addTextField {
+                $0.placeholder = "标题（必填）"
+                $0.clearButtonMode = .whileEditing
+            }
+            alert.addTextField {
+                $0.placeholder = "为这一天写一句话（可选）"
+                $0.clearButtonMode = .whileEditing
+            }
             alert.addAction(UIAlertAction(title: "取消", style: .cancel))
             alert.addAction(UIAlertAction(title: "补签", style: .default) { [weak self] _ in
                 guard let self else { return }
-                let body = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                let entry = JournalEntry(title: "补签的一天", body: body.isEmpty ? "今天也值得被记住。" : body, mood: .calm, tags: ["补签"], createdAt: date)
+                let title = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                guard !title.isEmpty else {
+                    DispatchQueue.main.async {
+                        self.showMakeupTitleRequiredAlert()
+                    }
+                    return
+                }
+                let body = alert.textFields?.dropFirst().first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let entry = JournalEntry(title: title, body: body.isEmpty ? "今天也值得被记住。" : body, mood: .calm, tags: ["补签"], createdAt: date)
                 do {
                     try self.repository.save(entry)
                     try self.repository.saveCheckIn(CheckInRecord(date: date, journalEntryId: entry.id, isMakeup: true))
@@ -329,5 +343,11 @@ extension CalendarViewController: UICollectionViewDataSource, UICollectionViewDe
             })
             present(alert, animated: true)
         }
+    }
+
+    private func showMakeupTitleRequiredAlert() {
+        let alert = UIAlertController(title: "需要填写标题", message: "补签日记需要一个标题，请重新补签。", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "知道了", style: .default))
+        present(alert, animated: true)
     }
 }

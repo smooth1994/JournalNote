@@ -226,7 +226,6 @@
 			children = (
 				042A9BB230358217007D8AE2 /* Base */,
 				045469F9303699EB0044576D /* Welcome */,
-				04A1000C306A000000000001 /* Badge */,
 				045469F6303694000044576D /* TimeLine */,
 				045469F73036985C0044576D /* Calendar */,
 				045469F8303698B70044576D /* Profile */,
@@ -242,7 +241,7 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-			042A9B9A30357D72007D8AE2 /* Models */ = {
+		042A9B9A30357D72007D8AE2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				042A9B9730357D72007D8AE2 /* JournalEntry.swift */,
@@ -255,7 +254,7 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-			042A9B9C30357D72007D8AE2 /* Persistence */ = {
+		042A9B9C30357D72007D8AE2 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
 				042A9B9B30357D72007D8AE2 /* JournalRepository.swift */,
@@ -263,14 +262,6 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
-			04A10009306A000000000001 /* Managers */ = {
-				isa = PBXGroup;
-				children = (
-					04A10007306A000000000001 /* BadgeManager.swift */,
-				);
-				path = Managers;
-				sourceTree = "<group>";
-			};
 		042A9BA130357D72007D8AE2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -312,6 +303,7 @@
 		045469F8303698B70044576D /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				04A1000C306A000000000001 /* Badge */,
 				042A9B9230357D72007D8AE2 /* ProfileViewController.swift */,
 				04A1000F306A000000000001 /* FutureMailboxViewController.swift */,
 				04A10011306A000000000001 /* MonthlyReportViewController.swift */,
@@ -325,6 +317,14 @@
 				04A10001306A000000000001 /* OnboardingViewController.swift */,
 			);
 			path = Welcome;
+			sourceTree = "<group>";
+		};
+		04A10009306A000000000001 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				04A10007306A000000000001 /* BadgeManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		04A1000C306A000000000001 /* Badge */ = {

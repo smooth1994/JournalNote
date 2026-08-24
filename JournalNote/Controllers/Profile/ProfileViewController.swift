@@ -19,6 +19,7 @@ final class ProfileViewController: JournalBaseViewController {
     private let sealStack = UIStackView()
     private let themeCard = UIView()
     private let nightSwitch = UISwitch()
+    private let badgeButton = JournalActionButton(title: "徽章中心", style: .soft)
     private let reportButton = JournalActionButton(title: "查看月度报告", style: .soft)
     private let mailboxButton = JournalActionButton(title: "未来信箱", style: .soft)
     private let exportButton = JournalActionButton(title: "导出 PDF 手账册", style: .ghost)
@@ -89,6 +90,9 @@ final class ProfileViewController: JournalBaseViewController {
         nightSwitch.addTarget(self, action: #selector(changeTheme), for: .valueChanged)
         nightSwitch.accessibilityLabel = "今夜台灯模式"
 
+        badgeButton.setImage(UIImage(systemName: "medal.fill") ?? UIImage(systemName: "star.circle.fill"), for: .normal)
+        badgeButton.tintColor = JournalDesign.accent
+        badgeButton.addTarget(self, action: #selector(showBadgeCenter), for: .touchUpInside)
         reportButton.setImage(UIImage(systemName: "chart.bar.doc.horizontal"), for: .normal)
         reportButton.tintColor = JournalDesign.accent
         reportButton.addTarget(self, action: #selector(showMonthlyReport), for: .touchUpInside)
@@ -99,7 +103,7 @@ final class ProfileViewController: JournalBaseViewController {
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, reportButton, mailboxButton, exportButton].forEach {
+        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, badgeButton, reportButton, mailboxButton, exportButton].forEach {
             contentView.addSubview($0)
         }
         moodCard.addSubview(moodTitle)
@@ -188,8 +192,12 @@ final class ProfileViewController: JournalBaseViewController {
             make.trailing.equalToSuperview().inset(18)
             make.centerY.equalToSuperview()
         }
-        reportButton.snp.makeConstraints { make in
+        badgeButton.snp.makeConstraints { make in
             make.top.equalTo(themeCard.snp.bottom).offset(22)
+            make.leading.trailing.equalTo(moodCard)
+        }
+        reportButton.snp.makeConstraints { make in
+            make.top.equalTo(badgeButton.snp.bottom).offset(12)
             make.leading.trailing.equalTo(moodCard)
         }
         mailboxButton.snp.makeConstraints { make in
@@ -278,6 +286,10 @@ final class ProfileViewController: JournalBaseViewController {
 
     @objc private func showMonthlyReport() {
         navigationController?.pushViewController(MonthlyReportViewController(), animated: true)
+    }
+
+    @objc private func showBadgeCenter() {
+        navigationController?.pushViewController(BadgeViewController(), animated: true)
     }
 
     @objc private func showFutureMailbox() {

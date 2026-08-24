@@ -18,6 +18,7 @@ enum JournalRepositoryError: LocalizedError {
 /// settings both live in WCDB; controllers never write to local files directly.
 final class JournalRepository {
     static let shared = JournalRepository()
+    static let monthlyMakeupLimit = 10
 
     private let entriesTableName = "journal_entries"
     private let settingsTableName = "journal_settings"
@@ -349,7 +350,7 @@ final class JournalRepository {
         guard checkInForDate(date, calendar: calendar) == nil else { return false }
 
         // 每月限制2次
-        return makeupCount(in: date, calendar: calendar) < 2
+        return makeupCount(in: date, calendar: calendar) < Self.monthlyMakeupLimit
     }
 
     func autoCheckInForEntry(_ entry: JournalEntry, calendar: Calendar = .current) throws {
