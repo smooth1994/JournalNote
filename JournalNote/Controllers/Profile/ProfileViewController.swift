@@ -22,6 +22,8 @@ final class ProfileViewController: JournalBaseViewController {
     private let badgeButton = JournalActionButton(title: "徽章中心", style: .soft)
     private let reportButton = JournalActionButton(title: "查看月度报告", style: .soft)
     private let mailboxButton = JournalActionButton(title: "未来信箱", style: .soft)
+    private let syncExportButton = JournalActionButton(title: "导出数据", style: .soft)
+    private let syncReceiveButton = JournalActionButton(title: "接收数据", style: .soft)
     private let exportButton = JournalActionButton(title: "导出 PDF 手账册", style: .ghost)
     private var observers: [NSObjectProtocol] = []
 
@@ -99,11 +101,17 @@ final class ProfileViewController: JournalBaseViewController {
         mailboxButton.setImage(UIImage(systemName: "envelope.badge"), for: .normal)
         mailboxButton.tintColor = JournalDesign.accent
         mailboxButton.addTarget(self, action: #selector(showFutureMailbox), for: .touchUpInside)
+        syncExportButton.setImage(UIImage(systemName: "arrow.up.doc"), for: .normal)
+        syncExportButton.tintColor = JournalDesign.accent
+        syncExportButton.addTarget(self, action: #selector(showDataExport), for: .touchUpInside)
+        syncReceiveButton.setImage(UIImage(systemName: "arrow.down.doc"), for: .normal)
+        syncReceiveButton.tintColor = JournalDesign.accent
+        syncReceiveButton.addTarget(self, action: #selector(showDataReceive), for: .touchUpInside)
         exportButton.addTarget(self, action: #selector(exportJournal), for: .touchUpInside)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, badgeButton, reportButton, mailboxButton, exportButton].forEach {
+        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, badgeButton, reportButton, mailboxButton, syncExportButton, syncReceiveButton, exportButton].forEach {
             contentView.addSubview($0)
         }
         moodCard.addSubview(moodTitle)
@@ -204,8 +212,16 @@ final class ProfileViewController: JournalBaseViewController {
             make.top.equalTo(reportButton.snp.bottom).offset(12)
             make.leading.trailing.equalTo(moodCard)
         }
+        syncExportButton.snp.makeConstraints { make in
+            make.top.equalTo(mailboxButton.snp.bottom).offset(12)
+            make.leading.trailing.equalTo(moodCard)
+        }
+        syncReceiveButton.snp.makeConstraints { make in
+            make.top.equalTo(syncExportButton.snp.bottom).offset(12)
+            make.leading.trailing.equalTo(moodCard)
+        }
         exportButton.snp.makeConstraints { make in
-            make.top.equalTo(mailboxButton.snp.bottom).offset(18)
+            make.top.equalTo(syncReceiveButton.snp.bottom).offset(18)
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().inset(30)
         }
@@ -294,6 +310,17 @@ final class ProfileViewController: JournalBaseViewController {
 
     @objc private func showFutureMailbox() {
         navigationController?.pushViewController(FutureMailboxViewController(), animated: true)
+    }
+
+    @objc private func showDataExport() {
+        navigationController?.pushViewController(DataExportViewController(), animated: true)
+    }
+
+    @objc private func showDataReceive() {
+        let controller = DataReceiveViewController()
+        controller.modalPresentationStyle = .overFullScreen
+        controller.modalTransitionStyle = .crossDissolve
+        present(controller, animated: true)
     }
 
     @objc private func exportJournal() {

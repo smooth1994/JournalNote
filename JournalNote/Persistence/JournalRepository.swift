@@ -476,7 +476,8 @@ final class JournalRepository {
         if let mode = JournalThemeMode(rawValue: payload.themeMode) {
             try saveThemeMode(mode)
         }
-        try saveUnlockedBadgeIDs(payload.unlockedBadgeIDs)
+        let mergedBadgeIDs = Set(unlockedBadgeIDs()).union(payload.unlockedBadgeIDs)
+        try saveUnlockedBadgeIDs(Array(mergedBadgeIDs))
         NotificationCenter.default.post(name: .journalEntriesDidChange, object: nil)
         NotificationCenter.default.post(name: .checkInDidChange, object: nil)
         NotificationCenter.default.post(name: .futureLettersDidChange, object: nil)

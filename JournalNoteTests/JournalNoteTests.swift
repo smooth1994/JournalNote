@@ -15,6 +15,26 @@ struct JournalNoteTests {
         #expect(JournalRepository.monthlyMakeupLimit == 10)
     }
 
+    @Test func syncPayloadRoundTripsJournalEntry() throws {
+        let entry = JournalEntry(title: "局域网同步", body: "另一台设备也能看到。", mood: .calm, tags: ["同步"])
+        let payload = JournalSyncPayload(
+            entries: [JournalSyncEntry(entry)],
+            checkIns: [],
+            futureLetters: [],
+            themeMode: JournalThemeMode.light.rawValue,
+            unlockedBadgeIDs: []
+        )
+        let data = try JSONEncoder().encode(payload)
+        let decoded = try JSONDecoder().decode(JournalSyncPayload.self, from: data)
+        let restored = try #require(decoded.entries.first?.makeEntry())
+
+        #expect(decoded.version == JournalSyncPayload.currentVersion)
+        #expect(restored.id == entry.id)
+        #expect(restored.title == entry.title)
+        #expect(restored.body == entry.body)
+        #expect(restored.tags == entry.tags)
+    }
+
     @Test func futureLetterContentIsEncryptedAndCanBeDecrypted() throws {
         let plainText = "写给未来的自己"
         let encrypted = try FutureLetterCipher.encrypt(plainText)
@@ -64,6 +84,22 @@ struct JournalNoteTests {
 
         badgeButton?.sendActions(for: .touchUpInside)
         #expect(navigationController.topViewController is BadgeViewController)
+    }
+
+    @Test @MainActor func profileProvidesDataSyncActionsAndReceiveStartsLocked() {
+        let profile = ProfileViewController()
+        profile.loadViewIfNeeded()
+        let buttonTitles = allSubviews(in: profile.view)
+            .compactMap { ($0 as? UIButton)?.title(for: .normal) }
+        #expect(buttonTitles.contains("导出数据"))
+        #expect(buttonTitles.contains("接收数据"))
+
+        let receive = DataReceiveViewController()
+        receive.loadViewIfNeeded()
+        let acknowledgeButton = allSubviews(in: receive.view)
+            .compactMap { $0 as? UIButton }
+            .first { $0.title(for: .normal) == "我知道了" }
+        #expect(acknowledgeButton?.isEnabled == false)
     }
 
     @MainActor

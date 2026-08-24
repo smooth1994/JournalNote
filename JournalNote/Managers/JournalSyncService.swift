@@ -60,7 +60,7 @@ final class JournalSyncService: NSObject {
     }
 
     func startSending(_ payload: JournalSyncPayload) {
-        stop()
+        resetTransport()
         makeSession()
         do {
             let encoder = JSONEncoder()
@@ -82,7 +82,7 @@ final class JournalSyncService: NSObject {
     }
 
     func startReceiving() {
-        stop()
+        resetTransport()
         makeSession()
         isReceiving = true
         browser = MCNearbyServiceBrowser(peer: peerID, serviceType: Self.serviceType)
@@ -93,6 +93,14 @@ final class JournalSyncService: NSObject {
     }
 
     func stop() {
+        resetTransport()
+        onStatus = nil
+        onProgress = nil
+        onSendingCompleted = nil
+        onReceivingCompleted = nil
+    }
+
+    private func resetTransport() {
         advertiser?.stopAdvertisingPeer()
         browser?.stopBrowsingForPeers()
         advertiser = nil
@@ -103,10 +111,6 @@ final class JournalSyncService: NSObject {
         expectedChunkCount = 0
         receivedChunks.removeAll()
         isReceiving = false
-        onStatus = nil
-        onProgress = nil
-        onSendingCompleted = nil
-        onReceivingCompleted = nil
     }
 
     private func makeSession() {
