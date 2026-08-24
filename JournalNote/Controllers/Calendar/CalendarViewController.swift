@@ -55,7 +55,7 @@ final class CalendarViewController: JournalBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "日历"
-        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.largeTitleDisplayMode = .never
         setupViews()
         dataObserver = NotificationCenter.default.addObserver(
             forName: .journalEntriesDidChange,

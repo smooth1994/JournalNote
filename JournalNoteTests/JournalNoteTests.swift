@@ -44,6 +44,12 @@ struct JournalNoteTests {
         let titles = controller.viewControllers?.compactMap { $0.tabBarItem.title } ?? []
         #expect(titles == ["时光轴", "日历", "我的"])
         #expect(controller.viewControllers?[2].tabBarItem.image != nil)
+
+        let rootControllers = controller.viewControllers?
+            .compactMap { $0 as? UINavigationController }
+            .compactMap(\.viewControllers.first) ?? []
+        rootControllers.forEach { $0.loadViewIfNeeded() }
+        #expect(rootControllers.allSatisfy { $0.navigationItem.largeTitleDisplayMode == .never })
     }
 
     @Test @MainActor func badgeCenterIsAvailableFromProfile() {

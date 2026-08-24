@@ -29,7 +29,7 @@ final class TimelineViewController: JournalBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "时光轴"
-        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.largeTitleDisplayMode = .never
         setupViews()
         dataObserver = NotificationCenter.default.addObserver(
             forName: .journalEntriesDidChange,

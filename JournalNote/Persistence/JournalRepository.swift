@@ -416,4 +416,70 @@ final class JournalRepository {
         try futureLettersTable.insert(letter)
         NotificationCenter.default.post(name: .futureLettersDidChange, object: nil)
     }
+
+    // MARK: - Local Network Sync
+
+    func makeSyncPayload() throws -> JournalSyncPayload {
+        guard let checkInsTable, let futureLettersTable else { throw JournalRepositoryError.databaseUnavailable }
+        let records = try checkInsTable.getObjects(on: CheckInRecord.Properties.all)
+        let letters = try futureLettersTable
+            .getObjects(on: FutureLetter.Properties.all)
+            .map { letter in
+                letter.body = try FutureLetterCipher.decrypt(letter.body)
+                return JournalSyncLetter(letter)
+            }
+        return JournalSyncPayload(
+            entries: allEntries(includeDrafts: true).map(JournalSyncEntry.init),
+            checkIns: records.map(JournalSyncCheckIn.init),
+            futureLetters: letters,
+            themeMode: themeMode().rawValue,
+            unlockedBadgeIDs: unlockedBadgeIDs()
+        )
+    }
+
+    /// Merges a remote snapshot by stable IDs. Existing local data is kept when
+    /// it is newer, so receiving on either device is safe to repeat.
+    func mergeSyncPayload(_ payload: JournalSyncPayload) throws {
+        guard payload.version == JournalSyncPayload.currentVersion,
+              let entriesTable,
+              let checkInsTable,
+              let futureLettersTable else {
+            throw JournalRepositoryError.databaseUnavailable
+        }
+
+        let localEntries = Dictionary(uniqueKeysWithValues: allEntries(includeDrafts: true).map { ($0.id, $0) })
+        for item in payload.entries {
+            if let local = localEntries[item.id], local.updatedAt > item.updatedAt { continue }
+            try entriesTable.delete(where: JournalEntry.CodingKeys.id == item.id)
+            try entriesTable.insert(item.makeEntry())
+        }
+
+        for item in payload.checkIns {
+            let incoming = item.makeRecord()
+            if let local = checkInForDate(incoming.date), local.createdAt >= incoming.createdAt { continue }
+            if let local = checkInForDate(incoming.date) {
+                try checkInsTable.delete(where: CheckInRecord.CodingKeys.id == local.id)
+            }
+            try checkInsTable.delete(where: CheckInRecord.CodingKeys.id == incoming.id)
+            try checkInsTable.insert(incoming)
+        }
+
+        let localLetters = Dictionary(uniqueKeysWithValues: futureLetters().map { ($0.id, $0) })
+        for item in payload.futureLetters {
+            if let local = localLetters[item.id], local.createdAt > item.createdAt { continue }
+            let letter = item.makeLetter()
+            letter.body = try FutureLetterCipher.encrypt(letter.body)
+            try futureLettersTable.delete(where: FutureLetter.CodingKeys.id == letter.id)
+            try futureLettersTable.insert(letter)
+        }
+
+        if let mode = JournalThemeMode(rawValue: payload.themeMode) {
+            try saveThemeMode(mode)
+        }
+        try saveUnlockedBadgeIDs(payload.unlockedBadgeIDs)
+        NotificationCenter.default.post(name: .journalEntriesDidChange, object: nil)
+        NotificationCenter.default.post(name: .checkInDidChange, object: nil)
+        NotificationCenter.default.post(name: .futureLettersDidChange, object: nil)
+        BadgeManager.shared.checkAndUnlockBadges()
+    }
 }

@@ -28,7 +28,7 @@ final class ProfileViewController: JournalBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "我的"
-        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.largeTitleDisplayMode = .never
         setupViews()
         observeChanges()
         reloadData()
