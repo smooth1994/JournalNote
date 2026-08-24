@@ -14,6 +14,8 @@ final class DataReceiveViewController: UIViewController {
     private let progressView = UIProgressView(progressViewStyle: .default)
     private let progressLabel = UILabel()
     private let acknowledgeButton = JournalActionButton(title: "我知道了", style: .soft)
+    private let closeButton = UIButton(type: .system)
+    private var didFinishReceiving = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,8 +62,17 @@ final class DataReceiveViewController: UIViewController {
         acknowledgeButton.alpha = 0.45
         acknowledgeButton.addTarget(self, action: #selector(acknowledge), for: .touchUpInside)
 
+        closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        closeButton.tintColor = JournalDesign.primaryText
+        closeButton.backgroundColor = JournalDesign.cardBackground
+        closeButton.layer.cornerRadius = 18
+        closeButton.accessibilityLabel = "关闭接收数据"
+        closeButton.accessibilityIdentifier = "closeDataReceiveButton"
+        closeButton.addTarget(self, action: #selector(requestClose), for: .touchUpInside)
+
         view.addSubview(card)
         card.addSubview(titleLabel)
+        card.addSubview(closeButton)
         card.addSubview(messageLabel)
         card.addSubview(progressView)
         card.addSubview(progressLabel)
@@ -69,6 +80,11 @@ final class DataReceiveViewController: UIViewController {
         card.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(28)
             make.centerY.equalToSuperview()
+        }
+        closeButton.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(12)
+            make.trailing.equalToSuperview().inset(12)
+            make.width.height.equalTo(44)
         }
         titleLabel.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview().inset(22)
@@ -107,10 +123,12 @@ final class DataReceiveViewController: UIViewController {
             self.acknowledgeButton.alpha = 1
             switch result {
             case .success(let count):
+                self.didFinishReceiving = true
                 self.messageLabel.text = "已同步成功\n共接收 \(count) 条日记记录"
                 self.progressView.setProgress(1, animated: true)
                 self.progressLabel.text = "100%"
             case .failure(let error):
+                self.didFinishReceiving = true
                 self.messageLabel.text = "同步失败\n\(error.localizedDescription)"
                 self.progressLabel.text = "未完成"
             }
@@ -119,5 +137,18 @@ final class DataReceiveViewController: UIViewController {
 
     @objc private func acknowledge() {
         dismiss(animated: true)
+    }
+
+    @objc private func requestClose() {
+        let alert = UIAlertController(
+            title: "关闭接收数据？",
+            message: didFinishReceiving ? "同步结果已经保存。" : "关闭后，本次同步将停止。",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "继续接收", style: .cancel))
+        alert.addAction(UIAlertAction(title: "关闭", style: .destructive) { [weak self] _ in
+            self?.dismiss(animated: true)
+        })
+        present(alert, animated: true)
     }
 }

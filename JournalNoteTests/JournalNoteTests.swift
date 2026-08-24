@@ -100,6 +100,9 @@ struct JournalNoteTests {
             .compactMap { $0 as? UIButton }
             .first { $0.title(for: .normal) == "我知道了" }
         #expect(acknowledgeButton?.isEnabled == false)
+        #expect(allSubviews(in: receive.view).contains {
+            ($0 as? UIButton)?.accessibilityIdentifier == "closeDataReceiveButton"
+        })
     }
 
     @MainActor
