@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="eXqF4A3r361KDZjyduSzzc">
+<head data-page-node-id="R2KiBv2Wy8LtiGH7SibINF">
+<meta charset="UTF-8" data-page-node-id="wytlrRRhAZnRa2NPr29qdo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="RgDps7934IMHXhRASlPjJc">
+<title>拾光手账 V2.0 · 「计划」模块 UI 设计方案</title>
+<style>
+  :root{
+    --paper:#FBF7EF; --paper-2:#F5EEE1; --card:#FFFDF8;
+    --caramel:#B07B4E; --caramel-deep:#8F5F38;
+    --sage:#93A084; --gold:#D4A056; --brick:#B5533C;
+    --ink:#3D3629; --ink-2:#8A7E6C; --line:#E8DFCE;
+    --danger:#C24A34; --danger-bg:#FBEDE8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#EFE9DC;font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;color:var(--ink);padding:48px 24px 96px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:34px;letter-spacing:1px}
+  .sub{color:var(--ink-2);margin:10px 0 40px;font-size:15px;line-height:1.7}
+  h2{font-size:22px;margin:64px 0 8px;border-left:4px solid var(--caramel);padding-left:12px}
+  .h2sub{color:var(--ink-2);font-size:14px;margin-bottom:24px;padding-left:16px}
+  .row{display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start}
+
+  /* ===== 手机框 ===== */
+  .phone{width:300px;background:var(--paper);border-radius:36px;border:8px solid #2E2A24;box-shadow:0 24px 48px rgba(61,54,41,.18);overflow:hidden;flex-shrink:0;position:relative}
+  .statusbar{display:flex;justify-content:space-between;padding:10px 18px 4px;font-size:11px;color:var(--ink)}
+  .navbar{padding:10px 18px 6px;font-size:20px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .navbar .date{font-size:12px;color:var(--ink-2);font-weight:400}
+  .screen{padding:8px 14px 100px;min-height:560px}
+
+  /* ===== Tab Bar ===== */
+  .tabbar{position:absolute;bottom:0;left:0;right:0;background:rgba(255,253,248,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;padding:8px 6px 18px}
+  .tab{flex:1;text-align:center;font-size:10px;color:var(--ink-2)}
+  .tab .ico{font-size:20px;display:block;margin-bottom:2px}
+  .tab.on{color:var(--caramel);font-weight:700}
+  .tab.new::after{content:"NEW";position:absolute;font-size:7px;background:var(--brick);color:#fff;border-radius:6px;padding:1px 4px;transform:translate(24px,-14px)}
+
+  /* ===== 日期翻页器 ===== */
+  .pager{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:14px;box-shadow:0 2px 6px rgba(61,54,41,.05)}
+  .pager .arrow{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:13px;background:var(--paper-2)}
+  .pager .mid{flex:1;text-align:center}
+  .pager .mid b{font-size:15px}
+  .pager .mid span{display:block;font-size:10px;color:var(--ink-2)}
+  .swipe-hint{font-size:10px;color:var(--ink-2);text-align:center;margin:-6px 0 12px}
+
+  /* ===== 进度环 ===== */
+  .hero{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#FFFDF8,#F7EFE0);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+  .ring{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--caramel) 0 60%,var(--paper-2) 60% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ring i{width:42px;height:42px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:700;color:var(--caramel)}
+  .hero b{font-size:14px;display:block;margin-bottom:3px}
+  .hero small{font-size:11px;color:var(--ink-2);line-height:1.5}
+
+  /* ===== 分组标题 ===== */
+  .group{font-size:11px;color:var(--ink-2);margin:14px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+  .group .cnt{font-size:10px;background:var(--paper-2);border-radius:8px;padding:2px 8px}
+
+  /* ===== 任务卡 ===== */
+  .task{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:8px;box-shadow:0 2px 5px rgba(61,54,41,.04)}
+  .cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--caramel);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+  .cb.done{background:var(--sage);border-color:var(--sage)}
+  .cb.locked{border-color:#D8CFBE;background:var(--paper-2);color:#B9AE99}
+  .cb.over{border-color:var(--danger);background:var(--danger);color:#fff}
+  .task .tx{flex:1;min-width:0}
+  .task .tx b{font-size:13px;font-weight:600;display:block}
+  .task .tx small{font-size:10px;color:var(--ink-2)}
+  .task .tag{font-size:9px;border-radius:6px;padding:2px 6px;flex-shrink:0}
+  .tag.daily{background:#EEF0E7;color:var(--sage)}
+  .tag.weekday{background:#F5EBDD;color:var(--caramel)}
+  .tag.once{background:#F1EDE4;color:var(--ink-2)}
+  .task.done .tx b{text-decoration:line-through;color:var(--ink-2);font-weight:400}
+  .task.overdue{background:var(--danger-bg);border-color:#EBC4BA}
+  .task.overdue .tx b{color:var(--danger)}
+  .task.overdue .tag{background:var(--danger);color:#fff}
+  .faded{opacity:.55;pointer-events:none}
+
+  /* ===== 封存/锁定横幅 ===== */
+  .banner{display:flex;gap:8px;align-items:center;border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.5;margin-bottom:12px}
+  .banner.seal{background:#F3EDE0;border:1px dashed var(--caramel);color:var(--caramel-deep)}
+  .banner.lock{background:#F1EDE4;border:1px dashed #C9BFA9;color:var(--ink-2)}
+
+  /* ===== 底部按钮 ===== */
+  .cta{position:absolute;bottom:86px;left:14px;right:14px;background:var(--caramel);color:#fff;text-align:center;border-radius:16px;padding:13px;font-size:14px;font-weight:600;box-shadow:0 8px 18px rgba(176,123,78,.4)}
+
+  /* ===== Sheet（新建任务） ===== */
+  .sheet{background:var(--paper);border-radius:18px 18px 0 0;padding:14px 16px 20px;position:relative}
+  .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+  .sheet h3{font-size:16px;margin-bottom:10px}
+  .inp{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:13px;color:var(--ink-2);margin-bottom:12px}
+  .lbl{font-size:11px;color:var(--ink-2);margin:0 0 7px 2px}
+  .rep{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .rep span{font-size:11px;padding:7px 11px;border-radius:20px;background:var(--card);border:1px solid var(--line);color:var(--ink-2)}
+  .rep span.sel{background:var(--caramel);border-color:var(--caramel);color:#fff;font-weight:600}
+  .week{display:flex;gap:6px;margin-bottom:16px}
+  .week span{width:30px;height:30px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .week span.sel{background:var(--caramel);border-color:var(--caramel);color:#fff;font-weight:700}
+
+  /* ===== 说明卡 ===== */
+  .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;flex:1;min-width:300px}
+  .note h4{font-size:14px;margin-bottom:8px;color:var(--caramel-deep)}
+  .note ul{list-style:none;font-size:12px;color:var(--ink-2);line-height:2}
+  .note li::before{content:"· ";color:var(--caramel);font-weight:700}
+
+  /* ===== 状态表 ===== */
+  table{border-collapse:collapse;width:100%;background:var(--card);border-radius:14px;overflow:hidden;font-size:12px;box-shadow:0 2px 8px rgba(61,54,41,.06)}
+  th{background:var(--paper-2);text-align:left;padding:10px 14px;color:var(--ink);font-size:12px}
+  td{padding:10px 14px;border-top:1px solid var(--line);color:var(--ink-2);line-height:1.5}
+  td b{color:var(--ink)}
+  .pill{display:inline-block;font-size:10px;border-radius:8px;padding:2px 8px;font-weight:600}
+  .p-red{background:var(--danger-bg);color:var(--danger)}
+  .p-green{background:#EEF0E7;color:#6E7D5E}
+  .p-gray{background:#F1EDE4;color:var(--ink-2)}
+  .p-caramel{background:#F5EBDD;color:var(--caramel-deep)}
+  .cap{font-size:11px;color:var(--ink-2);text-align:center;margin-top:8px}
+</style>
+</head>
+<body data-page-node-id="Dpr6EabwrjUKXmVRUIeg8N">
+<div class="wrap" data-page-node-id="TGGdu18h9HdUfgZxRtULAu">
+  <h1 data-page-node-id="CYaXPiyU4uhBmCW6S8N4zs">拾光手账 V2.0 · 「计划」模块</h1>
+  <p class="sub" data-page-node-id="PEVvCO1FZwl49bNEYmYuYE">核心目标：把手账从「记录过去」升级为「计划当下」。新增独立「计划」Tab，支持每日任务与重复任务（每天 / 工作日 / 每周末 / 自定义周几）；页面以「天」为轴横向滑动，<b data-page-node-id="6yPKT56l94ht9j8qfgKLiT">昨日不可改、明日不可勾、过期标红</b>。视觉延续 V1.0 纸感复古设计语言。</p>
+
+  <!-- ================= 1. 信息架构 ================= -->
+  <h2 data-page-node-id="jgrTFaEY8f4WtL2hCLUPl4">一、信息架构：TabBar 维持 4 个（徽章并入「我的」）</h2>
+  <p class="h2sub" data-page-node-id="fOZNd7hSiEyeULUKqqH2co">新增「计划」Tab 排在「日历」之后；<b>徽章不再独立成 Tab</b>，已下沉为「我的」页面内的入口。</p>
+  <div class="row" style="margin-bottom:8px" data-page-node-id="IQLTuANfVJty6l8Q3U5dW4">
+    <div class="phone" style="height:130px" data-page-node-id="hdvlcIzDFTomwkGtUC0Eic">
+      <div class="tabbar" style="position:relative;margin-top:40px" data-page-node-id="e1E5leGvNKmo6U6Ow3TwTp">
+        <div class="tab on" data-page-node-id="v7ZiEakCmqYqPBpbfu0fbp"><span class="ico" data-page-node-id="mS8qUXZY0NjWnHFyrJMXUw">📖</span>时光轴</div>
+        <div class="tab" data-page-node-id="kj8zIAMxj8hQaJRksEQmwZ"><span class="ico" data-page-node-id="jq2I24wjATiQ8ub3lr8sri">🗓</span>日历</div>
+        <div class="tab" style="position:relative" data-page-node-id="u68mDz5IlJy5lNWSRktKnV"><span class="ico" data-page-node-id="gqDRR5WNGIAHKTS4AUfEX0">🌱</span>计划<i style="position:absolute;top:-6px;right:22%;font-size:7px;background:var(--brick);color:#fff;border-radius:6px;padding:1px 4px;font-style:normal" data-page-node-id="NX1kFmh1jfyi3Kde4UF98h">NEW</i></div>
+        <div class="tab" data-page-node-id="QwDEZ5CNrmIkbzUtDLecYw"><span class="ico" data-page-node-id="pTq25aSEfmsnCyvkQJnANT">🕯</span>我的</div>
+      </div>
+    </div>
+    <div class="note" data-page-node-id="kmuehdxjYxc46fG7y87aPi">
+      <h4 data-page-node-id="RgnFID6m9DJelxpGLxDPxJ">规划说明</h4>
+      <ul data-page-node-id="RstZyuTvmJzNnEmETHX1Qo">
+        <li data-page-node-id="eBCR6evGHtUvw4Rpk0NRYr">图标：🌱 嫩芽（计划 = 生长感，与火漆/纸感风格协调）</li>
+        <li data-page-node-id="E4PgvLOk3MNCuWgMJRvmKL">Tab 顺序：时光轴 → 日历 → <b data-page-node-id="trrYyv8WmnHXA4pG2bUR2D">计划</b> → 我的</li>
+        <li data-page-node-id="PDxlR1J0NjwLRv2VPnhO1H">有当日未完成任务时，Tab 图标右上角显示 1 个小圆点（非数字角标，保持克制）</li>
+        <li data-page-node-id="mBadgeEntry">🏅 <b>徽章入口</b>位于「我的」页顶部，作为成就卡片组（解锁进度 + 「全部徽章 ›」跳转），不再占用 Tab 位</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= 2. 三态页面 ================= -->
+  <h2 data-page-node-id="4s0trllFBEwldnnFumvn3e">二、「计划」核心三态：今日 / 昨日 / 明日</h2>
+  <p class="h2sub" data-page-node-id="azyfhxHBWnSzmsaTWQfyQ4">同一页面结构，以「天」为轴左右滑动切换；昨天封存不可编辑，明天可见但不可勾选。</p>
+  <div class="row" data-page-node-id="PFnBDZKO5CEuvJPqs95UDO">
+
+    <!-- 今日 -->
+    <div data-page-node-id="xmhzUjcCUJVroN3sYHjFyA">
+      <div class="phone" data-page-node-id="PzL2FmSjCnXFX6DTxa5qcq">
+        <div class="statusbar" data-page-node-id="EOnwnZQl2uM6JgYfeNZ38C"><span data-page-node-id="GyQ0E9IT4iAiA3NdUOuE54">11:19</span><span data-page-node-id="4YfAYXYG7j4DdOkIQIOVJv">📶 🔋</span></div>
+        <div class="navbar" data-page-node-id="pCS3cloKPyRtjEBrOFLB7D">计划 <span class="date" data-page-node-id="gOol1AC2pRXV292G4wek5k">2026.09.03 · 周四</span></div>
+        <div class="screen" data-page-node-id="TiGiCGEoPT0D6CU3Il2Eot">
+          <div class="pager" data-page-node-id="PDXMtwG80kFAu89fpDLcpq">
+            <div class="arrow" data-page-node-id="l5Dtrpy99tMAvz5LLcTAme">‹</div>
+            <div class="mid" data-page-node-id="6YWMdmULWu6TAEY377pMmu"><b data-page-node-id="3EqRZjO94gK5VQGKE8BuvU">今天</b><span data-page-node-id="0m2JX2RjtTyFtTSkD3EhEM">09.03 周四 · 3 / 5 已完成</span></div>
+            <div class="arrow" data-page-node-id="sRvyJuqhsTxC8YmsHCHWKY">›</div>
+          </div>
+          <div class="swipe-hint" data-page-node-id="Ic7Fvcp11L2BgvpuFcScZO">← 左滑看明天 · 右滑看昨天 →</div>
+
+          <div class="hero" data-page-node-id="iLOwlSuiPapaxCBVooD0bt">
+            <div class="ring" data-page-node-id="S5Ciz0VuEc7EgHGPdPRDNo"><i data-page-node-id="KxfNqwCniB5rpGrhSdtaYN">60%</i></div>
+            <div data-page-node-id="SCAM7Dlx6RfJe8MaiCc2vp"><b data-page-node-id="eSeGMXIC8Rl1NM13DB6G3j">今日完成 3 / 5</b><small data-page-node-id="8xFXbFNAPwBpW6t9yLsZBX">别急，剩下的留给今晚的台灯 🕯</small></div>
+          </div>
+
+          <div class="group" data-page-node-id="YD722nD87gV9sWZQrBdOVs">每日循环 <span class="cnt" data-page-node-id="XL5QJMrsvsGDRb8fIucWXJ">2 项</span></div>
+          <div class="task done" data-page-node-id="oaxk0Uly2GAMuuiz1wZQJU"><div class="cb done" data-page-node-id="A0Jox4NXDuhDOqstpKqOP4">✓</div><div class="tx" data-page-node-id="ncoH97eJkHjRTbVEgodmnl"><b data-page-node-id="TnTf8bLGfEPi6GlmP11cZs">晨间散步 20 分钟</b><small data-page-node-id="ZSsDKEhblTRRm6xRkhV39z">每天 · 连续 12 天 🔥</small></div><span class="tag daily" data-page-node-id="g3A8NDOy2WGSzmqlhN7w6n">每天</span></div>
+          <div class="task" data-page-node-id="Uu1YVVS8XRhIADf92XB6tR"><div class="cb" data-page-node-id="XbHFtSC9XCdMykw5TOwUbH"></div><div class="tx" data-page-node-id="YVJoNCA6KxYzfrVYgqT3aR"><b data-page-node-id="hm60xryUWjtD807F9ibCw5">睡前写手账</b><small data-page-node-id="92ogdNc0IA9jdHPCU2nqTB">每天 · 连续 5 天 🔥</small></div><span class="tag daily" data-page-node-id="a6dOXMfAmADBIMrjiYVW7k">每天</span></div>
+
+          <div class="group" data-page-node-id="WVPU4k3ZCaFHodatrdHZca">工作日循环 <span class="cnt" data-page-node-id="SfSScH7L4STiX4CQgNSSO6">2 项</span></div>
+          <div class="task done" data-page-node-id="PzzTmdiozlMFQM2B8cU9Fs"><div class="cb done" data-page-node-id="AAshzOB4ZDBXOF3368DoVe">✓</div><div class="tx" data-page-node-id="POUX5xDHMFeXMKbKVCo3G3"><b data-page-node-id="NsMEub4VQYTzb2FaPaSNbH">背 20 个单词</b><small data-page-node-id="sM1emxyH1vvUxRcFcFj1Xb">周一至周五</small></div><span class="tag weekday" data-page-node-id="FBcSUrfo3Wn1xDvUPG9dbq">工作日</span></div>
+          <div class="task" data-page-node-id="uRIjvIJyxsM4D0NLj2jM0C"><div class="cb" data-page-node-id="wN2E85AkuCBLb5xGsoSjmm"></div><div class="tx" data-page-node-id="mQR1R7gYx0D0kdNupm9JwW"><b data-page-node-id="wrCVolIWZWBW3qAs6rBtRL">阅读 30 分钟</b><small data-page-node-id="CNaY1wq0srnMgTmp1WhYx0">周一至周五</small></div><span class="tag weekday" data-page-node-id="hjaqIBYuSvFPIlBgbsuNRc">工作日</span></div>
+
+          <div class="group" data-page-node-id="7FKDEaiHHBGDkMAISN2gxI">今日新增 <span class="cnt" data-page-node-id="G2YbcAyymA8tbbl3Ms3NzM">1 项</span></div>
+          <div class="task" data-page-node-id="YX9OZV4mfApOyHEgySATHn"><div class="cb" data-page-node-id="iBBHzN0FmmZOvSGRS3JHXU"></div><div class="tx" data-page-node-id="RmATTnLcyzs65sSyatVHQW"><b data-page-node-id="BAsl11ATEqznVB78jJmq6S">给绿萝浇水</b><small data-page-node-id="oLMuyQm2D1ZoNhZH6F9not">仅今天 · 新增于 09.03</small></div><span class="tag once" data-page-node-id="dcCoB6qP4TRUF9kj2sj9g1">单次</span></div>
+
+          <div class="cta" data-page-node-id="DJCDRdzC0nShIpHc4CrC7z">＋ 新增今日任务</div>
+        </div>
+        <div class="tabbar" data-page-node-id="PTcLk5AM9Ssf2d3jGntXEv">
+          <div class="tab" data-page-node-id="CkruuSFsy4ojDTSMFwvNqv"><span class="ico" data-page-node-id="BW101OyQ3f6GNVyJaByLqx">📖</span>时光轴</div>
+          <div class="tab" data-page-node-id="a375trZATXOve7JGApr8su"><span class="ico" data-page-node-id="ayu9rstZVJSsMdjBUPGsAo">🗓</span>日历</div>
+          <div class="tab on" data-page-node-id="b1LCPUdbfs5YHQbGbNyix9"><span class="ico" data-page-node-id="GJye2WBC3CJsiu1TsNCWEl">🌱</span>计划</div>
+          <div class="tab" data-page-node-id="pzgKCVGwXvzqxG9W7x7XqJ"><span class="ico" data-page-node-id="QbGG0sDePNjsayaoMBE1wJ">🕯</span>我的</div>
+        </div>
+      </div>
+      <p class="cap" data-page-node-id="92uayRxqS6Ke7PiNRfmMIC">② 今日视图（默认）：可勾选、可新增</p>
+    </div>
+
+    <!-- 昨日 -->
+    <div data-page-node-id="klRdaWG0jD3CkFjXthMVkj">
+      <div class="phone" data-page-node-id="kdjN6eaJtHQxrTPIBOQXUR">
+        <div class="statusbar" data-page-node-id="9M3n84HAcVXokS4CIW0r8Z"><span data-page-node-id="xSy2nt0K6nDfFbq0HKZY2i">11:19</span><span data-page-node-id="nnwOCEP33nJ3RD4g8ZQMH3">📶 🔋</span></div>
+        <div class="navbar" data-page-node-id="7uS2aDmPNdsAdQQMno8l0g">计划 <span class="date" data-page-node-id="Lj9IVr1NTYRJS1dTTGm4j3">2026.09.02 · 周三</span></div>
+        <div class="screen" data-page-node-id="a3LZiI8V2YOBsWbjrBnpNx">
+          <div class="pager" data-page-node-id="Ui77jGODM1UYqhRY1LOZVe">
+            <div class="arrow" data-page-node-id="iLVsRJhwYCscI4Mxm3pahT">‹</div>
+            <div class="mid" data-page-node-id="4Z6WVCY2nS62o97ECBV7jy"><b data-page-node-id="3cbAToGIVNK5yciF6dveOk">昨天</b><span data-page-node-id="Cd8CtcVCbHGfuxnjNATh52">09.02 周三 · 3 / 5 已完成</span></div>
+            <div class="arrow" data-page-node-id="gUDdyjrBXy2RxEOKHlVNBm">›</div>
+          </div>
+
+          <div class="banner seal" data-page-node-id="i8vQD3pYfwyV5gZL6HOAIx">🔖 <span data-page-node-id="7udkaMG6x3keedioourE3S">昨日已封存，记录只读保留。<b data-page-node-id="K6dP1QV1ENUnHkJdvuzO90">过期未完成的项目不再可编辑或补勾。</b></span></div>
+
+          <div class="group" data-page-node-id="MOzWe8d5t5epVskbqHxqZD">每日循环 <span class="cnt" data-page-node-id="NVb2WEgBknN2e8pgZLNHFA">2 项</span></div>
+          <div class="task done faded" data-page-node-id="gKMgs8TpITJiCh14y6yEA3"><div class="cb done" data-page-node-id="xnUYRZC3Y5TFB2TSFJV4jI">✓</div><div class="tx" data-page-node-id="t18wptRr5hjEl26OodWAtm"><b data-page-node-id="SOKzFtLqjhAkCuMazG0a8C">晨间散步 20 分钟</b><small data-page-node-id="rD8f5fWH7CMMXE52W3Zg7P">每天 · 已完成 08:12</small></div><span class="tag daily" data-page-node-id="lEU1CINc8QX88c06DKSdqA">每天</span></div>
+          <div class="task overdue faded" data-page-node-id="TlY199fbZWfEAz5Z0I57R2"><div class="cb over" data-page-node-id="iz1rzbhMcmqxdcBag39aoY">✕</div><div class="tx" data-page-node-id="ecsJ0omny4YX0PFE5rIDP2"><b data-page-node-id="BLVsBhTza14TujJTkhMO94">睡前写手账</b><small data-page-node-id="1XANRJzhe3uYMJ8E9pOTov">每天 · 过期未完成</small></div><span class="tag" data-page-node-id="0HdFADN9MG5mYOSyBIhkEo">未完成</span></div>
+
+          <div class="group" data-page-node-id="daV4KH0R8Gz7C2IeNmYXfk">工作日循环 <span class="cnt" data-page-node-id="N6lOCTGYBNDf0ksAaRY1ZU">2 项</span></div>
+          <div class="task done faded" data-page-node-id="21XaLPDab9kWMG6FAVzUuk"><div class="cb done" data-page-node-id="O5qeUDMFAHDYQqTAgEd4EY">✓</div><div class="tx" data-page-node-id="hHYsoJh9IlQJbQs6r9XOQC"><b data-page-node-id="yQGpr26n78Y4GnoRDFpMR7">背 20 个单词</b><small data-page-node-id="2JYrP2Zy8CME60sKqHdDc6">周一至周五 · 已完成 20:40</small></div><span class="tag weekday" data-page-node-id="DKRPYneoO54MWjB9WXgpEr">工作日</span></div>
+          <div class="task overdue faded" data-page-node-id="82zl57UIsT58yQURmIF1zH"><div class="cb over" data-page-node-id="qOX9AmHeyoTTKeuAs8mCPl">✕</div><div class="tx" data-page-node-id="uqXvgC2zM0qcG058hcOQja"><b data-page-node-id="oK0R4E3MN5RbDU4bBjU4od">阅读 30 分钟</b><small data-page-node-id="SBwM9wLX1WYvX1NcfcsCcG">周一至周五 · 过期未完成</small></div><span class="tag" data-page-node-id="P9dpbyscZHLGjEw6vK8sLS">未完成</span></div>
+
+          <div class="group" data-page-node-id="P9jU9ksOm5FTcsnCr9EIjL">今日新增 <span class="cnt" data-page-node-id="h9sei87fezzoBnX7BLWRGZ">1 项</span></div>
+          <div class="task overdue faded" data-page-node-id="QCMhvVjtjmuKbGrL5Al7C7"><div class="cb over" data-page-node-id="hymGkW0rDrrOiO4zwaCpeG">✕</div><div class="tx" data-page-node-id="9bZIhjoSiCzf3IU8wQMgPp"><b data-page-node-id="qXyyWV8vjhrqUCBulx3MaB">给绿萝浇水</b><small data-page-node-id="3WC4NvKrpxTy8VmJrEa7F9">仅今天 · 过期未完成</small></div><span class="tag" data-page-node-id="56oe4wMiCAy28WmbBjWBoJ">未完成</span></div>
+        </div>
+        <div class="tabbar" data-page-node-id="KHkqYcByIKZukWWmdifhbk">
+          <div class="tab" data-page-node-id="AVsCDYdTAKdaPVh45OEzH4"><span class="ico" data-page-node-id="8VSXtlcKGsCAxdqcLF0Vcg">📖</span>时光轴</div>
+          <div class="tab" data-page-node-id="7gz5ZHxIligbmwkqAAFAqD"><span class="ico" data-page-node-id="WiBWxwJZqrIItMEYQAktf9">🗓</span>日历</div>
+          <div class="tab on" data-page-node-id="9O1wM3Qjn8ApcE1A5Iv5dy"><span class="ico" data-page-node-id="yrFBcEfM2GYpWaUO0wjsAL">🌱</span>计划</div>
+          <div class="tab" data-page-node-id="Kh8ZUEOwlHeZhFwOl1AqTQ"><span class="ico" data-page-node-id="3efwUYIU8ZmGE3ew0gfwJl">🕯</span>我的</div>
+        </div>
+      </div>
+      <p class="cap" data-page-node-id="6m2Py6gVI7mBFkj08C8iDR">② 昨日视图：整体降透明度，过期未勾 = 红底红字「✕」，只读</p>
+    </div>
+
+    <!-- 明日 -->
+    <div data-page-node-id="rbBa0NUJGdC2EXVSqDWCFQ">
+      <div class="phone" data-page-node-id="2mgCLkZwYOTPiiXs4ghRUY">
+        <div class="statusbar" data-page-node-id="uBEXPQ0MEzz1k7A3flXPUD"><span data-page-node-id="agyoZPrhQzrDlrFO6USCBq">11:19</span><span data-page-node-id="5grEI7Q00WTDfPQF1Y2Kh4">📶 🔋</span></div>
+        <div class="navbar" data-page-node-id="Krtfx5pg7CTjgcpZrqT0l5">计划 <span class="date" data-page-node-id="rU9GeNA26h4hcOVlGkM1RL">2026.09.04 · 周五</span></div>
+        <div class="screen" data-page-node-id="NSgGjhtlb0w78YvCaUHUek">
+          <div class="pager" data-page-node-id="eTCoGHz0ZzLY7D1c8OtCsF">
+            <div class="arrow" data-page-node-id="Fm76kaYEEmHFNbhclV1aXN">‹</div>
+            <div class="mid" data-page-node-id="2kMHD5icwZEr0ZA0xdGuvi"><b data-page-node-id="4JNgvgJP5FKQpnvAX7kaz4">明天</b><span data-page-node-id="vn80gjP5UBTD0kWfFbbMm5">09.04 周五 · 3 项待办</span></div>
+            <div class="arrow" style="opacity:.35" data-page-node-id="MP0WGS3fDZOje0U9oDJ0NP">›</div>
+          </div>
+
+          <div class="banner lock" data-page-node-id="7UEZefC2TAemWwQMT4uBCI">🔒 <span data-page-node-id="q5awUHXfgBzUQMt2DlywnB">未来任务仅可预览与新增，<b data-page-node-id="GUgccYZGssCfFHQgdoTcjh">到达当天才能勾选完成</b>。</span></div>
+
+          <div class="group" data-page-node-id="dlaP5g02I3stqtXgP89jET">每日循环 <span class="cnt" data-page-node-id="jWWJ38gXFPJcBNbDCrbh5J">2 项</span></div>
+          <div class="task faded" data-page-node-id="E060PWEgrNFxqFpZYjI8T0"><div class="cb locked" data-page-node-id="Vh7m3UjKK6KO9aJ6CJQjJ3">🔒</div><div class="tx" data-page-node-id="9y9o4SBwcqSpoqA0fE63ql"><b data-page-node-id="A1k0zIqk2bM44r2CW2FS6S">晨间散步 20 分钟</b><small data-page-node-id="iaDETGeoSiZzPFXB2erWcd">每天</small></div><span class="tag daily" data-page-node-id="FOyy5cYnrcEB1ktMVAjfnt">每天</span></div>
+          <div class="task faded" data-page-node-id="bYkpkiVSbCFok4DOM6XGNQ"><div class="cb locked" data-page-node-id="jJOVfqj4UseddZfzHptHVA">🔒</div><div class="tx" data-page-node-id="YeoCrIPsLOalDQDQt7GHHd"><b data-page-node-id="Wmeb1Iw05Q8XYZkTYsLmLI">睡前写手账</b><small data-page-node-id="J6BkQRw69F5BABdSOdFssl">每天</small></div><span class="tag daily" data-page-node-id="PM8P3WlRGRyCGgtJ0JtWB8">每天</span></div>
+
+          <div class="group" data-page-node-id="ZWHTjktDI2ylWACzrCkR3l">工作日循环 <span class="cnt" data-page-node-id="uNEIhDIt0vep175UqA8CkC">2 项</span></div>
+          <div class="task faded" data-page-node-id="Rimj1ixRXsDLOTuNQJgDsB"><div class="cb locked" data-page-node-id="EENlGuJFqYPXWARggCVpvC">🔒</div><div class="tx" data-page-node-id="2bz6ER3dxNITvxNX6XIREX"><b data-page-node-id="PE5nwVTgBQMf53M4byh1BD">背 20 个单词</b><small data-page-node-id="z8FTbzs4VKjR3MEn0RWQq0">周一至周五</small></div><span class="tag weekday" data-page-node-id="yNaVJop2FtHBRyKHoQCwP9">工作日</span></div>
+          <div class="task faded" data-page-node-id="itHtmByc4ZtpffOg3DK58m"><div class="cb locked" data-page-node-id="MKocKH66v4N5QGHfSlr9jp">🔒</div><div class="tx" data-page-node-id="9BxRtnFm6mgAtIkPSRDrMZ"><b data-page-node-id="BVFZckkgizxqkzbvnXzV5B">阅读 30 分钟</b><small data-page-node-id="0BV1oBGDgmCFCa4o5ulfYF">周一至周五</small></div><span class="tag weekday" data-page-node-id="6QsmrWDX9EJ5ksFvU2zGaE">工作日</span></div>
+
+          <div class="cta" data-page-node-id="S9EugRy9okETnNLdPeD4NB">＋ 新增明日任务</div>
+        </div>
+        <div class="tabbar" data-page-node-id="ofqloViHhf8g4gnE3JWxuD">
+          <div class="tab" data-page-node-id="DMm4EEuzHSAsppJMCzIKB1"><span class="ico" data-page-node-id="Db6YXtG3H4NFtERNCew5Gt">📖</span>时光轴</div>
+          <div class="tab" data-page-node-id="1p0NCijni2wpnT6APEMEt6"><span class="ico" data-page-node-id="JbfaoGm2qzdSnLpN8CrCcs">🗓</span>日历</div>
+          <div class="tab on" data-page-node-id="Dwx5yHnhFCpfjZyj1iD9EM"><span class="ico" data-page-node-id="tJKEPR830oSSWcdVt1SeHt">🌱</span>计划</div>
+          <div class="tab" data-page-node-id="YzBom6oTSiszJHTq3Grtry"><span class="ico" data-page-node-id="DNEfVH9mwpYTEEzGJVuSqv">🕯</span>我的</div>
+        </div>
+      </div>
+      <p class="cap" data-page-node-id="QqizkDaIhKbsKJepc7I1Rf">③ 明日视图：勾选框呈 🔒 禁用态；只能看与新增</p>
+    </div>
+  </div>
+
+  <!-- ================= 3. 新建任务 ================= -->
+  <h2 data-page-node-id="QBtkNZBFba2iGZPL4nRCH9">三、新建任务 Sheet（重复规则）</h2>
+  <p class="h2sub" data-page-node-id="v7gDi0y8QpExQxzFODpjtr">覆盖需求 2 的全部类型：单次 / 每天 / 每周几 / 工作日 / 每周末；默认归属「今天」，翻到未来某天时可新建该天任务。</p>
+  <div class="row" data-page-node-id="PJgMBbBHj3RsshaYdI8wIF">
+    <div class="phone" style="height:560px" data-page-node-id="MFM47JpQ9bDcNsh08mnLXg">
+      <div class="statusbar" data-page-node-id="ZDsSLrJPFyF56N8fLQfmep"><span data-page-node-id="0BSfsVfHWzl6AANx5UFTVm">11:19</span><span data-page-node-id="yhH0zY0kyUzAcvkFuvlQ3D">📶 🔋</span></div>
+      <div class="sheet" data-page-node-id="TzqKFezaScKhHHhjpd4EWV">
+        <div class="grab" data-page-node-id="oXxTDQwc5FYASXFa7dVPpx"></div>
+        <h3 data-page-node-id="OTqn6MftcDY6ho9m2P8L2S">新建任务</h3>
+        <div class="inp" data-page-node-id="H171G0URAeh2QBjBG5cubs">要做点什么？例如「给妈妈打电话」</div>
+        <div class="lbl" data-page-node-id="pDkUxcDo895MUSKLN5BnyL">重复规则</div>
+        <div class="rep" data-page-node-id="qLOpuERkY3J8qDOdBNx0wQ">
+          <span class="sel" data-page-node-id="1iwxzqi8lkssQHdlWW8Law">仅今天</span><span data-page-node-id="G1JY7hT29roEvoQdP497Mo">每天</span><span data-page-node-id="R3R5dJS5rkv0ZDYiK7DEbN">工作日</span><span data-page-node-id="PzOrWtJgLTn3l1ZJj2kaDr">每周末</span><span data-page-node-id="eFZo4m4oEf1Z7yvN0YkOAT">自定义…</span>
+        </div>
+        <div class="lbl" data-page-node-id="FUDXbWxJDuGVo4fXvOBMuC">自定义周几（选「自定义…」后展开）</div>
+        <div class="week" data-page-node-id="7VySIy8fsWQpC2ezZUvccH">
+          <span class="sel" data-page-node-id="4ChGGKeCBSteiVOyamMJv9">一</span><span data-page-node-id="yiZF6k6gEDRaIp35kCCp1y">三</span><span class="sel" data-page-node-id="1hQ2QHa3ogWXpiYJuxyfYY">五</span><span data-page-node-id="H4Ui0MK69seSvgmtDbu1AI">六</span><span data-page-node-id="Bj4KNluH5wcjR2b231eXCU">日</span>
+        </div>
+        <div class="lbl" data-page-node-id="ZajQCjXwFA83lokFcdfPSf">归属日期</div>
+        <div class="inp" style="color:var(--ink)" data-page-node-id="mNwMb9OBigQNdarNFQaU5p">📅 今天 · 09.03 周四</div>
+        <div class="lbl" data-page-node-id="H1CtGccX5x609CoCWtValo">提醒</div>
+        <div class="inp" style="color:var(--ink)" data-page-node-id="X1sk26foS0nqVNjn0MU1kU">🔔 不提醒 ›</div>
+        <div class="cta" style="position:relative;bottom:auto;left:auto;right:auto;margin-top:6px" data-page-node-id="GKD6TziBILhEbY7CLrZQhE">保存任务</div>
+      </div>
+    </div>
+    <div class="note" data-page-node-id="xRF3ELEq69aTJFJIHD5SMy">
+      <h4 data-page-node-id="9W1ZgzoHUYgehUBQyBTpbX">交互细则</h4>
+      <ul data-page-node-id="pNG4z5MXyBWLNHtEOFRWCI">
+        <li data-page-node-id="hCTcFA3noWJi0YiSKxADY5"><b data-page-node-id="7XaDfy6Sxf8OjV6FUgHNj3">仅今天</b>：单次任务，只出现在归属日期当天</li>
+        <li data-page-node-id="rwoAjmS4lKWM1WSNz2c6xY"><b data-page-node-id="FVIKE0xWbuKkPpNJ1cIOCC">每天</b>：未来每一天自动生成实例</li>
+        <li data-page-node-id="hBAp7LypX7oPT28Pc8CJdn"><b data-page-node-id="1WN5jkf1OiBqDboxKtQKRH">工作日</b>：周一～周五；<b data-page-node-id="F5YEMOQKuyCw8KTJpMhyjL">每周末</b>：周六、周日</li>
+        <li data-page-node-id="jtbekAVy4ggBgPwTedIACw"><b data-page-node-id="66zW5FafQMas4XJrv5jj36">自定义…</b>：展开周几胶囊多选（可任意组合）</li>
+        <li data-page-node-id="b3tBrOTfAbxqWkXT5Zkrma">重复任务长按 → 修改 / 暂停 / 删除（作用于「之后所有天」）</li>
+        <li data-page-node-id="NJx6bLj9IinuW2CZZ7IeR5">空状态插画：一张空页 + 蜡烛，文案「这一页还很安静，写点什么吧」</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= 4. 状态规则表 ================= -->
+  <h2 data-page-node-id="R0W5IdahERoN0Y0lQu4VfH">四、任务状态与编辑规则总表（需求 3 / 4 / 5 落地）</h2>
+  <div style="max-width:900px" data-page-node-id="bCFoNKSHVm4u2frzeID4lp">
+  <table data-page-node-id="KTEe2t2NEmGPQCK0CvXzLR">
+    <tr data-page-node-id="NRhVZKrzR9t3EiAw8HvgXG"><th data-page-node-id="ZNHLkN5p8mdgNPkDYOXL7p">日期状态</th><th data-page-node-id="5PChEgWJ0ow4ZaLNSAIKhv">勾选框</th><th data-page-node-id="IhrGM4RvhawDFL54wrDRCm">过期未勾</th><th data-page-node-id="vtq3hxm0S1kAMQ1afDDMV4">编辑/删除</th><th data-page-node-id="k4m1nkSjVgKNMIXrERRd3l">新增</th></tr>
+    <tr data-page-node-id="d0TqWBCIHq6Lo6xIr9l1AK"><td data-page-node-id="x3SuWfdhUKZPgjPuMnDmKs"><b data-page-node-id="nbcRyMPgnEuuQdCqWPnDPe">今天（默认屏）</b></td><td data-page-node-id="xWM2dliyZ109CSu7TCBzK5"><span class="pill p-green" data-page-node-id="NmQSusJWbwqUP9JZlMOIeS">可勾选 ✓</span></td><td data-page-node-id="wkV7mnqB8FErgRXOzCSdQe">—</td><td data-page-node-id="A3VvbjJDFZpSjGEL7joXCl"><span class="pill p-green" data-page-node-id="LBrP2h7VAJXTNnn40FmpTv">可编辑</span></td><td data-page-node-id="skuHo9sexd4XJYgSi6UCKl"><span class="pill p-green" data-page-node-id="CB0jBDnPURcJp6dJE6fuKj">允许</span></td></tr>
+    <tr data-page-node-id="URnLQn7qDhLH6iyLWRTR6Q"><td data-page-node-id="6pFIA07YQTGwNa4h8G2oAb"><b data-page-node-id="gwT6rCho3WCNPlWOy1zHyO">昨天及更早（封存）</b></td><td data-page-node-id="7oY52RrXxGouZTlUzPTacz"><span class="pill p-red" data-page-node-id="V8MNpLFWxd6cF7ZqjnTmC0">✕ 不可操作</span></td><td data-page-node-id="PqXdCQvXHzi4D7kCthJGiY"><span class="pill p-red" data-page-node-id="KDOC8Db1lEeG7PHk6zvl2i">红底红字标红</span></td><td data-page-node-id="FMs0uhKeJEcDZcTnaMF3ky"><span class="pill p-red" data-page-node-id="9VF2knoXz44a0Kh4gddrkG">全部只读 🔒</span></td><td data-page-node-id="YyXEUdNr6VulBPtYWEFYaL"><span class="pill p-red" data-page-node-id="rIyVCXShAKzRMOLaylnwJN">不允许</span></td></tr>
+    <tr data-page-node-id="vFtiJju40sobBCfPleAQiU"><td data-page-node-id="ja88mlswwWXKBIRBB8Gys0"><b data-page-node-id="7FfHVZcKE6wIg1CmVzXSkY">明天及未来</b></td><td data-page-node-id="9LShJqgWK5aZ3ouLaWYkD2"><span class="pill p-gray" data-page-node-id="i5VC45mCnhJ7BiWiULoEdk">🔒 不可勾选</span></td><td data-page-node-id="hC3GiIElV5dUqZCCHc3BvP">—</td><td data-page-node-id="dB6QaFL2jTt0rkMkNzyVUx"><span class="pill p-caramel" data-page-node-id="t4qOmHciBC547MAuN1AVWM">可编辑（仅重复规则/标题）</span></td><td data-page-node-id="yyuGcuLDDxNZuEzHfS9eHI"><span class="pill p-green" data-page-node-id="kaGLEQ2HTvjEXtIwKYGuCR">允许</span></td></tr>
+  </table>
+  </div>
+  <p class="h2sub" style="margin-top:12px" data-page-node-id="QxchC7VEIgx8tATi56Ic7F">滑动边界：最早可滑到使用 App 的第一天；最远可滑到 +30 天。翻过 0 点自动回到「今天」。</p>
+
+  <!-- ================= 5. 动效 ================= -->
+  <h2 data-page-node-id="OOiR9AhXEkeYXQ6w4jLqiy">五、动效要点</h2>
+  <div class="row" data-page-node-id="nebXBAjFnqzRABlwAG83jY">
+    <div class="note" data-page-node-id="TpAI3rBsWpATm0FMUadPlV"><h4 data-page-node-id="Um19oaD4hZ6tFKUlYKuUqi">勾选完成</h4><ul data-page-node-id="OryfT8onTFB5jc4pAp8Lzr"><li data-page-node-id="sx2i8ATjKa2CW8POOxFDGe">打勾 200ms scale 弹出 → 卡片轻压回弹 → 纸感「嗒」音（可选）</li><li data-page-node-id="Hsy0BeHyJDXX2TnApO2AhG">全部完成时：顶部进度环点亮金箔描边 + 印章动画「今日计划 · 已完成」</li></ul></div>
+    <div class="note" data-page-node-id="YBKNVjVwq9PA13RG3PRvPw"><h4 data-page-node-id="ooZybRCbBAuE335XWx8wR5">天切换（滑动）</h4><ul data-page-node-id="IV55rDflbmaD2mgUzGa6Dh"><li data-page-node-id="UTpY80rAKn8Eyje0RHz6wI">整页卡片横向位移动画 280ms，日期翻页器数字滚动</li><li data-page-node-id="HR9tbc5eQLMuUvvrFwS6av">切到昨日：卡片带「盖章封存」微动效；切到未来：勾选框逐个「落锁」</li></ul></div>
+    <div class="note" data-page-node-id="29YPvTXRo39zFFjjEmZbAV"><h4 data-page-node-id="bukzrNQffn407LSPXYH8MG">过期标红</h4><ul data-page-node-id="9MTDCuhwFFkzY4EtoZcjYF"><li data-page-node-id="eLBznU5IxKtUv0L7QEsT0B">过 0 点后首次进入昨日视图：未完成卡从白渐变至红底 500ms，提示「已封存」</li></ul></div>
+  </div>
+
+  <!-- ================= 6. 开发要点 ================= -->
+  <h2 data-page-node-id="FsGrEgWDAEBlYckLCZSSJP">六、数据与开发要点</h2>
+  <div style="max-width:900px" data-page-node-id="43B0ot4Qcq5NjQd16GceFx">
+  <table data-page-node-id="QXtvEEfT7ClPdLgVUPXbxf">
+    <tr data-page-node-id="Tb2GgDnRe2AMCea63DluXX"><th data-page-node-id="SxCZWJEuglg1ccsFHuyJDg">项</th><th data-page-node-id="AnrA34ncR9ncJ21LFrOvpp">说明</th></tr>
+    <tr data-page-node-id="tdMvmy9lhWED3IRfKqRy3x"><td data-page-node-id="9TrqoqxkQRVFO2YN3c3FGk"><b data-page-node-id="m5TUrvHVBq0CIHmlHCOk6J">数据模型</b></td><td data-page-node-id="ovCHUnfs1BtUzJQbTpjsVz">`Task { id, title, rule: once|daily|weekday|weekend|custom(weekdays[]), anchorDate, reminder }` + `TaskInstance { date, done, doneAt }`，实例懒生成、只落库被操作过的天</td></tr>
+    <tr data-page-node-id="2WHen5lN0ISMZRYlvlrh0H"><td data-page-node-id="UckenkomoZ9QgNE9ktwNjQ"><b data-page-node-id="BgQLkaDczpkaYRo3DyxQKv">只读策略</b></td><td data-page-node-id="jpaCephbGVfCtOWYWoQj6R">客户端按本地日期 0 点冻结；补勾入口不做（与 V1.1 打卡补签区分：计划是承诺，不补）</td></tr>
+    <tr data-page-node-id="xm8tfNSC7nNrf4iTUVydoG"><td data-page-node-id="folmWKiAVhwRxNut1KV9Zz"><b data-page-node-id="F0zK96maOCUHuzbM5H5OI7">联动</b></td><td data-page-node-id="3pyTAFIHJjS5AIAf91tHrt">完成「睡前写手账」可一键跳转书写页；完成数据计入徽章（如「计划达人 · 连续完成 7 天」）</td></tr>
+    <tr data-page-node-id="DdcI4EABwE6YPxlwjKPMBj"><td data-page-node-id="H8t6Ca0LwhdnBXfKaOF7rF"><b data-page-node-id="Sx1tcINYLiF26JMTNKi4ge">无障碍</b></td><td data-page-node-id="r9wf8bH0EqTxX1OzWySdoj">锁定框朗读「未来任务，到达当天可完成」；过期朗读「已过期，不可编辑」</td></tr>
+  </table>
+  </div>
+</div>
+</body>
+</html>
