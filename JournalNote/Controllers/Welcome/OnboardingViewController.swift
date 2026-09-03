@@ -27,7 +27,6 @@ final class OnboardingViewController: UIViewController {
     private let pageControl = UIPageControl()
     private let skipButton = UIButton(type: .system)
     private let actionButton = UIButton(type: .system)
-    private let bottomButtonStack = UIStackView()
     private var pageViews: [UIView] = []
 
     override func viewDidLoad() {
@@ -160,25 +159,21 @@ final class OnboardingViewController: UIViewController {
         actionButton.setContentHuggingPriority(.required, for: .horizontal)
         actionButton.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // Use the stack as a full-width positioning container. The primary
-        // action is centered on the screen; skip follows it on the right.
-        view.addSubview(bottomButtonStack)
-        bottomButtonStack.snp.makeConstraints { make in
-            make.top.equalTo(pageControl.snp.bottom).offset(10)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(44)
-            make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).offset(-16)
-        }
-        bottomButtonStack.addSubview(actionButton)
-        bottomButtonStack.addSubview(skipButton)
+        // Keep the primary action centered below the page indicator.
+        view.addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.bottom.equalToSuperview()
+            make.top.equalTo(pageControl.snp.bottom).offset(10)
+            make.height.equalTo(44)
             make.width.equalTo(132)
         }
+
+        // The skip affordance belongs in the top-right corner, clear of the
+        // paged content and aligned to the safe area on devices with a notch.
+        view.addSubview(skipButton)
         skipButton.snp.makeConstraints { make in
-            make.leading.equalTo(actionButton.snp.trailing).offset(12)
-            make.centerY.equalTo(actionButton)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
             make.width.equalTo(68)
             make.height.equalTo(44)
         }
