@@ -92,7 +92,10 @@ struct PlanTask: Codable, Identifiable, Equatable {
         let day = calendar.startOfDay(for: date)
         guard day >= calendar.startOfDay(for: anchorDate) else { return false }
         if let endDate, day >= calendar.startOfDay(for: endDate) { return false }
-        if isPaused, let pauseDate, day >= calendar.startOfDay(for: pauseDate) { return false }
+        if isPaused {
+            guard let pauseDate else { return false }
+            if day >= calendar.startOfDay(for: pauseDate) { return false }
+        }
         if rule == .once { return calendar.isDate(day, inSameDayAs: anchorDate) }
         if rule == .custom { return weekdays.contains(calendar.component(.weekday, from: day)) }
         return rule.includes(weekday: calendar.component(.weekday, from: day))

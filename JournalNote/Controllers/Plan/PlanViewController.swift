@@ -17,7 +17,6 @@ final class PlanViewController: JournalBaseViewController {
     private var displayedDate: Date
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-    private let dateLabel = UILabel()
     private let previousButton = UIButton(type: .system)
     private let nextButton = UIButton(type: .system)
     private let pagerTitleLabel = UILabel()
@@ -46,12 +45,11 @@ final class PlanViewController: JournalBaseViewController {
         title = "计划"
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "ellipsis.circle"),
+            title: "重复计划",
             style: .plain,
             target: self,
-            action: #selector(showPausedTasks)
+            action: #selector(showRecurringPlans)
         )
-        navigationItem.rightBarButtonItem?.accessibilityLabel = "管理已暂停任务"
         setupViews()
         let planObserver = NotificationCenter.default.addObserver(
             forName: .planTasksDidChange,
@@ -79,10 +77,6 @@ final class PlanViewController: JournalBaseViewController {
 
     private func setupViews() {
         view.backgroundColor = JournalDesign.pageBackground
-        dateLabel.font = JournalDesign.monoFont(size: 12, textStyle: .caption1)
-        dateLabel.textColor = JournalDesign.secondaryText
-        dateLabel.textAlignment = .right
-
         configureArrow(previousButton, image: "chevron.left", action: #selector(showPreviousDay))
         configureArrow(nextButton, image: "chevron.right", action: #selector(showNextDay))
         pagerTitleLabel.font = JournalDesign.serifFont(size: 16, textStyle: .headline, weight: .semibold)
@@ -125,12 +119,6 @@ final class PlanViewController: JournalBaseViewController {
         addButton.addTarget(self, action: #selector(addTask), for: .touchUpInside)
         addButton.accessibilityIdentifier = "addPlanTaskButton"
 
-        let header = UIView()
-        header.addSubview(dateLabel)
-        header.snp.makeConstraints { make in make.height.equalTo(24) }
-        dateLabel.snp.makeConstraints { make in make.edges.equalToSuperview() }
-
-        contentView.addSubview(header)
         contentView.addSubview(pager)
         contentView.addSubview(progressCard)
         contentView.addSubview(taskStack)
@@ -146,12 +134,8 @@ final class PlanViewController: JournalBaseViewController {
             make.edges.equalToSuperview()
             make.width.equalTo(scrollView.snp.width)
         }
-        header.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.leading.trailing.equalToSuperview().inset(20)
-        }
         pager.snp.makeConstraints { make in
-            make.top.equalTo(header.snp.bottom).offset(6)
+            make.top.equalToSuperview().offset(8)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(70)
         }
@@ -246,7 +230,6 @@ final class PlanViewController: JournalBaseViewController {
         let isPast = displayedDate < today
         let isFuture = displayedDate > today
 
-        dateLabel.text = formattedDate(displayedDate, format: "yyyy.MM.dd · EEEE")
         pagerTitleLabel.text = calendar.isDateInToday(displayedDate) ? "今天" : (isPast ? "昨天" : "明天")
         if abs(dayOffset) > 1 { pagerTitleLabel.text = formattedDate(displayedDate, format: "MM.dd · EEEE") }
         pagerDetailLabel.text = "\(formattedDate(displayedDate, format: "MM.dd EEEE")) · \(completion.completed) / \(completion.total) 已完成"
@@ -370,6 +353,10 @@ final class PlanViewController: JournalBaseViewController {
         presentEditor(for: nil)
     }
 
+    @objc private func showRecurringPlans() {
+        navigationController?.pushViewController(RecurringPlanListViewController(), animated: true)
+    }
+
     private func presentEditor(for task: PlanTask?) {
         let editor = PlanTaskEditorViewController(task: task, date: displayedDate)
         let isEditingExistingTask = task != nil
@@ -414,26 +401,6 @@ final class PlanViewController: JournalBaseViewController {
         })
         alert.addAction(UIAlertAction(title: "取消", style: .cancel))
         if let popover = alert.popoverPresentationController { popover.sourceView = view; popover.sourceRect = view.bounds }
-        present(alert, animated: true)
-    }
-
-    @objc private func showPausedTasks() {
-        let paused = repository.allPlanTasks(includePaused: true).filter { $0.isPaused && $0.endDate == nil }
-        let alert = UIAlertController(
-            title: "已暂停任务",
-            message: paused.isEmpty ? "当前没有暂停的重复任务。" : "选择任务即可恢复之后的计划。",
-            preferredStyle: .actionSheet
-        )
-        for task in paused {
-            alert.addAction(UIAlertAction(title: "恢复 · \(task.title)", style: .default) { [weak self] _ in
-                do { try self?.repository.setPlanTaskPaused(task, paused: false) }
-                catch { self?.presentError(error) }
-            })
-        }
-        alert.addAction(UIAlertAction(title: "关闭", style: .cancel))
-        if let popover = alert.popoverPresentationController {
-            popover.barButtonItem = navigationItem.rightBarButtonItem
-        }
         present(alert, animated: true)
     }
 
