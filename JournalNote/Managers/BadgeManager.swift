@@ -49,6 +49,9 @@ final class BadgeManager {
 
         case .entriesInMonth:
             current = JournalRepository.shared.monthlyEntries(for: Date()).count
+
+        case .planConsecutiveDays:
+            current = JournalRepository.shared.consecutivePlanCompletion()
         }
 
         return (current, target)

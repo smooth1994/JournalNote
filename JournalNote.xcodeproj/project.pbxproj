@@ -47,6 +47,8 @@
 		04A10016306A000000000001 /* JournalSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10015306A000000000001 /* JournalSyncService.swift */; };
 		04A10018306A000000000001 /* DataExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10017306A000000000001 /* DataExportViewController.swift */; };
 		04A1001A306A000000000001 /* DataReceiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A10019306A000000000001 /* DataReceiveViewController.swift */; };
+		04A1001C306A000000000001 /* PlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1001B306A000000000001 /* PlanViewController.swift */; };
+		04A1001E306A000000000001 /* PlanTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1001D306A000000000001 /* PlanTask.swift */; };
 		04D218B53036CB2A000C304D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B43036CB29000C304D /* README.md */; };
 		04D218B73036D4CF000C304D /* upload_ipa_to_pgyer.sh in Resources */ = {isa = PBXBuildFile; fileRef = 04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */; };
 		4AB779239460BFF45FD97FFF /* Pods_JournalNote_JournalNoteUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2F3514EF8249231A6C8ABA /* Pods_JournalNote_JournalNoteUITests.framework */; };
@@ -116,6 +118,8 @@
 		04A10015306A000000000001 /* JournalSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalSyncService.swift; sourceTree = "<group>"; };
 		04A10017306A000000000001 /* DataExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportViewController.swift; sourceTree = "<group>"; };
 		04A10019306A000000000001 /* DataReceiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataReceiveViewController.swift; sourceTree = "<group>"; };
+		04A1001B306A000000000001 /* PlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanViewController.swift; sourceTree = "<group>"; };
+		04A1001D306A000000000001 /* PlanTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTask.swift; sourceTree = "<group>"; };
 		04D218B43036CB29000C304D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		04D218B63036D4CF000C304D /* upload_ipa_to_pgyer.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = upload_ipa_to_pgyer.sh; sourceTree = "<group>"; };
 		106573FE886035CD55601DBC /* Pods-JournalNote.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JournalNote.debug.xcconfig"; path = "Target Support Files/Pods-JournalNote/Pods-JournalNote.debug.xcconfig"; sourceTree = "<group>"; };
@@ -236,6 +240,7 @@
 				045469F9303699EB0044576D /* Welcome */,
 				045469F6303694000044576D /* TimeLine */,
 				045469F73036985C0044576D /* Calendar */,
+				04A1001F306A000000000001 /* Plan */,
 				045469F8303698B70044576D /* Profile */,
 			);
 			path = Controllers;
@@ -259,6 +264,7 @@
 				04A10005306A000000000001 /* CheckInRecord.swift */,
 				04A1000D306A000000000001 /* FutureLetter.swift */,
 				04A10013306A000000000001 /* JournalSyncPayload.swift */,
+				04A1001D306A000000000001 /* PlanTask.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -307,6 +313,14 @@
 				042A9B8D30357D72007D8AE2 /* CalendarViewController.swift */,
 			);
 			path = Calendar;
+			sourceTree = "<group>";
+		};
+		04A1001F306A000000000001 /* Plan */ = {
+			isa = PBXGroup;
+			children = (
+				04A1001B306A000000000001 /* PlanViewController.swift */,
+			);
+			path = Plan;
 			sourceTree = "<group>";
 		};
 		045469F8303698B70044576D /* Profile */ = {
@@ -652,6 +666,8 @@
 				04A10016306A000000000001 /* JournalSyncService.swift in Sources */,
 				04A10018306A000000000001 /* DataExportViewController.swift in Sources */,
 				04A1001A306A000000000001 /* DataReceiveViewController.swift in Sources */,
+				04A1001C306A000000000001 /* PlanViewController.swift in Sources */,
+				04A1001E306A000000000001 /* PlanTask.swift in Sources */,
 				042A9B7C30357C20007D8AE2 /* SceneDelegate.swift in Sources */,
 				042A9B7D30357C20007D8AE2 /* ViewController.swift in Sources */,
 			);

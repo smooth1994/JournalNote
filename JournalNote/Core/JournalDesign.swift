@@ -43,6 +43,11 @@ enum JournalDesign {
     static let rose500 = UIColor(hex: "#C08879")
     static let mist500 = UIColor(hex: "#8CA0AC")
     static let clay500 = UIColor(hex: "#B5533C")
+    static let expiredRed = UIColor(hex: "#C24A34")
+    static let expiredBackground = UIColor(hex: "#FBEDE8")
+    static let lockedGray = UIColor(hex: "#D8CFBE")
+    static let lockedBackground = UIColor(hex: "#F1EDE4")
+    static let gold = UIColor(hex: "#D4A056")
 
     // MARK: Night lamp mode
 
@@ -161,4 +166,5 @@ extension Notification.Name {
     static let checkInDidChange = Notification.Name("checkInDidChange")
     static let badgeUnlocked = Notification.Name("badgeUnlocked")
     static let futureLettersDidChange = Notification.Name("futureLettersDidChange")
+    static let planTasksDidChange = Notification.Name("planTasksDidChange")
 }

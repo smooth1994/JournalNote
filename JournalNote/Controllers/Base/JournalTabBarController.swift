@@ -33,13 +33,22 @@ final class JournalTabBarController: UITabBarController {
             image: "calendar",
             selectedImage: "calendar"
         )
+        let plan = makeNavigationController(
+            root: PlanViewController(),
+            title: "计划",
+            image: "leaf",
+            selectedImage: "leaf.fill",
+            fallbackImage: "leaf",
+            fallbackSelectedImage: "leaf.fill"
+        )
         let profile = makeNavigationController(
             root: ProfileViewController(),
             title: "我的",
             image: "flame",
             selectedImage: "flame.fill"
         )
-        viewControllers = [timeline, calendar, profile]
+        viewControllers = [timeline, calendar, plan, profile]
+        updatePlanBadge()
     }
 
     private func makeNavigationController(
@@ -103,5 +112,19 @@ final class JournalTabBarController: UITabBarController {
             self.view.setNeedsLayout()
         }
         observers.append(themeObserver)
+        let planObserver = NotificationCenter.default.addObserver(
+            forName: .planTasksDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in self?.updatePlanBadge() }
+        observers.append(planObserver)
+    }
+
+    private func updatePlanBadge() {
+        guard let planIndex = viewControllers?.firstIndex(where: { $0.tabBarItem.title == "计划" }),
+              let planItem = tabBar.items?[planIndex] else { return }
+        planItem.badgeValue = JournalRepository.shared.planHasIncompleteTasks() ? " " : nil
+        planItem.badgeColor = JournalDesign.clay500
+        planItem.accessibilityLabel = JournalRepository.shared.planHasIncompleteTasks() ? "计划，有未完成任务" : "计划"
     }
 }

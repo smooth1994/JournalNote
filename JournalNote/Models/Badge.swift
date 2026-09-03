@@ -16,6 +16,7 @@ enum BadgeCondition: Codable {
     case totalEntries(Int)
     case moodCount(String, Int)
     case entriesInMonth(Int)
+    case planConsecutiveDays(Int)
 
     var targetValue: Int {
         switch self {
@@ -23,6 +24,7 @@ enum BadgeCondition: Codable {
         case .totalEntries(let count): return count
         case .moodCount(_, let count): return count
         case .entriesInMonth(let count): return count
+        case .planConsecutiveDays(let days): return days
         }
     }
 }
@@ -60,6 +62,14 @@ struct Badge: Codable {
             name: "一月有成",
             description: "连续打卡 30 天",
             unlockCondition: .consecutiveDays(30)
+        ),
+        Badge(
+            id: "plan_expert",
+            series: .persistence,
+            emoji: "🌱",
+            name: "计划达人",
+            description: "连续完成 7 天计划任务",
+            unlockCondition: .planConsecutiveDays(7)
         ),
         Badge(
             id: "four_seasons",

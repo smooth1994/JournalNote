@@ -5,12 +5,19 @@
 
 import Foundation
 import WCDBSwift
+import UserNotifications
 
 enum JournalRepositoryError: LocalizedError {
     case databaseUnavailable
+    case planTaskDateReadOnly
+    case planTaskUnavailable
 
     var errorDescription: String? {
-        "手账暂时无法保存，请稍后再试。"
+        switch self {
+        case .databaseUnavailable: return "手账暂时无法保存，请稍后再试。"
+        case .planTaskDateReadOnly: return "只有今天的任务可以勾选。"
+        case .planTaskUnavailable: return "这个任务已经暂停或不属于当天。"
+        }
     }
 }
 
@@ -29,6 +36,8 @@ final class JournalRepository {
     private let onboardingLastShownKey = "onboarding_last_shown_at_v1"
     private let onboardingInterval: TimeInterval = 12 * 60 * 60
     private let unlockedBadgesKey = "unlocked_badge_ids_v1"
+    private let planTasksKey = "plan_tasks_v2"
+    private let planInstancesKey = "plan_task_instances_v2"
     private var database: Database?
     private var entriesTable: Table<JournalEntry>?
     private var settingsTable: Table<JournalSetting>?
@@ -380,6 +389,252 @@ final class JournalRepository {
         try settingsTable.insert(JournalSetting(key: unlockedBadgesKey, value: value))
     }
 
+    // MARK: - Plan tasks
+
+    func allPlanTasks(includePaused: Bool = false) -> [PlanTask] {
+        let tasks: [PlanTask] = readSettingJSON(forKey: planTasksKey) ?? []
+        return tasks
+            .filter { includePaused || !$0.isPaused }
+            .sorted { ($0.createdAt, $0.title) < ($1.createdAt, $1.title) }
+    }
+
+    func planTask(id: String) -> PlanTask? {
+        allPlanTasks(includePaused: true).first { $0.id == id }
+    }
+
+    @discardableResult
+    func savePlanTask(_ task: PlanTask) throws -> PlanTask {
+        var tasks = allPlanTasks(includePaused: true)
+        var value = task
+        value.updatedAt = Date()
+        if let index = tasks.firstIndex(where: { $0.id == value.id }) {
+            tasks[index] = value
+        } else {
+            tasks.append(value)
+        }
+        try writeSettingJSON(tasks, forKey: planTasksKey)
+        schedulePlanReminder(for: value)
+        postPlanChange()
+        return value
+    }
+
+    func deletePlanTask(_ task: PlanTask) throws {
+        try deletePlanTask(task, from: Date())
+    }
+
+    func deletePlanTask(_ task: PlanTask, from date: Date, calendar: Calendar = .current) throws {
+        var tasks = allPlanTasks(includePaused: true)
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index].endDate = calendar.startOfDay(for: date)
+            tasks[index].updatedAt = Date()
+        }
+        try writeSettingJSON(tasks, forKey: planTasksKey)
+        removePlanReminder(for: task)
+        postPlanChange()
+    }
+
+    func setPlanTaskPaused(_ task: PlanTask, paused: Bool, from date: Date = Date(), calendar: Calendar = .current) throws {
+        if !paused, task.isPaused {
+            var tasks = allPlanTasks(includePaused: true)
+            guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+            let effectiveDate = calendar.startOfDay(for: date)
+            var archived = tasks[index]
+            archived.isPaused = false
+            archived.endDate = effectiveDate
+            archived.updatedAt = Date()
+            tasks[index] = archived
+
+            var resumed = task
+            resumed.id = UUID().uuidString
+            resumed.anchorDate = effectiveDate
+            resumed.createdAt = Date()
+            resumed.updatedAt = resumed.createdAt
+            resumed.isPaused = false
+            resumed.pauseDate = nil
+            resumed.endDate = nil
+            tasks.append(resumed)
+            try writeSettingJSON(tasks, forKey: planTasksKey)
+            removePlanReminder(for: archived)
+            schedulePlanReminder(for: resumed)
+            postPlanChange()
+            return
+        }
+        var updated = task
+        updated.isPaused = paused
+        updated.pauseDate = paused ? calendar.startOfDay(for: date) : nil
+        _ = try savePlanTask(updated)
+    }
+
+    /// Creates a new revision from the selected day onward, preserving the archived revision.
+    func replacePlanTask(_ task: PlanTask, effectiveFrom date: Date, calendar: Calendar = .current) throws {
+        var tasks = allPlanTasks(includePaused: true)
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
+            _ = try savePlanTask(task)
+            return
+        }
+        let effectiveDate = calendar.startOfDay(for: date)
+        var archived = tasks[index]
+        archived.endDate = effectiveDate
+        archived.updatedAt = Date()
+        tasks[index] = archived
+
+        var revision = task
+        revision.id = UUID().uuidString
+        revision.anchorDate = effectiveDate
+        revision.createdAt = Date()
+        revision.updatedAt = revision.createdAt
+        revision.isPaused = false
+        revision.pauseDate = nil
+        revision.endDate = nil
+        tasks.append(revision)
+        try writeSettingJSON(tasks, forKey: planTasksKey)
+        removePlanReminder(for: archived)
+        schedulePlanReminder(for: revision)
+
+        var instances = planTaskInstancesStorage()
+        if calendar.isDateInToday(effectiveDate), let old = instances.first(where: { $0.taskID == task.id && calendar.isDate($0.date, inSameDayAs: effectiveDate) }) {
+            instances.append(PlanTaskInstance(taskID: revision.id, date: effectiveDate, done: old.done, doneAt: old.doneAt, calendar: calendar))
+            try writeSettingJSON(instances, forKey: planInstancesKey)
+        }
+        postPlanChange()
+    }
+
+    /// Returns lazily-generated instances for active tasks matching the date.
+    func planTaskInstances(for date: Date, calendar: Calendar = .current) -> [PlanTaskInstance] {
+        let day = calendar.startOfDay(for: date)
+        let stored = planTaskInstancesStorage()
+        return allPlanTasks(includePaused: true).compactMap { task in
+            guard task.occurs(on: day, calendar: calendar) else { return nil }
+            return stored.first(where: { $0.taskID == task.id && calendar.isDate($0.date, inSameDayAs: day) })
+                ?? PlanTaskInstance(taskID: task.id, date: day, calendar: calendar)
+        }
+    }
+
+    func allPlanTaskInstances() -> [PlanTaskInstance] {
+        planTaskInstancesStorage()
+    }
+
+    func planTaskInstance(taskID: String, date: Date, calendar: Calendar = .current) -> PlanTaskInstance? {
+        planTaskInstances(for: date, calendar: calendar).first { $0.taskID == taskID }
+    }
+
+    /// Completing a task is deliberately restricted to the local current day.
+    @discardableResult
+    func setPlanTaskDone(taskID: String, on date: Date, done: Bool, calendar: Calendar = .current) throws -> PlanTaskInstance {
+        let day = calendar.startOfDay(for: date)
+        guard calendar.isDateInToday(day) else { throw JournalRepositoryError.planTaskDateReadOnly }
+        guard let task = planTask(id: taskID), task.occurs(on: day, calendar: calendar) else {
+            throw JournalRepositoryError.planTaskUnavailable
+        }
+
+        var instances = planTaskInstancesStorage()
+        let index = instances.firstIndex { $0.taskID == taskID && calendar.isDate($0.date, inSameDayAs: day) }
+        var instance = PlanTaskInstance(taskID: taskID, date: day, done: done, doneAt: done ? Date() : nil, calendar: calendar)
+        if let index {
+            instance = instances[index]
+            instance.done = done
+            instance.doneAt = done ? (instance.doneAt ?? Date()) : nil
+            instances[index] = instance
+        } else {
+            instances.append(instance)
+        }
+        try writeSettingJSON(instances, forKey: planInstancesKey)
+        postPlanChange()
+        BadgeManager.shared.checkAndUnlockBadges()
+        return instance
+    }
+
+    func planCompletion(for date: Date = Date(), calendar: Calendar = .current) -> (completed: Int, total: Int) {
+        let instances = planTaskInstances(for: date, calendar: calendar)
+        return (instances.filter(\.done).count, instances.count)
+    }
+
+    func planHasIncompleteTasks(on date: Date = Date(), calendar: Calendar = .current) -> Bool {
+        let result = planCompletion(for: date, calendar: calendar)
+        return result.total > result.completed
+    }
+
+    func consecutivePlanCompletion(upTo date: Date = Date(), calendar: Calendar = .current) -> Int {
+        var cursor = calendar.startOfDay(for: date)
+        var count = 0
+        while true {
+            let completion = planCompletion(for: cursor, calendar: calendar)
+            guard completion.total > 0, completion.completed == completion.total else { break }
+            count += 1
+            guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            cursor = previous
+        }
+        return count
+    }
+
+    private func planTaskInstancesStorage() -> [PlanTaskInstance] {
+        readSettingJSON(forKey: planInstancesKey) ?? []
+    }
+
+    private func readSettingJSON<T: Decodable>(forKey key: String) -> T? {
+        guard let settingsTable else { return nil }
+        do {
+            let settings = try settingsTable.getObjects(on: JournalSetting.Properties.all)
+            guard let value = settings.first(where: { $0.key == key })?.value,
+                  let data = value.data(using: .utf8) else { return nil }
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            assertionFailure("WCDB plan setting read error: \(error)")
+            return nil
+        }
+    }
+
+    private func writeSettingJSON<T: Encodable>(_ value: T, forKey key: String) throws {
+        guard let settingsTable else { throw JournalRepositoryError.databaseUnavailable }
+        let data = try JSONEncoder().encode(value)
+        guard let string = String(data: data, encoding: .utf8) else { throw JournalRepositoryError.databaseUnavailable }
+        try settingsTable.delete(where: JournalSetting.CodingKeys.key == key)
+        try settingsTable.insert(JournalSetting(key: key, value: string))
+    }
+
+    private func postPlanChange() {
+        NotificationCenter.default.post(name: .planTasksDidChange, object: nil)
+    }
+
+    private func schedulePlanReminder(for task: PlanTask) {
+        guard task.reminderEnabled, let hour = task.reminderHour, let minute = task.reminderMinute else {
+            removePlanReminder(for: task)
+            return
+        }
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+            guard granted else { return }
+            let content = UNMutableNotificationContent()
+            content.title = "计划提醒"
+            content.body = task.title
+            content.sound = .default
+            var components = DateComponents()
+            components.hour = hour
+            components.minute = minute
+            if task.rule == .once {
+                components.year = Calendar.current.component(.year, from: task.anchorDate)
+                components.month = Calendar.current.component(.month, from: task.anchorDate)
+                components.day = Calendar.current.component(.day, from: task.anchorDate)
+            } else if task.rule == .custom || task.rule == .weekdays || task.rule == .weekends {
+                // One request per weekday keeps repeating reminders aligned with the task rule.
+                let weekdays = task.rule == .custom ? task.weekdays : (1...7).filter { task.rule.includes(weekday: $0) }
+                for weekday in weekdays {
+                    components.weekday = weekday
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+                    center.add(UNNotificationRequest(identifier: "plan-\(task.id)-\(weekday)", content: content, trigger: trigger))
+                }
+                return
+            }
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: task.rule != .once)
+            center.add(UNNotificationRequest(identifier: "plan-\(task.id)", content: content, trigger: trigger))
+        }
+    }
+
+    private func removePlanReminder(for task: PlanTask) {
+        let ids = ["plan-\(task.id)"] + (1...7).map { "plan-\(task.id)-\($0)" }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
+    }
+
     // MARK: - Future Mailbox
 
     /// Returns letters in the order in which they are scheduled to open.
@@ -433,14 +688,16 @@ final class JournalRepository {
             checkIns: records.map(JournalSyncCheckIn.init),
             futureLetters: letters,
             themeMode: themeMode().rawValue,
-            unlockedBadgeIDs: unlockedBadgeIDs()
+            unlockedBadgeIDs: unlockedBadgeIDs(),
+            planTasks: allPlanTasks(includePaused: true),
+            planTaskInstances: allPlanTaskInstances()
         )
     }
 
     /// Merges a remote snapshot by stable IDs. Existing local data is kept when
     /// it is newer, so receiving on either device is safe to repeat.
     func mergeSyncPayload(_ payload: JournalSyncPayload) throws {
-        guard payload.version == JournalSyncPayload.currentVersion,
+        guard (1...JournalSyncPayload.currentVersion).contains(payload.version),
               let entriesTable,
               let checkInsTable,
               let futureLettersTable else {
@@ -478,9 +735,34 @@ final class JournalRepository {
         }
         let mergedBadgeIDs = Set(unlockedBadgeIDs()).union(payload.unlockedBadgeIDs)
         try saveUnlockedBadgeIDs(Array(mergedBadgeIDs))
+        if !payload.planTasks.isEmpty {
+            var localTasks = allPlanTasks(includePaused: true)
+            for incoming in payload.planTasks {
+                if let index = localTasks.firstIndex(where: { $0.id == incoming.id }) {
+                    if localTasks[index].updatedAt < incoming.updatedAt { localTasks[index] = incoming }
+                } else {
+                    localTasks.append(incoming)
+                }
+            }
+            try writeSettingJSON(localTasks, forKey: planTasksKey)
+        }
+        if !payload.planTaskInstances.isEmpty {
+            var localInstances = planTaskInstancesStorage()
+            for incoming in payload.planTaskInstances {
+                if let index = localInstances.firstIndex(where: { $0.id == incoming.id }) {
+                    let localDate = localInstances[index].doneAt ?? .distantPast
+                    let incomingDate = incoming.doneAt ?? .distantPast
+                    if incomingDate > localDate { localInstances[index] = incoming }
+                } else {
+                    localInstances.append(incoming)
+                }
+            }
+            try writeSettingJSON(localInstances, forKey: planInstancesKey)
+        }
         NotificationCenter.default.post(name: .journalEntriesDidChange, object: nil)
         NotificationCenter.default.post(name: .checkInDidChange, object: nil)
         NotificationCenter.default.post(name: .futureLettersDidChange, object: nil)
+        postPlanChange()
         BadgeManager.shared.checkAndUnlockBadges()
     }
 }

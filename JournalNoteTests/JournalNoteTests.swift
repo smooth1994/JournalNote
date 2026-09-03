@@ -58,11 +58,11 @@ struct JournalNoteTests {
         }
     }
 
-    @Test @MainActor func rootTabBarContainsV11Destinations() {
+    @Test @MainActor func rootTabBarContainsV20Destinations() {
         let controller = JournalTabBarController()
         controller.loadViewIfNeeded()
         let titles = controller.viewControllers?.compactMap { $0.tabBarItem.title } ?? []
-        #expect(titles == ["时光轴", "日历", "我的"])
+        #expect(titles == ["时光轴", "日历", "计划", "我的"])
         #expect(controller.viewControllers?[2].tabBarItem.image != nil)
 
         let rootControllers = controller.viewControllers?
@@ -70,6 +70,29 @@ struct JournalNoteTests {
             .compactMap(\.viewControllers.first) ?? []
         rootControllers.forEach { $0.loadViewIfNeeded() }
         #expect(rootControllers.allSatisfy { $0.navigationItem.largeTitleDisplayMode == .never })
+    }
+
+    @Test func planTaskRulesMatchTheirExpectedWeekdays() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let monday = Date(timeIntervalSince1970: 1_725_316_800) // 2024-09-02 UTC
+        let saturday = Date(timeIntervalSince1970: 1_725_748_800)
+        let weekdayTask = PlanTask(title: "工作", rule: .weekdays, anchorDate: monday)
+        let weekendTask = PlanTask(title: "休息", rule: .weekends, anchorDate: monday)
+        let customTask = PlanTask(title: "周一", rule: .custom, weekdays: [2], anchorDate: monday)
+
+        #expect(weekdayTask.occurs(on: monday, calendar: calendar))
+        #expect(!weekdayTask.occurs(on: saturday, calendar: calendar))
+        #expect(weekendTask.occurs(on: saturday, calendar: calendar))
+        #expect(customTask.occurs(on: monday, calendar: calendar))
+        #expect(!customTask.occurs(on: saturday, calendar: calendar))
+    }
+
+    @Test func oncePlanTaskOnlyOccursOnItsAnchorDay() {
+        let date = Date(timeIntervalSince1970: 1_725_316_800)
+        let task = PlanTask(title: "今天", rule: .once, anchorDate: date)
+        #expect(task.occurs(on: date))
+        #expect(!task.occurs(on: date.addingTimeInterval(86_400)))
     }
 
     @Test @MainActor func badgeCenterIsAvailableFromProfile() {

@@ -15,6 +15,9 @@ final class ProfileViewController: JournalBaseViewController {
     private let moodCard = UIView()
     private let moodYearView = MoodYearView()
     private let moodSummaryLabel = UILabel()
+    private let badgeEntryCard = UIView()
+    private let badgePreviewStack = UIStackView()
+    private let badgeProgressLabel = UILabel()
     private let sealCard = UIView()
     private let sealStack = UIStackView()
     private let themeCard = UIView()
@@ -60,6 +63,35 @@ final class ProfileViewController: JournalBaseViewController {
         moodSummaryLabel.numberOfLines = 0
         moodSummaryLabel.textAlignment = .center
         moodSummaryLabel.adjustsFontForContentSizeCategory = true
+
+        badgeEntryCard.applyJournalSoftCard(cornerRadius: JournalDesign.cardCorner)
+        badgeEntryCard.layer.borderColor = JournalDesign.gold.cgColor
+        let badgeTitle = UILabel()
+        badgeTitle.text = "🏅 我的徽章"
+        badgeTitle.font = JournalDesign.serifFont(size: 15, textStyle: .headline, weight: .semibold)
+        badgeTitle.textColor = JournalDesign.primaryText
+        let badgeArrow = UILabel()
+        badgeArrow.text = "全部徽章 ›"
+        badgeArrow.font = JournalDesign.monoFont(size: 11, textStyle: .caption1)
+        badgeArrow.textColor = JournalDesign.accent
+        badgeProgressLabel.font = JournalDesign.serifFont(size: 12, textStyle: .caption1)
+        badgeProgressLabel.textColor = JournalDesign.secondaryText
+        badgePreviewStack.axis = .horizontal
+        badgePreviewStack.spacing = 8
+        badgePreviewStack.alignment = .center
+        let badgeHeader = UIView()
+        badgeHeader.addSubview(badgeTitle); badgeHeader.addSubview(badgeArrow)
+        badgeTitle.snp.makeConstraints { make in make.leading.top.bottom.equalToSuperview() }
+        badgeArrow.snp.makeConstraints { make in make.trailing.centerY.equalToSuperview() }
+        badgeEntryCard.addSubview(badgeHeader)
+        badgeEntryCard.addSubview(badgePreviewStack)
+        badgeEntryCard.addSubview(badgeProgressLabel)
+        badgeHeader.snp.makeConstraints { make in make.top.leading.trailing.equalToSuperview().inset(14); make.height.equalTo(22) }
+        badgePreviewStack.snp.makeConstraints { make in make.top.equalTo(badgeHeader.snp.bottom).offset(10); make.leading.trailing.equalToSuperview().inset(14); make.height.equalTo(38) }
+        badgeProgressLabel.snp.makeConstraints { make in make.top.equalTo(badgePreviewStack.snp.bottom).offset(8); make.leading.trailing.equalToSuperview().inset(14); make.bottom.equalToSuperview().inset(13) }
+        let cardTap = UITapGestureRecognizer(target: self, action: #selector(showBadgeCenter))
+        badgeEntryCard.addGestureRecognizer(cardTap)
+        badgeEntryCard.isUserInteractionEnabled = true
 
         sealCard.applyJournalSoftCard(cornerRadius: JournalDesign.panelCorner)
         let sealTitle = makeCardEyebrow("印章墙")
@@ -111,7 +143,7 @@ final class ProfileViewController: JournalBaseViewController {
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        [greetingLabel, subtitleLabel, moodCard, sealCard, themeCard, badgeButton, reportButton, mailboxButton, syncExportButton, syncReceiveButton, exportButton].forEach {
+        [greetingLabel, subtitleLabel, badgeEntryCard, moodCard, sealCard, themeCard, badgeButton, reportButton, mailboxButton, syncExportButton, syncReceiveButton, exportButton].forEach {
             contentView.addSubview($0)
         }
         moodCard.addSubview(moodTitle)
@@ -140,8 +172,12 @@ final class ProfileViewController: JournalBaseViewController {
             make.top.equalTo(greetingLabel.snp.bottom).offset(2)
             make.leading.trailing.equalTo(greetingLabel)
         }
+        badgeEntryCard.snp.makeConstraints { make in
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
         moodCard.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(20)
+            make.top.equalTo(badgeEntryCard.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(20)
         }
         moodTitle.snp.makeConstraints { make in
@@ -267,6 +303,51 @@ final class ProfileViewController: JournalBaseViewController {
             .joined(separator: "  ·  ")
         moodSummaryLabel.text = counts.isEmpty ? "你的心情会在这里慢慢长成一圈年轮。" : counts
         updateSealWall(entryCount: entries.count, streak: repository.consecutiveDays())
+        updateBadgeEntry()
+    }
+
+    private func updateBadgeEntry() {
+        badgePreviewStack.arrangedSubviews.forEach { badgePreviewStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        let unlocked = BadgeManager.shared.unlockedBadges()
+        let visible = Array(unlocked.prefix(4))
+        for badge in visible {
+            let label = UILabel()
+            label.text = badge.emoji
+            label.font = .systemFont(ofSize: 22)
+            label.textAlignment = .center
+            label.backgroundColor = JournalDesign.amber100
+            label.layer.cornerRadius = 19
+            label.clipsToBounds = true
+            label.layer.borderWidth = 1.5
+            label.layer.borderColor = JournalDesign.gold.cgColor
+            label.snp.makeConstraints { make in make.width.height.equalTo(38) }
+            badgePreviewStack.addArrangedSubview(label)
+        }
+        while badgePreviewStack.arrangedSubviews.count < 4 {
+            let label = UILabel()
+            label.text = "🔒"
+            label.font = .systemFont(ofSize: 18)
+            label.textAlignment = .center
+            label.backgroundColor = JournalDesign.secondaryBackground
+            label.alpha = 0.55
+            label.layer.cornerRadius = 19
+            label.clipsToBounds = true
+            label.snp.makeConstraints { make in make.width.height.equalTo(38) }
+            badgePreviewStack.addArrangedSubview(label)
+        }
+        if unlocked.count > 4 {
+            let more = UILabel()
+            more.text = "+\(unlocked.count - 4)"
+            more.font = JournalDesign.monoFont(size: 10, textStyle: .caption2)
+            more.textAlignment = .center
+            more.textColor = JournalDesign.secondaryText
+            badgePreviewStack.addArrangedSubview(more)
+        }
+        badgeProgressLabel.text = "已点亮 \(unlocked.count) / \(BadgeManager.shared.allBadges().count)"
+        if let planBadge = Badge.allBadges.first(where: { $0.id == "plan_expert" }), !BadgeManager.shared.isUnlocked(planBadge.id) {
+            let progress = BadgeManager.shared.progressForBadge(planBadge)
+            badgeProgressLabel.text = "已点亮 \(unlocked.count) / \(BadgeManager.shared.allBadges().count) · 计划达人还差 \(max(0, progress.target - progress.current)) 天"
+        }
     }
 
     private func updateSealWall(entryCount: Int, streak: Int) {

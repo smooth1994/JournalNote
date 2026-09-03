@@ -8,7 +8,7 @@ import Foundation
 /// A versioned, JSON-safe snapshot of the WCDB-backed journal data.
 /// Device-specific onboarding timestamps are intentionally not included.
 struct JournalSyncPayload: Codable {
-    static let currentVersion = 1
+    static let currentVersion = 2
 
     let version: Int
     let exportedAt: Date
@@ -17,6 +17,8 @@ struct JournalSyncPayload: Codable {
     let futureLetters: [JournalSyncLetter]
     let themeMode: String
     let unlockedBadgeIDs: [String]
+    let planTasks: [PlanTask]
+    let planTaskInstances: [PlanTaskInstance]
 
     init(
         entries: [JournalSyncEntry],
@@ -24,6 +26,8 @@ struct JournalSyncPayload: Codable {
         futureLetters: [JournalSyncLetter],
         themeMode: String,
         unlockedBadgeIDs: [String],
+        planTasks: [PlanTask] = [],
+        planTaskInstances: [PlanTaskInstance] = [],
         exportedAt: Date = Date()
     ) {
         version = Self.currentVersion
@@ -33,6 +37,25 @@ struct JournalSyncPayload: Codable {
         self.futureLetters = futureLetters
         self.themeMode = themeMode
         self.unlockedBadgeIDs = unlockedBadgeIDs
+        self.planTasks = planTasks
+        self.planTaskInstances = planTaskInstances
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case version, exportedAt, entries, checkIns, futureLetters, themeMode, unlockedBadgeIDs, planTasks, planTaskInstances
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        version = try values.decode(Int.self, forKey: .version)
+        exportedAt = try values.decode(Date.self, forKey: .exportedAt)
+        entries = try values.decode([JournalSyncEntry].self, forKey: .entries)
+        checkIns = try values.decode([JournalSyncCheckIn].self, forKey: .checkIns)
+        futureLetters = try values.decode([JournalSyncLetter].self, forKey: .futureLetters)
+        themeMode = try values.decode(String.self, forKey: .themeMode)
+        unlockedBadgeIDs = try values.decode([String].self, forKey: .unlockedBadgeIDs)
+        planTasks = try values.decodeIfPresent([PlanTask].self, forKey: .planTasks) ?? []
+        planTaskInstances = try values.decodeIfPresent([PlanTaskInstance].self, forKey: .planTaskInstances) ?? []
     }
 }
 
