@@ -317,15 +317,6 @@
 			path = Calendar;
 			sourceTree = "<group>";
 		};
-		04A1001F306A000000000001 /* Plan */ = {
-			isa = PBXGroup;
-			children = (
-				04A1001B306A000000000001 /* PlanViewController.swift */,
-				04A10021306A000000000001 /* RecurringPlanListViewController.swift */,
-			);
-			path = Plan;
-			sourceTree = "<group>";
-		};
 		045469F8303698B70044576D /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -362,6 +353,15 @@
 				04A1000A306A000000000001 /* BadgeViewController.swift */,
 			);
 			path = Badge;
+			sourceTree = "<group>";
+		};
+		04A1001F306A000000000001 /* Plan */ = {
+			isa = PBXGroup;
+			children = (
+				04A1001B306A000000000001 /* PlanViewController.swift */,
+				04A10021306A000000000001 /* RecurringPlanListViewController.swift */,
+			);
+			path = Plan;
 			sourceTree = "<group>";
 		};
 		5114442DD05FFD3FACC660E5 /* Frameworks */ = {
@@ -533,13 +533,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote/Pods-JournalNote-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -554,13 +550,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-JournalNote-JournalNoteUITests/Pods-JournalNote-JournalNoteUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -737,10 +729,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4NX335G8BX;
+				DEVELOPMENT_TEAM = 66M88PL895;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JournalNote/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "拾光手账";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "拾光手账需要访问本地网络，以便在同一 Wi-Fi 下与另一台设备同步数据。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -751,7 +744,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yolanda.JournalNote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.smoothv.JournalNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -775,10 +768,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4NX335G8BX;
+				DEVELOPMENT_TEAM = 66M88PL895;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = JournalNote/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "拾光手账";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "拾光手账需要访问本地网络，以便在同一 Wi-Fi 下与另一台设备同步数据。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -789,7 +783,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yolanda.JournalNote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.smoothv.JournalNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
